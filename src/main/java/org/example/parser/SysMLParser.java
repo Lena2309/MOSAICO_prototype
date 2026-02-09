@@ -37,7 +37,7 @@ public class SysMLParser {
         String mainBody = extractBlock(collaborationPattern, "action def");
 
         if (mainBody == null || mainBody.isEmpty()) {
-            return new TaskExecutionPlan(0, List.of(), List.of(), WorkflowType.SEQUENTIAL);
+            return new TaskExecutionPlan(0, List.of(), List.of(), WorkflowType.SEQUENTIAL, Optional.empty());
         }
 
         int cursor = 0;
@@ -54,7 +54,8 @@ public class SysMLParser {
                 String block = extractBlock(mainBody.substring(loopIndex), "loop action");
                 // TODO: Improve sub task plans in loop
                 List<Task> loopTasks = parseTasksInsideBlock(block); // Recursively parse actions inside loop
-                plans.add(new TaskExecutionPlan(orderCounter++, loopTasks, List.of(), WorkflowType.LOOP));
+                // TODO: parse condition
+                plans.add(new TaskExecutionPlan(orderCounter++, loopTasks, List.of(), WorkflowType.LOOP, Optional.empty()));
                 cursor = loopIndex + block.length() + "loop action".length();
                 cursor = mainBody.indexOf(";", cursor) + 1;
 
@@ -64,7 +65,7 @@ public class SysMLParser {
                 if (joinIndex > 0) {
                     String forkBlock = mainBody.substring(forkIndex, joinIndex);
                     List<Task> parallelTasks = parseForkBlock(forkBlock);
-                    plans.add(new TaskExecutionPlan(orderCounter++, parallelTasks, List.of(), WorkflowType.PARALLEL));
+                    plans.add(new TaskExecutionPlan(orderCounter++, parallelTasks, List.of(), WorkflowType.PARALLEL, Optional.empty()));
                     cursor = joinIndex + "then join joinNode;".length();
                 } else {
                     cursor = forkIndex + 10;
@@ -83,7 +84,7 @@ public class SysMLParser {
             }
         }
 
-        return new TaskExecutionPlan(0, tasks, plans, WorkflowType.SEQUENTIAL);
+        return new TaskExecutionPlan(0, tasks, plans, WorkflowType.SEQUENTIAL, Optional.empty());
     }
 
     // -----------------------------------------------------------------------

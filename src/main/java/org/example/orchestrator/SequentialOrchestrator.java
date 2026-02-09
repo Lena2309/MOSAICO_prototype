@@ -1,10 +1,12 @@
 package org.example.orchestrator;
 
+import jakarta.el.LambdaExpression;
 import org.example.agents.CollaborationAgent;
 import org.example.dto.*;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public record SequentialOrchestrator(CollaborationAgent collaborationAgent) implements Orchestrator {
@@ -14,15 +16,16 @@ public record SequentialOrchestrator(CollaborationAgent collaborationAgent) impl
     }
 
     @Override
-    public List<TaskOutput> run(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs) {
+    public List<TaskOutput> run(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs, Optional<LambdaExpression> endLoopCondition) {
         System.out.println("--- Starting Sequential Plan Execution ---");
 
         var executionQueue = Stream.concat(tasks.stream(), taskExecutionPlans.stream())
                 .sorted(Comparator.comparingInt(OrderedMOSAICOExecution::executionOrder))
                 .toList();
 
+
         for (OrderedMOSAICOExecution executable : executionQueue) {
-            executeItem(collaborationAgent, executable, taskOutputs);
+            executeItem(executable, taskOutputs);
         }
 
         System.out.println("--- Finished Sequential Plan Order ---");

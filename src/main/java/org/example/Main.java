@@ -130,6 +130,6 @@ public class Main {
                 """;
 
         var collabAgent = new CollaborationAgent();
-        collabAgent.run(collaborationPattern);
+        System.out.println(collabAgent.run(collaborationPattern));
     }
 }

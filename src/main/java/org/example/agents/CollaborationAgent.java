@@ -1,5 +1,6 @@
 package org.example.agents;
 
+import jakarta.el.LambdaExpression;
 import org.example.dto.Task;
 import org.example.dto.TaskExecutionPlan;
 import org.example.dto.TaskOutput;
@@ -12,6 +13,7 @@ import org.example.parser.SysMLParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CollaborationAgent implements MosaicoAgent{
     private final List<Orchestrator> orchestrators = List.of(new SequentialOrchestrator(this), new ParallelOrchestration(this), new LoopOrchestration(this));
@@ -27,24 +29,19 @@ public class CollaborationAgent implements MosaicoAgent{
         this.managerAgent = managerAgent;
     }
     
-    public String getAgentCard() {
-        return "";
-    }
-    
     public String run(String collaborationPattern) {
         TaskExecutionPlan executionPlan = SysMLParser.parse(collaborationPattern);
-        var taskOutputs = runOrchestrator(executionPlan.tasks(), executionPlan.taskExecutionPlans(), executionPlan.workflowType(), new ArrayList<>());
+        var taskOutputs = runOrchestrator(executionPlan.tasks(), executionPlan.taskExecutionPlans(), executionPlan.workflowType(), new ArrayList<>(), executionPlan.endLoopCondition());
         return taskOutputs.toString();
     }
 
-    public List<TaskOutput> runOrchestrator(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, WorkflowType workflowType, List<TaskOutput> taskOutputs) {
-        var output = new ArrayList<TaskOutput>();
-        for (var orchestrator : orchestrators) {
-            if(orchestrator.getWorkflowType() == workflowType) {
-                output.addAll(orchestrator.run(tasks, taskExecutionPlans, taskOutputs));
-            }
+    public List<TaskOutput> runOrchestrator(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, WorkflowType workflowType, List<TaskOutput> taskOutputs, Optional<LambdaExpression> endLoopCondition) {
+        var orchestrator = this.orchestrators.stream().filter(o -> o.getWorkflowType() == workflowType).findFirst();
+        if (orchestrator.isEmpty()) {
+            return taskOutputs;
         }
-        return output;
+        orchestrator.get().run(tasks, taskExecutionPlans, taskOutputs, endLoopCondition);
+        return taskOutputs;
     }
 
     public List<String> generateKeyWordsForTask(String taskDescription) {

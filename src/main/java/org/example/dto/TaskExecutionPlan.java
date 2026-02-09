@@ -1,6 +1,9 @@
 package org.example.dto;
 
-import java.util.List;
+import jakarta.el.LambdaExpression;
 
-public record TaskExecutionPlan(int executionOrder, List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, WorkflowType workflowType) implements OrderedMOSAICOExecution {
+import java.util.List;
+import java.util.Optional;
+
+public record TaskExecutionPlan(int executionOrder, List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, WorkflowType workflowType, Optional<LambdaExpression> endLoopCondition) implements OrderedMOSAICOExecution {
 }

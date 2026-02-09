@@ -1,14 +1,15 @@
 package org.example.orchestrator;
 
+import jakarta.el.LambdaExpression;
 import org.example.agents.CollaborationAgent;
 import org.example.dto.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public record ParallelOrchestration(CollaborationAgent collaborationAgent) implements Orchestrator {
@@ -18,33 +19,28 @@ public record ParallelOrchestration(CollaborationAgent collaborationAgent) imple
     }
 
     @Override
-    public List<TaskOutput> run(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs) {
+    public List<TaskOutput> run(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs, Optional<LambdaExpression> endLoopCondition) {
         ExecutorService executor = Executors.newCachedThreadPool();
 
-            var allItems = Stream.concat(
-                    safeStream(tasks),
-                    safeStream(taskExecutionPlans)
-            ).toList();
+        var allItems = Stream.concat(
+                tasks.stream(),
+                taskExecutionPlans.stream()
+        ).toList();
 
-            if (allItems.isEmpty()) {
-                return List.of();
-            }
-
-            List<TaskOutput> threadSafeResults = Collections.synchronizedList(taskOutputs);
-
-            List<CompletableFuture<Void>> futures = allItems.stream()
-                    .map(item -> CompletableFuture.runAsync(() -> {
-                        // Pass the thread-safe list so executeItem can update it
-                        executeItem(this.collaborationAgent, item, threadSafeResults);
-                    }, executor))
-                    .toList();
-
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-            return threadSafeResults;
+        if (allItems.isEmpty()) {
+            return taskOutputs;
         }
 
-        private <T> Stream<T> safeStream(List<T> list) {
-            return list == null ? Stream.empty() : list.stream();
-        }
+        List<TaskOutput> threadSafeResults = Collections.synchronizedList(taskOutputs);
+
+        List<CompletableFuture<Void>> futures = allItems.stream()
+                .map(item -> CompletableFuture.runAsync(() -> {
+                    executeItem(item, threadSafeResults);
+                }, executor))
+                .toList();
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        return threadSafeResults;
+    }
 }
