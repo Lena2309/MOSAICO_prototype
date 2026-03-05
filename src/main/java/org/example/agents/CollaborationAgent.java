@@ -1,68 +1,142 @@
 package org.example.agents;
 
 import jakarta.el.LambdaExpression;
-import org.example.dto.Task;
-import org.example.dto.TaskExecutionPlan;
-import org.example.dto.TaskOutput;
-import org.example.orchestrator.LoopOrchestration;
-import org.example.orchestrator.Orchestrator;
-import org.example.orchestrator.ParallelOrchestration;
-import org.example.orchestrator.SequentialOrchestrator;
-import org.example.dto.WorkflowType;
-import org.example.parser.SysMLParser;
+import org.example.dto.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.stream.Stream;
 
-public class CollaborationAgent implements MosaicoAgent{
-    private final List<Orchestrator> orchestrators = List.of(new SequentialOrchestrator(this), new ParallelOrchestration(this), new LoopOrchestration(this));
+public class CollaborationAgent extends MosaicoAgent {
     private CollaborationAgent managerAgent;
-    private List<CollaborationAgent> orchestrationAgentPool;
-    private List<MosaicoAgent> agentPool;
+    private List<CollaborationAgent> collaborationAgentPool;
+    private List<MosaicoAgent> agentPool = new ArrayList<>();
 
     public CollaborationAgent() {
-        this.managerAgent = null;
+        this(null, null);
+        this.agentPool.add(new ReferenceAgent());
     }
 
     public CollaborationAgent(CollaborationAgent managerAgent) {
-        this.managerAgent = managerAgent;
+        this(managerAgent, null);
     }
-    
-    public String run(String collaborationPattern) {
-        TaskExecutionPlan executionPlan = SysMLParser.parse(collaborationPattern);
-        var taskOutputs = runOrchestrator(executionPlan.tasks(), executionPlan.taskExecutionPlans(), executionPlan.workflowType(), new ArrayList<>(), executionPlan.endLoopCondition());
+
+    public CollaborationAgent(CollaborationAgent managerAgent, List<MosaicoAgent> agentPool) {
+        super(null, null, null, null);
+        this.managerAgent = managerAgent;
+        if (agentPool != null) {
+            this.agentPool.addAll(agentPool);
+        }
+    }
+
+    // ----------------------------------------------------------
+
+    // REPO ? ou AgentPool
+    // TODO: implement repo talk
+    public static MosaicoAgent findBestAgentForTask(List<MosaicoAgent> agentPool, List<String> taskKeywords, String taskDescription, MosaicoAgent agentToAvoid) {
+        if (agentToAvoid != null) {
+            return agentToAvoid;
+        }
+        return null;
+    }
+
+    public CollaborationAgent getManagerAgent() {
+        return managerAgent;
+    }
+
+    // --------------------------
+
+    public List<MosaicoAgent> getAgentPool() {
+        return agentPool;
+    }
+
+    public String run(TaskExecutionPlan executionPlan) {
+        var taskOutputs = runOrchestrator(executionPlan.getTasks(), executionPlan.getTaskExecutionPlans(), executionPlan.getWorkflowType(), new ArrayList<>(), executionPlan.getEndLoopCondition());
         return taskOutputs.toString();
     }
 
     public List<TaskOutput> runOrchestrator(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, WorkflowType workflowType, List<TaskOutput> taskOutputs, Optional<LambdaExpression> endLoopCondition) {
-        var orchestrator = this.orchestrators.stream().filter(o -> o.getWorkflowType() == workflowType).findFirst();
-        if (orchestrator.isEmpty()) {
-            return taskOutputs;
+        switch (workflowType) {
+            case SEQUENTIAL -> taskOutputs = executeSequential(tasks, taskExecutionPlans, taskOutputs);
+            case PARALLEL -> taskOutputs = executeParallel(tasks, taskExecutionPlans, taskOutputs);
+            case LOOP -> taskOutputs = executeLoop(tasks, taskExecutionPlans, taskOutputs, endLoopCondition);
         }
-        orchestrator.get().run(tasks, taskExecutionPlans, taskOutputs, endLoopCondition);
         return taskOutputs;
     }
 
-    public List<String> generateKeyWordsForTask(String taskDescription) {
-        return List.of();
+    private void executeItem(OrderedMOSAICOExecution item, List<TaskOutput> taskOutputs) {
+        if (item instanceof Task task) {
+            var necessaryOutputs = taskOutputs.stream()
+                    .filter(taskOutput -> task.getOutputDependencies().contains(taskOutput.task()))
+                    .toList();
+            taskOutputs.add(task.execute(necessaryOutputs));
+        } else if (item instanceof TaskExecutionPlan subPlan) {
+            runOrchestrator(subPlan.getTasks(), subPlan.getTaskExecutionPlans(), subPlan.getWorkflowType(), taskOutputs, subPlan.getEndLoopCondition());
+        }
     }
 
-    // REPO
-    public List<MosaicoAgent> retrieveKeywordsAgents(List<String> keywords) {
-        return List.of();
+    private List<TaskOutput> executeSequential(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs) {
+        System.out.println("--- Starting Sequential Plan Execution ---");
+
+        var executionQueue = Stream.concat(tasks.stream(), taskExecutionPlans.stream())
+                .sorted(Comparator.comparingInt(OrderedMOSAICOExecution::getExecutionOrder))
+                .toList();
+
+
+        for (OrderedMOSAICOExecution executable : executionQueue) {
+            executeItem(executable, taskOutputs);
+        }
+
+        System.out.println("--- Finished Sequential Plan Order ---");
+        return taskOutputs;
     }
 
-    // REPO ? ou AgentPool
-    public static MosaicoAgent findBestAgentForTask(List<MosaicoAgent> agentPool, List<String> taskKeywords, String taskDescription) {
-        return null;
+    public List<TaskOutput> executeParallel(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs) {
+        // TODO: fix parallel execution
+        System.out.println("--- Starting Parallel Plan Execution ---");
+        var executor = Executors.newCachedThreadPool();
+
+        var allItems = Stream.concat(
+                tasks.stream(),
+                taskExecutionPlans.stream()
+        ).toList();
+
+        if (allItems.isEmpty()) {
+            return taskOutputs;
+        }
+
+        var threadSafeResults = Collections.synchronizedList(taskOutputs);
+
+        var futures = allItems.stream()
+                .map(item -> CompletableFuture.runAsync(() -> {
+                    executeItem(item, threadSafeResults);
+                }, executor))
+                .toList();
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        System.out.println("--- Finished Parallel Plan Order ---");
+        return threadSafeResults;
     }
 
-    public TaskExecutionPlan buildTaskExecutionPlan(Task task, WorkflowType workflowType) {
-        return null;
-    }
-    
-    public String executeOrchestrator(Orchestrator orchestrator, TaskExecutionPlan workflowTaskExecutionPlan) {
-        return "";
+
+    private List<TaskOutput> executeLoop(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs, Optional<LambdaExpression> endLoopCondition) {
+        // TODO: implement loop execution
+        System.out.println("--- Starting Loop Plan Execution ---");
+        //if (endLoopCondition.isPresent()) {
+        //while (endLoopCondition.get() != true) {
+        var executionQueue = Stream.concat(tasks.stream(), taskExecutionPlans.stream())
+                .sorted(Comparator.comparingInt(OrderedMOSAICOExecution::getExecutionOrder))
+                .toList();
+
+        for (OrderedMOSAICOExecution executable : executionQueue) {
+            executeItem(executable, taskOutputs);
+        }
+        //}
+        //}
+
+        System.out.println("--- Finished Loop Plan Order ---");
+        return taskOutputs;
     }
 }
