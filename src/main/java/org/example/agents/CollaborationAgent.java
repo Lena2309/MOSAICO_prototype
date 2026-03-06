@@ -92,32 +92,61 @@ public class CollaborationAgent extends MosaicoAgent {
         return taskOutputs;
     }
 
-    public List<TaskOutput> executeParallel(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs) {
-        // TODO: fix parallel execution
+    /**
+     * Executes a collection of tasks and sub-plans concurrently.
+     * <p>
+     * This method utilizes Virtual Threads to handle potentially I/O-bound agent tasks
+     * without blocking platform threads. It blocks the calling thread until all
+     * parallel items have completed execution.
+     */
+    private List<TaskOutput> executeParallel(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs) {
         System.out.println("--- Starting Parallel Plan Execution ---");
-        var executor = Executors.newCachedThreadPool();
 
-        var allItems = Stream.concat(
-                tasks.stream(),
-                taskExecutionPlans.stream()
-        ).toList();
-
+        var allItems = Stream.concat(tasks.stream(), taskExecutionPlans.stream()).toList();
         if (allItems.isEmpty()) {
             return taskOutputs;
         }
 
+        // Ensure the output list can handle concurrent additions from multiple worker threads
         var threadSafeResults = Collections.synchronizedList(taskOutputs);
 
-        var futures = allItems.stream()
-                .map(item -> CompletableFuture.runAsync(() -> {
-                    executeItem(item, threadSafeResults);
-                }, executor))
-                .toList();
+        // Try-with-resources on the executor ensures proper shutdown and
+        // waits for all virtual threads to terminate before exiting the block.
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+            List<CompletableFuture<Void>> futures = allItems.stream()
+                    .map(item -> CompletableFuture.runAsync(() -> {
+                                System.out.println("  [Parallel] Starting: " + getIdentifier(item));
+                                executeItem(item, threadSafeResults);
+                                System.out.println("  [Parallel] Completed: " + getIdentifier(item));
+                            }, executor)
+                            .exceptionally(ex -> {
+                                // Capture and log exceptions within threads to prevent silent failures
+                                System.err.println("  [Parallel] FAILED: " + getIdentifier(item) + " -> " + ex.getMessage());
+                                ex.printStackTrace();
+                                return null;
+                            }))
+                    .toList();
+
+            // Block the main thread until every submitted task reports completion
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        }
 
         System.out.println("--- Finished Parallel Plan Order ---");
-        return threadSafeResults;
+        return taskOutputs;
+    }
+
+    /**
+     * Internal helper for logging purposes.
+     */
+    private String getIdentifier(Object item) {
+        if (item instanceof Task t) {
+            return "Task " + t.getTaskName();
+        }
+        if (item instanceof TaskExecutionPlan) {
+            return "SubPlan";
+        }
+        return "Unknown Item";
     }
 
 
