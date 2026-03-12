@@ -1,6 +1,6 @@
 package org.example.parser.util;
 
-import jakarta.el.LambdaExpression;
+import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.example.agents.MosaicoAgent;
 import org.example.dto.Task;
 import org.example.dto.TaskExecutionPlan;
@@ -36,7 +36,7 @@ public interface FlowMapper {
 
         processSubNodes(taskOutputParameters, mosaicoAgents, rootFlows, rootTasks, rootExecutionPlans, executionOrder);
 
-        return new TaskExecutionPlan(0, rootTasks, rootExecutionPlans, WorkflowType.SEQUENTIAL, Optional.empty());
+        return new TaskExecutionPlan(0, rootTasks, rootExecutionPlans, WorkflowType.SEQUENTIAL, "");
     }
 
     /**
@@ -70,7 +70,7 @@ public interface FlowMapper {
                     new ArrayList<>(),
                     new ArrayList<>(),
                     WorkflowType.PARALLEL,
-                    Optional.empty()
+                    ""
             );
             currentSubPlans.add(parallelPlan);
 
@@ -149,9 +149,46 @@ public interface FlowMapper {
         Optional<LambdaExpression> condition = Optional.empty();
         if (e instanceof WhileLoopActionUsage) {
             // TODO: map the setup/test parts of the while loop logic
+        String executionPlanName = "unnamed";
+        String conditionString = "";
+        if (e instanceof WhileLoopActionUsage loopActionUsage) {
+            for (var child : loopActionUsage.getOwnedRelationship()) {
+                for (var subChild : child.getOwnedRelatedElement()) {
+                    if (subChild instanceof ActionUsage actionUsage) {
+                        executionPlanName = actionUsage.getDeclaredName();
+                        break;
+                    }
+                }
+            }
+            if (loopActionUsage.getUntilArgument() != null) {
+                conditionString = "until " + parseConditionText(loopActionUsage.getUntilArgument());
+            } else if (loopActionUsage.getWhileArgument() != null) {
+                conditionString = "while " + parseConditionText(loopActionUsage.getUntilArgument());
+            }
         }
 
-        return new TaskExecutionPlan(executionOrder.getAndIncrement(), subTasks, subPlans, workflowType, condition);
+        return new TaskExecutionPlan(executionOrder.getAndIncrement(), executionPlanName, subTasks, subPlans, workflowType, conditionString);
+    }
+
+    /**
+     * Resolves the text representation of a SysML constraint/expression.
+     */
+    private static String parseConditionText(Element e) {
+        if (e == null) return "";
+
+        // Directly finds
+        try {
+            var node = NodeModelUtils.getNode(e);
+            if (node != null) {
+                String rawText = node.getText();
+                if (rawText != null && !rawText.isBlank()) {
+                    return rawText.trim();
+                }
+            }
+        } catch (Exception ignored) {
+            // Fallback to AST parsing if Xtext nodes are stripped or unavailable
+        }
+        return "couldn't parse condition";
     }
 
     /**

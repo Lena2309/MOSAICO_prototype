@@ -1,9 +1,11 @@
 package org.example.agents;
 
-import jakarta.el.LambdaExpression;
 import org.example.dto.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -32,15 +34,6 @@ public class CollaborationAgent extends MosaicoAgent {
 
     // ----------------------------------------------------------
 
-    // REPO ? ou AgentPool
-    // TODO: implement repo talk
-    public static MosaicoAgent findBestAgentForTask(List<MosaicoAgent> agentPool, List<String> taskKeywords, String taskDescription, MosaicoAgent agentToAvoid) {
-        if (agentToAvoid != null) {
-            return agentToAvoid;
-        }
-        return null;
-    }
-
     public CollaborationAgent getManagerAgent() {
         return managerAgent;
     }
@@ -52,15 +45,15 @@ public class CollaborationAgent extends MosaicoAgent {
     }
 
     public String run(TaskExecutionPlan executionPlan) {
-        var taskOutputs = runOrchestrator(executionPlan.getTasks(), executionPlan.getTaskExecutionPlans(), executionPlan.getWorkflowType(), new ArrayList<>(), executionPlan.getEndLoopCondition());
+        var taskOutputs = runOrchestrator(executionPlan, executionPlan.getWorkflowType(), new ArrayList<>(), executionPlan.getEndLoopCondition());
         return taskOutputs.toString();
     }
 
-    public List<TaskOutput> runOrchestrator(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, WorkflowType workflowType, List<TaskOutput> taskOutputs, Optional<LambdaExpression> endLoopCondition) {
+    public List<TaskOutput> runOrchestrator(TaskExecutionPlan taskExecutionPlan, WorkflowType workflowType, List<TaskOutput> taskOutputs, String endLoopCondition) {
         switch (workflowType) {
-            case SEQUENTIAL -> taskOutputs = executeSequential(tasks, taskExecutionPlans, taskOutputs);
-            case PARALLEL -> taskOutputs = executeParallel(tasks, taskExecutionPlans, taskOutputs);
-            case LOOP -> taskOutputs = executeLoop(tasks, taskExecutionPlans, taskOutputs, endLoopCondition);
+            case SEQUENTIAL -> taskOutputs = executeSequential(taskExecutionPlan, taskOutputs);
+            case PARALLEL -> taskOutputs = executeParallel(taskExecutionPlan, taskOutputs);
+            case LOOP -> taskOutputs = executeLoop(taskExecutionPlan, taskOutputs, endLoopCondition);
         }
         return taskOutputs;
     }
@@ -72,14 +65,14 @@ public class CollaborationAgent extends MosaicoAgent {
                     .toList();
             taskOutputs.add(task.execute(necessaryOutputs));
         } else if (item instanceof TaskExecutionPlan subPlan) {
-            runOrchestrator(subPlan.getTasks(), subPlan.getTaskExecutionPlans(), subPlan.getWorkflowType(), taskOutputs, subPlan.getEndLoopCondition());
+            runOrchestrator(subPlan, subPlan.getWorkflowType(), taskOutputs, subPlan.getEndLoopCondition());
         }
     }
 
-    private List<TaskOutput> executeSequential(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs) {
+    private List<TaskOutput> executeSequential(TaskExecutionPlan taskExecutionPlan, List<TaskOutput> taskOutputs) {
         System.out.println("--- Starting Sequential Plan Execution ---");
 
-        var executionQueue = Stream.concat(tasks.stream(), taskExecutionPlans.stream())
+        var executionQueue = Stream.concat(taskExecutionPlan.getTasks().stream(), taskExecutionPlan.getTaskExecutionPlans().stream())
                 .sorted(Comparator.comparingInt(OrderedMOSAICOExecution::getExecutionOrder))
                 .toList();
 
@@ -99,10 +92,10 @@ public class CollaborationAgent extends MosaicoAgent {
      * without blocking platform threads. It blocks the calling thread until all
      * parallel items have completed execution.
      */
-    private List<TaskOutput> executeParallel(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs) {
+    private List<TaskOutput> executeParallel(TaskExecutionPlan taskExecutionPlan, List<TaskOutput> taskOutputs) {
         System.out.println("--- Starting Parallel Plan Execution ---");
 
-        var allItems = Stream.concat(tasks.stream(), taskExecutionPlans.stream()).toList();
+        var allItems = Stream.concat(taskExecutionPlan.getTasks().stream(), taskExecutionPlan.getTaskExecutionPlans().stream()).toList();
         if (allItems.isEmpty()) {
             return taskOutputs;
         }
@@ -153,17 +146,24 @@ public class CollaborationAgent extends MosaicoAgent {
     private List<TaskOutput> executeLoop(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs, Optional<LambdaExpression> endLoopCondition) {
         // TODO: implement loop execution
         System.out.println("--- Starting Loop Plan Execution ---");
-        //if (endLoopCondition.isPresent()) {
-        //while (endLoopCondition.get() != true) {
-        var executionQueue = Stream.concat(tasks.stream(), taskExecutionPlans.stream())
-                .sorted(Comparator.comparingInt(OrderedMOSAICOExecution::getExecutionOrder))
-                .toList();
 
-        for (OrderedMOSAICOExecution executable : executionQueue) {
-            executeItem(executable, taskOutputs);
+        if (!endLoopCondition.isBlank()) {
+
+            var executionQueue = Stream.concat(taskExecutionPlan.getTasks().stream(), taskExecutionPlan.getTaskExecutionPlans().stream())
+                    .sorted(Comparator.comparingInt(OrderedMOSAICOExecution::getExecutionOrder))
+                    .toList();
+
+            var repeat = true;
+            while (repeat) {
+                for (OrderedMOSAICOExecution executable : executionQueue) {
+                    executeItem(executable, taskOutputs);
+                }
+
+
+                repeat = false;
+            }
+
         }
-        //}
-        //}
 
         System.out.println("--- Finished Loop Plan Order ---");
         return taskOutputs;
