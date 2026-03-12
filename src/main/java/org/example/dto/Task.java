@@ -12,20 +12,30 @@ public class Task implements OrderedMOSAICOExecution {
     private final int executionOrder;
     private final String taskName;
     private final String taskDescription;
+    private final List<String> taskOutputsNames;
     private MosaicoAgent bestAgent;
     private List<Task> outputDependencies;
 
     public Task(int executionOrder, String taskName, String taskDescription, MosaicoAgent bestAgent) {
-        this(executionOrder, taskName, taskDescription, bestAgent, new ArrayList<>());
+        this(executionOrder, taskName, taskDescription, new ArrayList<>(), bestAgent, new ArrayList<>());
     }
 
     public Task(int executionOrder, String taskName, String taskDescription,
-                MosaicoAgent bestAgent, List<Task> outputDependencies) {
+                List<String> taskOutputsNames, MosaicoAgent bestAgent, List<Task> outputDependencies) {
         this.executionOrder = executionOrder;
         this.taskName = taskName;
         this.taskDescription = taskDescription;
+        this.taskOutputsNames = taskOutputsNames;
         this.bestAgent = bestAgent;
         this.outputDependencies = outputDependencies;
+    }
+
+    // TODO: implement repo talk
+    public static MosaicoAgent findBestAgentForTask(List<MosaicoAgent> agentPool, List<String> taskKeywords, String taskDescription, MosaicoAgent agentToAvoid) {
+        if (agentToAvoid != null) {
+            return agentToAvoid;
+        }
+        return null;
     }
 
     public TaskOutput execute(List<TaskOutput> dependenciesOutputs) {

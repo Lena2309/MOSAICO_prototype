@@ -38,10 +38,16 @@ public interface ActionMapper {
             agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), propertyMap.get("agentName"), null, null));
         }
 
+        var outputs = new ArrayList<String>();
+        action.getOutput().stream()
+                .map(Element::getDeclaredName)
+                .forEach(outputs::add);
+
         return new Task(
                 executionOrder,
                 action.getDeclaredName(),
                 propertyMap.get("description"),
+                outputs,
                 agentForTask.get(),
                 outputDependencies
         );

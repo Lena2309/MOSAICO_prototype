@@ -33,12 +33,12 @@ public interface SysMLDecoder {
         var sysmlResource = sysml.readResource(collaborationPatternPath);
 
         var packages = (Namespace) sysmlResource.getContents().getFirst();
-        var agents = new HashMap<String, MosaicoAgent>();
+        var agentTypes = new HashMap<String, MosaicoAgent>();
         var mosaicoAgents = new ArrayList<MosaicoAgent>();
         var rootFlows = new ArrayList<SuccessionAsUsage>();
 
-        // Recursively traverse the model to populate agents and control flows
-        mapModelResources(packages, agents, mosaicoAgents, rootFlows);
+        // Recursively traverse the model to populate agentTypes and control flows
+        mapModelResources(packages, agentTypes, mosaicoAgents, rootFlows);
 
         return FlowMapper.parseTaskExecutionPlan(rootFlows, mosaicoAgents);
     }

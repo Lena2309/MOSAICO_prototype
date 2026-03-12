@@ -1,37 +1,34 @@
 package org.example.dto;
 
-import jakarta.el.LambdaExpression;
-
 import java.util.List;
-import java.util.Optional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 public class TaskExecutionPlan implements OrderedMOSAICOExecution {
+    private final String id = UUID.randomUUID().toString();
+    private final String name;
     private final int executionOrder;
     private final WorkflowType workflowType;
 
     private List<Task> tasks;
     private List<TaskExecutionPlan> taskExecutionPlans;
-    private Optional<LambdaExpression> endLoopCondition;
-
-    public TaskExecutionPlan(int executionOrder, WorkflowType workflowType) {
-        this(executionOrder, new ArrayList<>(), new ArrayList<>(), workflowType, Optional.empty());
-    }
-
-    public TaskExecutionPlan(int executionOrder, WorkflowType workflowType,
-                             Optional<LambdaExpression> endLoopCondition) {
-        this(executionOrder, new ArrayList<>(), new ArrayList<>(), workflowType, endLoopCondition);
-    }
+    private String endLoopCondition;
 
     public TaskExecutionPlan(int executionOrder,
                              List<Task> tasks,
                              List<TaskExecutionPlan> taskExecutionPlans,
                              WorkflowType workflowType,
-                             Optional<LambdaExpression> endLoopCondition) {
+                             String endLoopCondition) {
+        this(executionOrder, "unnamed", tasks, taskExecutionPlans, workflowType, endLoopCondition);
+    }
+
+    public TaskExecutionPlan(int executionOrder,
+                             String name,
+                             List<Task> tasks,
+                             List<TaskExecutionPlan> taskExecutionPlans,
+                             WorkflowType workflowType,
+                             String endLoopCondition) {
         this.executionOrder = executionOrder;
+        this.name = name;
         this.tasks = tasks;
         this.taskExecutionPlans = taskExecutionPlans;
         this.workflowType = workflowType;
@@ -56,8 +53,12 @@ public class TaskExecutionPlan implements OrderedMOSAICOExecution {
         return workflowType;
     }
 
-    public Optional<LambdaExpression> getEndLoopCondition() {
+    public String getEndLoopCondition() {
         return endLoopCondition;
+    }
+
+    public void setEndLoopCondition(String endLoopCondition) {
+        this.endLoopCondition = endLoopCondition;
     }
 
     // Add Methods
@@ -67,10 +68,6 @@ public class TaskExecutionPlan implements OrderedMOSAICOExecution {
 
     public void addTaskExecutionPlan(TaskExecutionPlan plan) {
         this.taskExecutionPlans.add(plan);
-    }
-
-    public void setEndLoopCondition(Optional<LambdaExpression> endLoopCondition) {
-        this.endLoopCondition = endLoopCondition;
     }
 
 
