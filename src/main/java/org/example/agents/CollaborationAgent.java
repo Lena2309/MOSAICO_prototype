@@ -143,8 +143,8 @@ public class CollaborationAgent extends MosaicoAgent {
     }
 
 
-    private List<TaskOutput> executeLoop(List<Task> tasks, List<TaskExecutionPlan> taskExecutionPlans, List<TaskOutput> taskOutputs, Optional<LambdaExpression> endLoopCondition) {
-        // TODO: implement loop execution
+    private List<TaskOutput> executeLoop(TaskExecutionPlan taskExecutionPlan, List<TaskOutput> taskOutputs, String endLoopCondition) {
+        // TODO julien: OCL interpretation to execute loop
         System.out.println("--- Starting Loop Plan Execution ---");
 
         if (!endLoopCondition.isBlank()) {

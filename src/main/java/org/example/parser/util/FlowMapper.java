@@ -146,9 +146,6 @@ public interface FlowMapper {
 
         processSubNodes(taskOutputParameters, mosaicoAgents, internalFlows, subTasks, subPlans, subPlanExecutionOrder);
 
-        Optional<LambdaExpression> condition = Optional.empty();
-        if (e instanceof WhileLoopActionUsage) {
-            // TODO: map the setup/test parts of the while loop logic
         String executionPlanName = "unnamed";
         String conditionString = "";
         if (e instanceof WhileLoopActionUsage loopActionUsage) {
@@ -160,6 +157,7 @@ public interface FlowMapper {
                     }
                 }
             }
+            // TODO julien: how the end condition is parsed and stored as a string as "key word + OCL expression"
             if (loopActionUsage.getUntilArgument() != null) {
                 conditionString = "until " + parseConditionText(loopActionUsage.getUntilArgument());
             } else if (loopActionUsage.getWhileArgument() != null) {
