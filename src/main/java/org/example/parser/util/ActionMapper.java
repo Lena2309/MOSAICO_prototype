@@ -1,5 +1,6 @@
 package org.example.parser.util;
 
+import org.example.agents.Channel;
 import org.example.agents.MosaicoAgent;
 import org.example.agents.SolutionAgent;
 import org.example.dto.Task;
@@ -23,10 +24,12 @@ public interface ActionMapper {
      * @return A populated {@link Task} instance.
      */
     static Task mapActionToTask(ActionUsage action, List<MosaicoAgent> mosaicoAgents, List<Task> outputDependencies, int executionOrder) {
-        var propertyMap = new HashMap<String, String>();
-        propertyMap = (HashMap<String, String>) findActionProperties(action, propertyMap);
+        Map<String,String> propertyMap = new HashMap<>();
+        populateActionProperties(action, propertyMap);
 
         var finalAgentName = propertyMap.get("agentName");
+        if (finalAgentName == null)
+            System.out.println("[WARNING] No agent name specification found.");
 
         // Attempt to find an existing agent that matches the requirement
         var agentForTask = mosaicoAgents.stream()
@@ -35,13 +38,20 @@ public interface ActionMapper {
 
         // Fallback: Create a generic SolutionAgent if no specific match is found
         if (agentForTask.isEmpty()) {
+            System.out.println("[WARNING] Convenient agent not found, using a fallback solution agent instead.");
             agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), propertyMap.get("agentName"), null, null));
         }
 
-        var outputs = new ArrayList<String>();
-        action.getOutput().stream()
-                .map(Element::getDeclaredName)
-                .forEach(outputs::add);
+        var outputs = new ArrayList<Channel>();
+
+        for(Feature e : action.getOutput()) {
+            String name = e.getDeclaredName() ;
+
+            // try to extract the type of the channel for later use
+            var t = extractChannelType(e, name);
+
+            outputs.add(new Channel(name)); // Fixme : add the type in addition to the name of the channel
+        }
 
         return new Task(
                 executionOrder,
@@ -53,31 +63,48 @@ public interface ActionMapper {
         );
     }
 
+    /** Extract the type of a channel (as a Feature).
+     *  FIXME : does not work. */
+    static String extractChannelType(Feature e, String name) {
+        String s = null ;
+        List<FeatureTyping> t = e.getOwnedTyping();
+        if (t!=null && !t.isEmpty()) {
+            FeatureTyping t0 = t.getFirst() ;
+            s = t0.getType().getName();
+            if (s == null)
+                System.out.println("[WARNING] Type not found for channel: " + name);
+        }
+        return s ;
+    }
+
     /**
      * Recursively traverses the SysML element tree to extract specific metadata
      * (e.g., description and agent name) from redefined features or feature values.
      *
      * @param e           The current SysML element being inspected.
      * @param propertyMap The accumulator map for extracted properties.
-     * @return The updated property map.
+     * Modifies the property map.
      */
-    private static Map<String, String> findActionProperties(Element e, Map<String, String> propertyMap) {
+    private static void populateActionProperties(Element e, Map<String, String> propertyMap) {
         // Optimization: stop recursion if all required fields are found
         if (propertyMap.containsKey("description") && propertyMap.containsKey("agentName")) {
-            return propertyMap;
+            return ;
         }
 
         var redefinedDescription = false;
         var redefinedAgentName = false;
 
+        // numerical loop because i+1 and i-1 are used below
         for (var i = 0; i < e.getOwnedRelationship().size(); i++) {
             if (e.getOwnedRelationship().get(i) instanceof Redefinition rd) {
                 var targetName = UtilAttributeMapper.getSafeName(rd.getRedefinedFeature());
-                if ("description".equals(targetName)) {
-                    redefinedDescription = true;
-                }
-                if ("agent".equals(targetName)) {
-                    redefinedAgentName = true;
+                if (targetName.isPresent()) {
+                    if ("description".equals(targetName.get())) {
+                        redefinedDescription = true;
+                    }
+                    if ("agent".equals(targetName.get())) {
+                        redefinedAgentName = true;
+                    }
                 }
             }
 
@@ -89,22 +116,26 @@ public interface ActionMapper {
 
                     if (propertyValue instanceof LiteralString ls) {
                         propertyMap.put("description", ls.getValue());
-                        return propertyMap;
+                        return ;
                     }
                     if (propertyValue instanceof FeatureReferenceExpression fre) {
-                        propertyMap.put("agentName", UtilAttributeMapper.getSafeName(fre.getReferent()));
-                        return propertyMap;
+                        Optional<String> safeName = UtilAttributeMapper.getSafeName(fre.getReferent());
+                        if (safeName.isPresent())
+                            propertyMap.put("agentName", safeName.get());
+                        else
+                            System.out.println("[WARNING] Name not found.");
+                        return ;
                     }
                 }
             }
             // Recursive call on relationships
-            findActionProperties(e.getOwnedRelationship().get(i), propertyMap);
+            populateActionProperties(e.getOwnedRelationship().get(i), propertyMap);
         }
 
         // Recursive call on child elements
         for (var child : e.getOwnedElement()) {
-            findActionProperties(child, propertyMap);
+            populateActionProperties(child, propertyMap);
         }
-        return propertyMap;
+        return ;
     }
 }

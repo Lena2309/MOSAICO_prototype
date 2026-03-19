@@ -47,4 +47,7 @@ public abstract class MosaicoAgent {
     public void setSkills(List<String> skills) {
         this.skills = skills;
     }
+
+    @Deprecated
+    abstract public Value fakeResult();
 }

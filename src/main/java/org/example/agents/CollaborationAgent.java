@@ -1,11 +1,10 @@
 package org.example.agents;
 
 import org.example.dto.*;
+import org.omg.sysml.lang.sysml.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.security.InvalidParameterException;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -49,7 +48,8 @@ public class CollaborationAgent extends MosaicoAgent {
         return taskOutputs.toString();
     }
 
-    public List<TaskOutput> runOrchestrator(TaskExecutionPlan taskExecutionPlan, WorkflowType workflowType, List<TaskOutput> taskOutputs, String endLoopCondition) {
+    public List<TaskOutput> runOrchestrator(TaskExecutionPlan taskExecutionPlan, WorkflowType workflowType, List<TaskOutput> taskOutputs, LoopCondition endLoopCondition) {
+
         switch (workflowType) {
             case SEQUENTIAL -> taskOutputs = executeSequential(taskExecutionPlan, taskOutputs);
             case PARALLEL -> taskOutputs = executeParallel(taskExecutionPlan, taskOutputs);
@@ -63,7 +63,10 @@ public class CollaborationAgent extends MosaicoAgent {
             var necessaryOutputs = taskOutputs.stream()
                     .filter(taskOutput -> task.getOutputDependencies().contains(taskOutput.task()))
                     .toList();
-            taskOutputs.add(task.execute(necessaryOutputs));
+            Optional<TaskOutput> res = task.execute(necessaryOutputs);
+            if (res.isPresent())
+                taskOutputs.add(res.get());
+            else System.out.println("[WARNING] Task with no output." );
         } else if (item instanceof TaskExecutionPlan subPlan) {
             runOrchestrator(subPlan, subPlan.getWorkflowType(), taskOutputs, subPlan.getEndLoopCondition());
         }
@@ -143,29 +146,37 @@ public class CollaborationAgent extends MosaicoAgent {
     }
 
 
-    private List<TaskOutput> executeLoop(TaskExecutionPlan taskExecutionPlan, List<TaskOutput> taskOutputs, String endLoopCondition) {
+    private List<TaskOutput> executeLoop(TaskExecutionPlan body, List<TaskOutput> taskOutputs, final LoopCondition loopCondition) {
         // TODO julien: OCL interpretation to execute loop
         System.out.println("--- Starting Loop Plan Execution ---");
 
-        if (!endLoopCondition.isBlank()) {
-
-            var executionQueue = Stream.concat(taskExecutionPlan.getTasks().stream(), taskExecutionPlan.getTaskExecutionPlans().stream())
+        if (loopCondition == null)
+            throw new InvalidParameterException("Missing loop condition.");
+        else {
+            var executionQueue = Stream.concat(body.getTasks().stream(), body.getTaskExecutionPlans().stream())
                     .sorted(Comparator.comparingInt(OrderedMOSAICOExecution::getExecutionOrder))
                     .toList();
 
-            var repeat = true;
-            while (repeat) {
+            boolean cont = loopCondition.testContinue(taskOutputs) ; // fixme : inline
+            System.out.println("Result of evaluation of loop condition:" + cont);
+            while (cont && taskOutputs.size() < 50 ) {
                 for (OrderedMOSAICOExecution executable : executionQueue) {
-                    executeItem(executable, taskOutputs);
+                    this.executeItem(executable, taskOutputs);
                 }
+                cont = loopCondition.testContinue(taskOutputs) ;
 
-
-                repeat = false;
             }
-
+            if (!cont) System.out.println("Loop ended because loop Condition satisfied.");
+            if (!(taskOutputs.size() < 50)) System.out.println("Loop ended because trace too big.");
         }
 
         System.out.println("--- Finished Loop Plan Order ---");
         return taskOutputs;
+    }
+
+
+    @Override
+    public Value fakeResult() {
+        return new StringValue("my result is bla");
     }
 }

@@ -3,10 +3,7 @@ package org.example.parser.util;
 import org.example.agents.*;
 import org.omg.sysml.lang.sysml.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Utility interface for mapping SysML {@link PartDefinition} elements to {@link MosaicoAgent} instances.
@@ -31,8 +28,8 @@ public interface PartMapper {
         var constraints = new ArrayList<String>();
         collectConstraints(partDefinition, constraints);
 
-        if (typeName == null || typeName.isBlank()) {
-            typeName = "SolutionAgent";
+        if (typeName.isEmpty()) {
+            typeName = Optional.of("SolutionAgent");
         }
         if (agentId == null || agentId.isBlank()) {
             agentId = UUID.randomUUID().toString();
@@ -44,7 +41,7 @@ public interface PartMapper {
             description = "";
         }
 
-        var agent = createAgent(typeName, agentId, "", description, constraints);
+        var agent = createAgent(typeName.get(), agentId, "", description, constraints);
         agents.put(partName, agent);
     }
 
@@ -52,8 +49,8 @@ public interface PartMapper {
      * Identifies the agent type by looking for a Subclassification relationship.
      * * @return The name of the superclass (e.g., "ReferenceAgent") or null if not found.
      */
-    private static String findSuperclassName(Element element) {
-        if (element == null) return null;
+    private static Optional<String> findSuperclassName(Element element) {
+        if (element == null) return Optional.empty();
 
         for (var rel : element.getOwnedRelationship()) {
             if (rel instanceof Subclassification sub) {
@@ -64,9 +61,9 @@ public interface PartMapper {
         // Recursive search in child elements
         for (Element child : element.getOwnedElement()) {
             var name = findSuperclassName(child);
-            if (name != null) return name;
+            if (name.isPresent()) return name;
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -157,7 +154,7 @@ public interface PartMapper {
         return switch (e) {
             case LiteralString ls -> ls.getValue();
             case LiteralInteger li -> String.valueOf(li.getValue());
-            case FeatureReferenceExpression fre -> UtilAttributeMapper.getSafeName(fre.getReferent());
+            case FeatureReferenceExpression fre -> UtilAttributeMapper.getSafeName(fre.getReferent()).get();
             default -> {
                 for (var child : e.getOwnedElement()) {
                     var result = parseConstraintText(child);
@@ -176,7 +173,8 @@ public interface PartMapper {
             case "ReferenceAgent" -> new ReferenceAgent(id, agentName, description, constraints);
             case "ConsensusAgent" -> new ConsensusAgent(id, agentName, description, constraints);
             case "SupervisionAgent" -> new SupervisionAgent(id, agentName, description, constraints);
-            default -> new SolutionAgent(id, agentName, description, constraints);
+            case "EvaluatorAgent" -> new EvaluatorAgent(id, agentName, description, constraints);
+            default -> new FallbackAgent(id, agentName, description, constraints);
         };
     }
 }

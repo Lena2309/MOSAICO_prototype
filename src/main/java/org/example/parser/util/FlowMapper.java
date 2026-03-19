@@ -2,9 +2,7 @@ package org.example.parser.util;
 
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.example.agents.MosaicoAgent;
-import org.example.dto.Task;
-import org.example.dto.TaskExecutionPlan;
-import org.example.dto.WorkflowType;
+import org.example.dto.*;
 import org.omg.sysml.lang.sysml.*;
 
 import java.util.*;
@@ -36,7 +34,7 @@ public interface FlowMapper {
 
         processSubNodes(taskOutputParameters, mosaicoAgents, rootFlows, rootTasks, rootExecutionPlans, executionOrder);
 
-        return new TaskExecutionPlan(0, rootTasks, rootExecutionPlans, WorkflowType.SEQUENTIAL, "");
+        return new TaskExecutionPlan(0, rootTasks, rootExecutionPlans, WorkflowType.SEQUENTIAL, null);
     }
 
     /**
@@ -70,7 +68,7 @@ public interface FlowMapper {
                     new ArrayList<>(),
                     new ArrayList<>(),
                     WorkflowType.PARALLEL,
-                    ""
+                    null
             );
             currentSubPlans.add(parallelPlan);
 
@@ -147,7 +145,7 @@ public interface FlowMapper {
         processSubNodes(taskOutputParameters, mosaicoAgents, internalFlows, subTasks, subPlans, subPlanExecutionOrder);
 
         String executionPlanName = "unnamed";
-        String conditionString = "";
+        LoopCondition condition = null;
         if (e instanceof WhileLoopActionUsage loopActionUsage) {
             for (var child : loopActionUsage.getOwnedRelationship()) {
                 for (var subChild : child.getOwnedRelatedElement()) {
@@ -159,13 +157,13 @@ public interface FlowMapper {
             }
             // TODO julien: how the end condition is parsed and stored as a string as "key word + OCL expression"
             if (loopActionUsage.getUntilArgument() != null) {
-                conditionString = "until " + parseConditionText(loopActionUsage.getUntilArgument());
+                condition = new LoopCondition(LoopKind.LoopUntil, ExpressionBuilder.transpile(loopActionUsage.getUntilArgument()));
             } else if (loopActionUsage.getWhileArgument() != null) {
-                conditionString = "while " + parseConditionText(loopActionUsage.getUntilArgument());
+                condition = new LoopCondition(LoopKind.While, ExpressionBuilder.transpile(loopActionUsage.getUntilArgument()));
             }
         }
 
-        return new TaskExecutionPlan(executionOrder.getAndIncrement(), executionPlanName, subTasks, subPlans, workflowType, conditionString);
+        return new TaskExecutionPlan(executionOrder.getAndIncrement(), executionPlanName, subTasks, subPlans, workflowType, condition);
     }
 
     /**

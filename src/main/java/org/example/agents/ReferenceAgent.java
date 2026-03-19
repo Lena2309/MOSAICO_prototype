@@ -11,4 +11,9 @@ public class ReferenceAgent extends MosaicoAgent {
     public ReferenceAgent(String id, String name, String description,  List<String> constraints) {
         super(id, name, description, constraints);
     }
+
+    @Override
+    public Value fakeResult() {
+        return new StringValue("hello");
+    }
 }

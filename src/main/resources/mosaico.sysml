@@ -21,7 +21,7 @@ package MOSAICO {
     }
 
     part def SolutionAgent specializes Agent;
-
+    part def EvaluatorAgent specializes Agent ;
     part def SupervisionAgent specializes Agent;
 
     action def Step {

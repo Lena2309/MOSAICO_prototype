@@ -1,18 +1,18 @@
 package org.example.dto;
 
-import org.example.agents.ConsensusAgent;
-import org.example.agents.MosaicoAgent;
-import org.example.agents.ReferenceAgent;
-import org.example.agents.SupervisionAgent;
+import org.example.agents.*;
+import org.omg.sysml.lang.sysml.LiteralString;
+import org.omg.sysml.lang.sysml.SysMLFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Task implements OrderedMOSAICOExecution {
     private final int executionOrder;
     private final String taskName;
     private final String taskDescription;
-    private final List<String> taskOutputsNames;
+    private final List<Channel> outputChannels;
     private MosaicoAgent bestAgent;
     private List<Task> outputDependencies;
 
@@ -21,11 +21,11 @@ public class Task implements OrderedMOSAICOExecution {
     }
 
     public Task(int executionOrder, String taskName, String taskDescription,
-                List<String> taskOutputsNames, MosaicoAgent bestAgent, List<Task> outputDependencies) {
+                List<Channel> taskOutputsNames, MosaicoAgent bestAgent, List<Task> outputDependencies) {
         this.executionOrder = executionOrder;
         this.taskName = taskName;
         this.taskDescription = taskDescription;
-        this.taskOutputsNames = taskOutputsNames;
+        this.outputChannels = taskOutputsNames;
         this.bestAgent = bestAgent;
         this.outputDependencies = outputDependencies;
     }
@@ -38,25 +38,39 @@ public class Task implements OrderedMOSAICOExecution {
         return null;
     }
 
-    public TaskOutput execute(List<TaskOutput> dependenciesOutputs) {
-        switch (bestAgent) {
-            case null -> {
-                // choper un agent
-                return new TaskOutput(this, this.taskDescription);
-                // skip ou exception
+    public Optional<TaskOutput> execute(List<TaskOutput> dependenciesOutputs) {
+        if (this.getDefaultOutputChannel().isEmpty()){
+            System.out.println("[WARNING] No output channel for this task.");
+            return Optional.empty();
             }
-            case ReferenceAgent referenceAgent -> {
+        else {
+            switch (bestAgent) {
+                case null -> {
+                    // choper un agent
+                    System.out.print("[WARNING] Using a fallback agent.");
+                    return Optional.of(new TaskOutput(this, this.getDefaultOutputChannel().get(), new StringValue(this.taskDescription)));
+                    // skip ou exception
+                }
+                case ReferenceAgent referenceAgent -> {
+                    // pass
+                }
+                case SupervisionAgent supervisionAgent -> {
+                    // pass
+                }
+                case ConsensusAgent consensusAgent -> {
+                    // pass
+                }
+                case SolutionAgent a -> {
+                    // pass
+                }
+
+                default -> {
+                    return Optional.of(new TaskOutput(this, this.getDefaultOutputChannel().get(), bestAgent.fakeResult()));
+                }
             }
-            case SupervisionAgent supervisionAgent -> {
-            }
-            case ConsensusAgent consensusAgent -> {
-            }
-            default -> {
-                return new TaskOutput(this, this.taskDescription);
-            }
+            System.out.println("Task " + getTaskName() + " executed successfully.");
+            return Optional.of(new TaskOutput(this, this.getDefaultOutputChannel().get(), bestAgent.fakeResult()));
         }
-        System.out.println("Task " + getTaskName() + " executed successfully.");
-        return new TaskOutput(this, this.taskDescription);
     }
 
     // Getters
@@ -91,4 +105,17 @@ public class Task implements OrderedMOSAICOExecution {
         this.outputDependencies.add(task);
     }
 
+    /** Returns a random output channel of this task.
+     * You should never use this and always use the relevant output channel instead. */
+    @Deprecated
+    Optional<Channel> getDefaultOutputChannel(){
+        if (this.outputChannels.isEmpty())
+                return Optional.empty() ;
+        else return Optional.of(outputChannels.getFirst());
+    }
+
+
+    public String toString(){
+        return this.taskName ;
+    }
 }
