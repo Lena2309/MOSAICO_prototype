@@ -159,7 +159,7 @@ public interface FlowMapper {
             if (loopActionUsage.getUntilArgument() != null) {
                 condition = new LoopCondition(LoopKind.LoopUntil, ExpressionBuilder.transpile(loopActionUsage.getUntilArgument()));
             } else if (loopActionUsage.getWhileArgument() != null) {
-                condition = new LoopCondition(LoopKind.While, ExpressionBuilder.transpile(loopActionUsage.getUntilArgument()));
+                condition = new LoopCondition(LoopKind.While, ExpressionBuilder.transpile(loopActionUsage.getWhileArgument()));
             }
         }
 

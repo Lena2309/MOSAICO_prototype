@@ -58,7 +58,7 @@ package RequirementManagementAgentsNoParams {
                 in consensus : Boolean;
                 out isComplete : Boolean;
             }
-        } until isComplete;
+        } until constructRequirementList.updateRequirements.isComplete ;
 
         then action outputToUser : Step {
             :>> description = "Returns the list of completed requirements to the user.";

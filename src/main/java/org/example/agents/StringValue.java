@@ -13,4 +13,15 @@ public class StringValue extends Value {
                 "value='" + value + '\'' +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof StringValue that)) return false;
+        return value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value.hashCode();
+    }
 }

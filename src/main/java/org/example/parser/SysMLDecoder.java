@@ -23,8 +23,10 @@ public interface SysMLDecoder {
      * @return A complete {@link TaskExecutionPlan} ready for the execution engine.
      */
     static TaskExecutionPlan decode(String collaborationPatternPath) {
-        final String libPrefix = "org/example/sysml.library";
 
+        // to load pre-defined types
+        //final String libPrefix = "org/example/sysml.library";
+        final String libPrefix = "src/main/resources/sysml.library";
         // Initialize SysML utility with custom library paths
         var sysml = new MySysMLUtil(libPrefix);
 
