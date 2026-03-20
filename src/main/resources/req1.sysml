@@ -27,6 +27,7 @@ package RequirementManagementAgentsNoParams {
     checkNonRedundancyAgent : CheckNonRedundancyAgent;
     checkSatisfiabilityAgent : CheckSatisfiabilityAgent;
     consensusAgent: ConsensusAgent;
+    evaluatorManagerAgent : EvaluatorAgent ;
 
     action def GenerateRequirementsProcess {
         
@@ -74,7 +75,7 @@ package RequirementManagementAgentsNoParams {
 
             then action updateRequirements : Step {
                 :>> description = "Updates the list of accepted requirements and checks whether the list of accepted requirements is complete.";
-                :>> agent = requirementManagerAgent;
+                :>> agent = evaluatorManagerAgent;
                 in consensus : Boolean;
                 out isComplete : Boolean;
             }

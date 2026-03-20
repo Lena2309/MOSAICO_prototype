@@ -11,7 +11,7 @@ public class Main {
         // to see how IntelliJ IDEA suggests fixing it.
         IO.println(String.format("Hello and welcome!"));
 
-        var parsed = SysMLDecoder.decode("src/main/resources/test00.sysml");
+        var parsed = SysMLDecoder.decode("src/main/resources/req1.sysml");
         var collabAgent = new CollaborationAgent();
         collabAgent.run(parsed);
     }
