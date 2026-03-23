@@ -50,7 +50,7 @@ public interface ActionMapper {
             // try to extract the type of the channel for later use
             var t = extractChannelType(e, name);
 
-            outputs.add(new Channel(name)); // Fixme : add the type in addition to the name of the channel
+            outputs.add(new Channel(name, t)); // Fixme : add the type in addition to the name of the channel
         }
 
         return new Task(
@@ -63,9 +63,8 @@ public interface ActionMapper {
         );
     }
 
-    /** Extract the type of a channel (as a Feature).
-     *  FIXME : does not work. */
-    static String extractChannelType(Feature e, String name) {
+    /** Extract the type of a channel (as a Feature). */
+    static Optional<String> extractChannelType(Feature e, String name) {
         String s = null ;
         List<FeatureTyping> t = e.getOwnedTyping();
         if (t!=null && !t.isEmpty()) {
@@ -74,7 +73,7 @@ public interface ActionMapper {
             if (s == null)
                 System.out.println("[WARNING] Type not found for channel: " + name);
         }
-        return s ;
+        return Optional.ofNullable(s) ;
     }
 
     /**
