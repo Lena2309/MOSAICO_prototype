@@ -174,6 +174,9 @@ public interface PartMapper {
             case "ConsensusAgent" -> new ConsensusAgent(id, agentName, description, constraints);
             case "SupervisionAgent" -> new SupervisionAgent(id, agentName, description, constraints);
             case "EvaluatorAgent" -> new EvaluatorAgent(id, agentName, description, constraints);
+            case "MockTrueEvaluatorAgent" -> new MockTrueEvaluatorAgent(id, agentName, description, constraints);
+            case "MockFalseEvaluatorAgent" -> new MockFalseEvaluatorAgent(id, agentName, description, constraints);
+            case "MockSequenceEvaluatorAgent" -> new MockSequenceEvaluatorAgent(id, agentName, description, constraints);
             default -> new FallbackAgent(id, agentName, description, constraints);
         };
     }

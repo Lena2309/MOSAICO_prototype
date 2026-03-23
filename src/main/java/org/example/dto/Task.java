@@ -1,8 +1,6 @@
 package org.example.dto;
 
 import org.example.agents.*;
-import org.omg.sysml.lang.sysml.LiteralString;
-import org.omg.sysml.lang.sysml.SysMLFactory;
 
 import java.util.ArrayList;
 import java.util.List;

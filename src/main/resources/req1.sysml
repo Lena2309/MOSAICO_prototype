@@ -27,7 +27,7 @@ package RequirementManagementAgentsNoParams {
     checkNonRedundancyAgent : CheckNonRedundancyAgent;
     checkSatisfiabilityAgent : CheckSatisfiabilityAgent;
     consensusAgent: ConsensusAgent;
-    evaluatorManagerAgent : EvaluatorAgent ;
+    evaluatorManagerAgent : MockSequenceEvaluatorAgent ;
 
     action def GenerateRequirementsProcess {
         

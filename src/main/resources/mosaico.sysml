@@ -24,6 +24,10 @@ package MOSAICO {
     part def EvaluatorAgent specializes Agent ;
     part def SupervisionAgent specializes Agent;
 
+    part def MockTrueEvaluatorAgent specializes EvaluatorAgent ;
+    part def MockFalseEvaluatorAgent specializes EvaluatorAgent ;
+    part def MockSequenceEvaluatorAgent specializes EvaluatorAgent ;
+
     action def Step {
         attribute description : String[0..1];
         ref agent: Agent[0..1];
