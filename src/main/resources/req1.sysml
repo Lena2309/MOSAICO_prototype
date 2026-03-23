@@ -44,6 +44,7 @@ package RequirementManagementAgentsNoParams {
             action decompose : Step {
                 :>> description = "A new requirement is generated based on the system description.";
                 :>> agent = requirementManagerAgent;
+                out req ;
             }
 
             then fork; then checkCorrectness; then checkNonRedundancy; then checkSatisfiability;
@@ -85,6 +86,7 @@ package RequirementManagementAgentsNoParams {
             :>> description = "Returns the list of completed requirements to the user.";
             :>> agent = referenceAgent;
             in biduleOUT : String;
+            out userOutput;
         }
 
         then done;
