@@ -80,7 +80,7 @@ public interface PartMapper {
             // Check if this relationship redefines the target property
             if (rel instanceof Redefinition redefinition) {
                 var name = UtilAttributeMapper.getSafeName(redefinition.getRedefinedFeature());
-                if (targetProperty.equals(name)) {
+                if (name.isPresent() && targetProperty.equals(name.get())) {
                     targetFound = true;
                 }
             }

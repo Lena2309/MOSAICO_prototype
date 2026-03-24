@@ -282,15 +282,18 @@ public interface FlowMapper {
     }
 
     private static boolean isForkNode(Element e) {
-        return e instanceof ForkNode || "forkNode".equals(getSafeName(e));
+        var n = getSafeName(e) ;
+        return e instanceof ForkNode || (n.isPresent() && "forkNode".equals(n.get()));
     }
 
     private static boolean isJoinNode(Element e) {
-        return e instanceof JoinNode || "joinNode".equals(getSafeName(e));
+        var n = getSafeName(e) ;
+        return e instanceof JoinNode || (n.isPresent() && "joinNode".equals(n.get()));
     }
 
     private static boolean isLoopNode(Element e) {
-        return e instanceof LoopActionUsage || e instanceof WhileLoopActionUsage || "loopAction".equals(getSafeName(e));
+        var n = getSafeName(e);
+        return e instanceof LoopActionUsage || /*e instanceof WhileLoopActionUsage ||*/ (n.isPresent() && "loopAction".equals(n.get()));
     }
 
     private static boolean hasSubPlans(Element e) {
