@@ -29,8 +29,28 @@ public class ExpressionBuilder {
             case FeatureReferenceExpression r :
                 throw new InvalidParameterException("FeatureReferenceExpression not tested.");
 
+            case LiteralBoolean b :
+                return new LiteralBooleanExpression(b.isValue());
+
             case LiteralString s :
                 throw new InvalidParameterException("String Literals cannot be used as loop conditions. (" + s.getValue() + ")");
+
+            case OperatorExpression op : {
+                var operator = op.getOperator() ;
+                switch (operator){
+
+                    case "&": {
+                        var params = op.getOwnedRelationship();
+                        var arg1 = (org.omg.sysml.lang.sysml.Expression) params.get(0).getOwnedRelatedElement().getFirst().getOwnedRelationship().getFirst().getOwnedRelatedElement().getFirst();
+                        var arg2 = (org.omg.sysml.lang.sysml.Expression) params.get(1).getOwnedRelatedElement().getFirst().getOwnedRelationship().getFirst().getOwnedRelatedElement().getFirst();
+                        return new ConjunctionExpression(transpile(arg1), transpile(arg2));
+                    }
+
+                    default:
+                        throw new InvalidParameterException("Operator not implemented: " + operator );
+                }
+            }
+
             default :
                 throw new InvalidParameterException("Expression not supported: " + e.getClass());
         }

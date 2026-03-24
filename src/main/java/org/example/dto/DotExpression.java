@@ -20,6 +20,7 @@ public class DotExpression extends Expression{
     }
 
     static Value trueVal = new BooleanValue(true);
+
     @Override
     boolean checkCondition(List<TaskOutput> trace) {
         assert (!this.chain.isEmpty());

@@ -167,7 +167,7 @@ public class CollaborationAgent extends MosaicoAgent {
 
             }
             if (!cont) System.out.println("Loop ended because loop Condition satisfied.");
-            if (!(taskOutputs.size() < 50)) System.out.println("Loop ended because trace too big.");
+            if (!(taskOutputs.size() < 50)) System.out.println("[DEBUG MODE] Loop ended because trace too big.");
         }
 
         System.out.println("--- Finished Loop Plan Order ---");

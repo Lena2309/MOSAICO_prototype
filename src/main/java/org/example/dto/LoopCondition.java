@@ -17,7 +17,7 @@ public record LoopCondition(LoopKind kind, Expression condition) {
             System.out.println("(Could not evaluate expression, fallback to false. ["+e.getMessage() +"])");
             b = false ;
         }
-        System.out.println("Evaluation of loop condition: " + b);
+        System.out.println("[DEBUG] Evaluation of loop condition: " + b);
         return switch (this.kind) {
             case LoopUntil -> !b;
             case While -> b;

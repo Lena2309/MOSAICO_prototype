@@ -1,3 +1,5 @@
+// Test case : FeatureChain (dot notation) in loop condition
+
 private import ScalarValues::*;
 private import Collections::*;
 private import CollectionFunctions::*;
@@ -9,17 +11,25 @@ package RequirementManagementAgentsNoParams {
         constraint { licence == "MIT" } // licences is not defined
     }
 
-    part def CheckCorrectnessAgent specializes SupervisionAgent {
+    part def CheckCorrectNessAgent specializes SupervisionAgent {
         :>> id = "eu.mosaico-project.check-correctness-agent-type.v1";
+    }
+
+    part def CheckNonRedundancyAgent specializes SupervisionAgent {
+        :>> id = "eu.mosaico-project.check-non-redundancy-agent-type.v1";
+    }
+
+    part def CheckSatisfiabilityAgent specializes SupervisionAgent {
+        :>> id = "eu.mosaico-project.check-satisfiability-agent-type.v1";
     }
 
     referenceAgent : ReferenceAgent;
     requirementManagerAgent : RequirementManagerAgent;
-    checkCorrectnessAgent : CheckCorrectnessAgent;
-    evaluatorManagerAgent : EvaluatorAgent ;
-
+    checkCorrectnessAgent : CheckCorrectNessAgent;
+    checkNonRedundancyAgent : CheckNonRedundancyAgent;
+    checkSatisfiabilityAgent : CheckSatisfiabilityAgent;
     consensusAgent: ConsensusAgent;
-
+    evaluatorAgent : MockSequenceEvaluatorAgent ;
 
     action def GenerateRequirementsProcess {
         
@@ -28,8 +38,7 @@ package RequirementManagementAgentsNoParams {
         then action userInput : Step {
             :>> description = "Get a system description from the user.";
             :>> agent = referenceAgent;
-            :>> specification = "A function to compare two cities given their population.";
-            out specification : String;
+            out biduleOUT : String;
         }
 
         then loop action constructRequirementList  {
@@ -37,34 +46,49 @@ package RequirementManagementAgentsNoParams {
             action decompose : Step {
                 :>> description = "A new requirement is generated based on the system description.";
                 :>> agent = requirementManagerAgent;
-                out req : String;
+                out req ;
             }
 
+            then fork; then checkCorrectness; then checkNonRedundancy; then checkSatisfiability;
+            
             action checkCorrectness : Step {
                 :>> description = "Checks whether the new Requirement is correct based on the system description.";
-                :>> agent = checkCorrectnessAgent;
                 out correct : Boolean;
-            }
+            } then joinNode;
+
+            action checkNonRedundancy : Step {
+                :>> description = "Checks that the new requirement is not redundant based on the current list of accepted requirements";
+                out nonRedundant : Boolean;
+            } then joinNode;
+
+            action checkSatisfiability : Step {
+                :>> description = "Checks whether the new requirement is satisfiable.";
+                out satisfiable : Boolean;
+            } then joinNode;
+
+            then join joinNode;
 
             then action checkConsensus : Step {
                 :>> agent = consensusAgent;
                 in correct : Boolean;
+                in nonRedundant : Boolean;
+                in satisfiable : Boolean;
                 out consensus : Boolean;
             }
 
             then action updateRequirements : Step {
-                :>> description = "Updates the requirements and checks its completeness.";
-                :>> agent = evaluatorManagerAgent;
+                :>> description = "Updates the list of accepted requirements and checks whether the list of accepted requirements is complete.";
+                :>> agent = evaluatorAgent;
                 in consensus : Boolean;
                 out isComplete : Boolean;
             }
-        } until constructRequirementList.updateRequirements.isComplete ;
+        } until constructRequirementList.updateRequirements.isComplete;
 
         then action outputToUser : Step {
             :>> description = "Returns the list of completed requirements to the user.";
             :>> agent = referenceAgent;
-            in specification : String;
-            out stdout : String
+            in biduleOUT : String;
+            out userOutput;
         }
 
         then done;

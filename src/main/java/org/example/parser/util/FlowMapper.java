@@ -227,7 +227,8 @@ public interface FlowMapper {
 
                     if (subChild instanceof SuccessionAsUsage flow) {
                         internalFlows.add(flow);
-                    } else if (isLoopNode(e) && subChild instanceof ActionUsage innerAction) {
+                    }
+                    else if (isLoopNode(e) && subChild instanceof ActionUsage innerAction) {
                         if (!isLoopNode(innerAction)) {
                             internalFlows.addAll(getInternalFlows(innerAction));
                         }
