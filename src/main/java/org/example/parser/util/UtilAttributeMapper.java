@@ -5,6 +5,8 @@ import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.omg.sysml.lang.sysml.Element;
 import org.omg.sysml.lang.sysml.SysMLPackage;
 
+import java.util.Optional;
+
 /**
  * Utility interface providing helper methods for extracting and mapping
  * attributes from SysML model elements.
@@ -26,8 +28,8 @@ public interface UtilAttributeMapper {
      * @return The declared name, the raw token text from the source,
      * or {@code "<unnamed>"} if no name can be resolved.
      */
-    static String getSafeName(Element e) {
-        if (e == null) return "null";
+    static Optional<String> getSafeName(Element e) {
+        if (e == null) return Optional.empty();
 
         // Handle EMF Proxies: If the element is a proxy, attempt to resolve it
         // within the current ResourceSet to access its actual data.
@@ -43,13 +45,14 @@ public interface UtilAttributeMapper {
                 // Attempt to recover the name by looking at the underlying Xtext node model (the grammar tokens)
                 var nodes = NodeModelUtils.findNodesForFeature(e, SysMLPackage.Literals.ELEMENT__DECLARED_NAME);
                 if (!nodes.isEmpty()) {
-                    return NodeModelUtils.getTokenText(nodes.getFirst());
+                    name = NodeModelUtils.getTokenText(nodes.getFirst());
                 }
             } catch (Exception ignored) {
-                // Fail silently and proceed to the default placeholder
+                // Fail silently and proceed
             }
-            name = "<unnamed>";
+
         }
-        return name;
+
+        return Optional.ofNullable(name);
     }
 }

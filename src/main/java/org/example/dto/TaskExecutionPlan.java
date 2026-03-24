@@ -11,13 +11,13 @@ public class TaskExecutionPlan implements OrderedMOSAICOExecution {
 
     private List<Task> tasks;
     private List<TaskExecutionPlan> taskExecutionPlans;
-    private String endLoopCondition;
+    private final LoopCondition endLoopCondition;
 
     public TaskExecutionPlan(int executionOrder,
                              List<Task> tasks,
                              List<TaskExecutionPlan> taskExecutionPlans,
                              WorkflowType workflowType,
-                             String endLoopCondition) {
+                             LoopCondition endLoopCondition) {
         this(executionOrder, "unnamed", tasks, taskExecutionPlans, workflowType, endLoopCondition);
     }
 
@@ -26,7 +26,7 @@ public class TaskExecutionPlan implements OrderedMOSAICOExecution {
                              List<Task> tasks,
                              List<TaskExecutionPlan> taskExecutionPlans,
                              WorkflowType workflowType,
-                             String endLoopCondition) {
+                             LoopCondition endLoopCondition) {
         this.executionOrder = executionOrder;
         this.name = name;
         this.tasks = tasks;
@@ -53,13 +53,10 @@ public class TaskExecutionPlan implements OrderedMOSAICOExecution {
         return workflowType;
     }
 
-    public String getEndLoopCondition() {
+    public LoopCondition getEndLoopCondition() {
         return endLoopCondition;
     }
 
-    public void setEndLoopCondition(String endLoopCondition) {
-        this.endLoopCondition = endLoopCondition;
-    }
 
     // Add Methods
     public void addTask(Task task) {

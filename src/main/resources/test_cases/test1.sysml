@@ -1,3 +1,5 @@
+// Test case : conjunction operator (&) in loop condition
+
 private import ScalarValues::*;
 private import Collections::*;
 private import CollectionFunctions::*;
@@ -27,7 +29,8 @@ package RequirementManagementAgentsNoParams {
     checkNonRedundancyAgent : CheckNonRedundancyAgent;
     checkSatisfiabilityAgent : CheckSatisfiabilityAgent;
     consensusAgent: ConsensusAgent;
-    evaluatorManagerAgent : MockSequenceEvaluatorAgent ;
+    evaluatorAgent : MockSequenceEvaluatorAgent ;
+    otherEvaluatorAgent : MockTrueEvaluatorAgent ;
 
     action def GenerateRequirementsProcess {
         
@@ -51,6 +54,7 @@ package RequirementManagementAgentsNoParams {
             
             action checkCorrectness : Step {
                 :>> description = "Checks whether the new Requirement is correct based on the system description.";
+                :>> agent = otherEvaluatorAgent ;
                 out correct : Boolean;
             } then joinNode;
 
@@ -76,11 +80,11 @@ package RequirementManagementAgentsNoParams {
 
             then action updateRequirements : Step {
                 :>> description = "Updates the list of accepted requirements and checks whether the list of accepted requirements is complete.";
-                :>> agent = evaluatorManagerAgent;
+                :>> agent = evaluatorAgent;
                 in consensus : Boolean;
                 out isComplete : Boolean;
             }
-        } until constructRequirementList.updateRequirements.isComplete;
+        } until (constructRequirementList.updateRequirements.isComplete & constructRequirementList.checkCorrectness.correct) ;
 
         then action outputToUser : Step {
             :>> description = "Returns the list of completed requirements to the user.";
