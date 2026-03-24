@@ -271,13 +271,14 @@ public interface FlowMapper {
     // -----------------------------------------------------------------------------
     //                            NODE TYPE CHECKS
     // -----------------------------------------------------------------------------
-
     private static boolean isStartNode(Element e) {
-        return "start".equals(getSafeName(e)) || "InitialNode".equals(e.eClass().getName());
+        var n = getSafeName(e) ;
+        return (n.isPresent() && "start".equals(n.get())) || "InitialNode".equals(e.eClass().getName());
     }
 
     private static boolean isDoneNode(Element e) {
-        return "done".equals(getSafeName(e)) || "ActivityFinalNode".equals(e.eClass().getName());
+        var n = getSafeName(e);
+        return (n.isPresent() && "done".equals(n.get())) || "ActivityFinalNode".equals(e.eClass().getName());
     }
 
     private static boolean isForkNode(Element e) {
