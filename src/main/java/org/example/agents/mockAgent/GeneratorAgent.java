@@ -1,4 +1,7 @@
-package org.example.agents;
+package org.example.agents.mockAgent;
+
+import org.example.agents.SolutionAgent;
+import org.example.dto.output.StringValue;
 
 import java.util.List;
 
@@ -8,7 +11,7 @@ public class GeneratorAgent extends SolutionAgent {
     }
 
     @Override
-    public StringValue fakeResult(){
+    public StringValue fakeResult() {
         return new StringValue("generated bla bla");
     }
 }

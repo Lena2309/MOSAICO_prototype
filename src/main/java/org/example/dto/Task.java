@@ -1,6 +1,8 @@
 package org.example.dto;
 
 import org.example.agents.*;
+import org.example.dto.output.Channel;
+import org.example.dto.output.StringValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +39,10 @@ public class Task implements OrderedMOSAICOExecution {
     }
 
     public Optional<TaskOutput> execute(List<TaskOutput> dependenciesOutputs) {
-        if (this.getDefaultOutputChannel().isEmpty()){
+        if (this.getDefaultOutputChannel().isEmpty()) {
             System.out.println("[WARNING] No output channel for this task.");
             return Optional.empty();
-            }
-        else {
+        } else {
             switch (bestAgent) {
                 case null -> {
                     // choper un agent
@@ -103,17 +104,19 @@ public class Task implements OrderedMOSAICOExecution {
         this.outputDependencies.add(task);
     }
 
-    /** Returns a random output channel of this task.
-     * You should never use this and always use the relevant output channel instead. */
+    /**
+     * Returns a random output channel of this task.
+     * You should never use this and always use the relevant output channel instead.
+     */
     @Deprecated
-    Optional<Channel> getDefaultOutputChannel(){
+    Optional<Channel> getDefaultOutputChannel() {
         if (this.outputChannels.isEmpty())
-                return Optional.empty() ;
+            return Optional.empty();
         else return Optional.of(outputChannels.getFirst());
     }
 
 
-    public String toString(){
-        return this.taskName ;
+    public String toString() {
+        return this.taskName;
     }
 }

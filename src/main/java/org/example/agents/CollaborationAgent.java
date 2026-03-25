@@ -1,7 +1,9 @@
 package org.example.agents;
 
 import org.example.dto.*;
-import org.omg.sysml.lang.sysml.*;
+import org.example.dto.loop.LoopCondition;
+import org.example.dto.output.StringValue;
+import org.example.dto.output.Value;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -66,7 +68,7 @@ public class CollaborationAgent extends MosaicoAgent {
             Optional<TaskOutput> res = task.execute(necessaryOutputs);
             if (res.isPresent())
                 taskOutputs.add(res.get());
-            else System.out.println("[WARNING] Task with no output." );
+            else System.out.println("[WARNING] Task with no output.");
         } else if (item instanceof TaskExecutionPlan subPlan) {
             runOrchestrator(subPlan, subPlan.getWorkflowType(), taskOutputs, subPlan.getEndLoopCondition());
         }
@@ -157,13 +159,13 @@ public class CollaborationAgent extends MosaicoAgent {
                     .sorted(Comparator.comparingInt(OrderedMOSAICOExecution::getExecutionOrder))
                     .toList();
 
-            boolean cont = loopCondition.testContinue(taskOutputs) ; // fixme : inline
+            boolean cont = loopCondition.testContinue(taskOutputs); // fixme : inline
             System.out.println("Result of evaluation of loop condition:" + cont);
-            while (cont && taskOutputs.size() < 50 ) {
+            while (cont && taskOutputs.size() < 50) {
                 for (OrderedMOSAICOExecution executable : executionQueue) {
                     this.executeItem(executable, taskOutputs);
                 }
-                cont = loopCondition.testContinue(taskOutputs) ;
+                cont = loopCondition.testContinue(taskOutputs);
 
             }
             if (!cont) System.out.println("Loop ended because loop Condition satisfied.");

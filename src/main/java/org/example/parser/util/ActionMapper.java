@@ -1,9 +1,9 @@
 package org.example.parser.util;
 
-import org.example.agents.Channel;
 import org.example.agents.MosaicoAgent;
 import org.example.agents.SolutionAgent;
 import org.example.dto.Task;
+import org.example.dto.output.Channel;
 import org.omg.sysml.lang.sysml.*;
 
 import java.util.*;
@@ -24,7 +24,7 @@ public interface ActionMapper {
      * @return A populated {@link Task} instance.
      */
     static Task mapActionToTask(ActionUsage action, List<MosaicoAgent> mosaicoAgents, List<Task> outputDependencies, int executionOrder) {
-        Map<String,String> propertyMap = new HashMap<>();
+        Map<String, String> propertyMap = new HashMap<>();
         populateActionProperties(action, propertyMap);
 
         var finalAgentName = propertyMap.get("agentName");
@@ -44,8 +44,8 @@ public interface ActionMapper {
 
         var outputs = new ArrayList<Channel>();
 
-        for(Feature e : action.getOutput()) {
-            String name = e.getDeclaredName() ;
+        for (Feature e : action.getOutput()) {
+            String name = e.getDeclaredName();
 
             // try to extract the type of the channel for later use
             var t = extractChannelType(e, name);
@@ -63,17 +63,19 @@ public interface ActionMapper {
         );
     }
 
-    /** Extract the type of a channel (as a Feature). */
+    /**
+     * Extract the type of a channel (as a Feature).
+     */
     static Optional<String> extractChannelType(Feature e, String name) {
-        String s = null ;
+        String s = null;
         List<FeatureTyping> t = e.getOwnedTyping();
-        if (t!=null && !t.isEmpty()) {
-            FeatureTyping t0 = t.getFirst() ;
+        if (t != null && !t.isEmpty()) {
+            FeatureTyping t0 = t.getFirst();
             s = t0.getType().getName();
             if (s == null)
                 System.out.println("[WARNING] Type not found for channel: " + name);
         }
-        return Optional.ofNullable(s) ;
+        return Optional.ofNullable(s);
     }
 
     /**
@@ -82,12 +84,12 @@ public interface ActionMapper {
      *
      * @param e           The current SysML element being inspected.
      * @param propertyMap The accumulator map for extracted properties.
-     * Modifies the property map.
+     *                    Modifies the property map.
      */
     private static void populateActionProperties(Element e, Map<String, String> propertyMap) {
         // Optimization: stop recursion if all required fields are found
         if (propertyMap.containsKey("description") && propertyMap.containsKey("agentName")) {
-            return ;
+            return;
         }
 
         var redefinedDescription = false;
@@ -115,7 +117,7 @@ public interface ActionMapper {
 
                     if (propertyValue instanceof LiteralString ls) {
                         propertyMap.put("description", ls.getValue());
-                        return ;
+                        return;
                     }
                     if (propertyValue instanceof FeatureReferenceExpression fre) {
                         Optional<String> safeName = UtilAttributeMapper.getSafeName(fre.getReferent());
@@ -123,7 +125,7 @@ public interface ActionMapper {
                             propertyMap.put("agentName", safeName.get());
                         else
                             System.out.println("[WARNING] Name not found.");
-                        return ;
+                        return;
                     }
                 }
             }
@@ -135,6 +137,6 @@ public interface ActionMapper {
         for (var child : e.getOwnedElement()) {
             populateActionProperties(child, propertyMap);
         }
-        return ;
+        return;
     }
 }

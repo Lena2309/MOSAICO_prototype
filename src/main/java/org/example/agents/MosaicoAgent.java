@@ -1,12 +1,14 @@
 package org.example.agents;
 
+import org.example.dto.output.Value;
+
 import java.util.List;
 
 public abstract class MosaicoAgent {
     private final String id;
-    private String name;
     private final String licence;
-    private final  List<String> constraints;
+    private final List<String> constraints;
+    private String name;
     private List<String> skills;
 
     public MosaicoAgent(String id, String licence, List<String> constraints) {
@@ -36,7 +38,7 @@ public abstract class MosaicoAgent {
         return licence;
     }
 
-    public  List<String> getConstraints() {
+    public List<String> getConstraints() {
         return constraints;
     }
 

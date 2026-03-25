@@ -1,4 +1,4 @@
-package org.example.agents;
+package org.example.dto.output;
 
 public abstract class Value {
 }

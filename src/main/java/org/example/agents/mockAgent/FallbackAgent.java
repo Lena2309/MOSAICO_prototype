@@ -1,4 +1,7 @@
-package org.example.agents;
+package org.example.agents.mockAgent;
+
+import org.example.agents.SolutionAgent;
+import org.example.dto.output.StringValue;
 
 import java.util.List;
 

@@ -1,6 +1,10 @@
 package org.example.parser.util;
 
-import org.example.agents.*;
+import org.example.agents.ConsensusAgent;
+import org.example.agents.MosaicoAgent;
+import org.example.agents.ReferenceAgent;
+import org.example.agents.SupervisionAgent;
+import org.example.agents.mockAgent.*;
 import org.omg.sysml.lang.sysml.*;
 
 import java.util.*;
@@ -154,7 +158,13 @@ public interface PartMapper {
         return switch (e) {
             case LiteralString ls -> ls.getValue();
             case LiteralInteger li -> String.valueOf(li.getValue());
-            case FeatureReferenceExpression fre -> UtilAttributeMapper.getSafeName(fre.getReferent()).get();
+            case FeatureReferenceExpression fre -> {
+                var optionalName = UtilAttributeMapper.getSafeName(fre.getReferent());
+                if (optionalName.isPresent()) {
+                    yield optionalName.get();
+                }
+                yield "no name found";
+            }
             default -> {
                 for (var child : e.getOwnedElement()) {
                     var result = parseConstraintText(child);
@@ -176,7 +186,8 @@ public interface PartMapper {
             case "EvaluatorAgent" -> new EvaluatorAgent(id, agentName, description, constraints);
             case "MockTrueEvaluatorAgent" -> new MockTrueEvaluatorAgent(id, agentName, description, constraints);
             case "MockFalseEvaluatorAgent" -> new MockFalseEvaluatorAgent(id, agentName, description, constraints);
-            case "MockSequenceEvaluatorAgent" -> new MockSequenceEvaluatorAgent(id, agentName, description, constraints);
+            case "MockSequenceEvaluatorAgent" ->
+                    new MockSequenceEvaluatorAgent(id, agentName, description, constraints);
             default -> new FallbackAgent(id, agentName, description, constraints);
         };
     }

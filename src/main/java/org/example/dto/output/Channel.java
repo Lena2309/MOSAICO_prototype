@@ -1,4 +1,4 @@
-package org.example.agents;
+package org.example.dto.output;
 
 import java.util.Optional;
 
@@ -11,13 +11,12 @@ public class Channel {
         if (t.isPresent())
             type = t.get();
         else
-            type = null ;
+            type = null;
     }
 
     @Override
-    public String toString() {
-        final String t = (this.type == null ? "(no type)" : "(" + this.type + ")");
-        return "channel:" + name + " " + t ;
+    public int hashCode() {
+        return name.hashCode();
     }
 
     @Override
@@ -27,7 +26,8 @@ public class Channel {
     }
 
     @Override
-    public int hashCode() {
-        return name.hashCode();
+    public String toString() {
+        final String t = (this.type == null ? "(no type)" : "(" + this.type + ")");
+        return "channel:" + name + " " + t;
     }
 }

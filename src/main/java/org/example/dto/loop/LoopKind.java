@@ -1,3 +1,3 @@
-package org.example.dto;
+package org.example.dto.loop;
 
 public enum LoopKind {LoopUntil, While}

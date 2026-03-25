@@ -1,17 +1,15 @@
-package org.example.agents;
+package org.example.dto.output;
 
 public class StringValue extends Value {
+    final String value;
+
     public StringValue(String value) {
         this.value = value;
     }
 
-    final String value ;
-
     @Override
-    public String toString() {
-        return "StringValue{" +
-                "value='" + value + '\'' +
-                '}';
+    public int hashCode() {
+        return value.hashCode();
     }
 
     @Override
@@ -21,7 +19,9 @@ public class StringValue extends Value {
     }
 
     @Override
-    public int hashCode() {
-        return value.hashCode();
+    public String toString() {
+        return "StringValue{" +
+                "value='" + value + '\'' +
+                '}';
     }
 }

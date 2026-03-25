@@ -1,5 +1,7 @@
 package org.example.dto;
 
+import org.example.dto.loop.LoopCondition;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -8,10 +10,9 @@ public class TaskExecutionPlan implements OrderedMOSAICOExecution {
     private final String name;
     private final int executionOrder;
     private final WorkflowType workflowType;
-
+    private final LoopCondition endLoopCondition;
     private List<Task> tasks;
     private List<TaskExecutionPlan> taskExecutionPlans;
-    private final LoopCondition endLoopCondition;
 
     public TaskExecutionPlan(int executionOrder,
                              List<Task> tasks,

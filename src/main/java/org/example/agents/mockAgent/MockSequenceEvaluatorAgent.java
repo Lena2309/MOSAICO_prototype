@@ -1,8 +1,13 @@
-package org.example.agents;
+package org.example.agents.mockAgent;
+
+import org.example.agents.SupervisionAgent;
+import org.example.dto.output.BooleanValue;
 
 import java.util.List;
 
-/** An agent that returns true or false following a predefined sequence. */
+/**
+ * An agent that returns true or false following a predefined sequence.
+ */
 public class MockSequenceEvaluatorAgent extends SupervisionAgent {
     int cpt;
 
@@ -12,8 +17,8 @@ public class MockSequenceEvaluatorAgent extends SupervisionAgent {
     }
 
     @Override
-    public BooleanValue fakeResult(){
-        cpt++ ;
-        return new BooleanValue(cpt%3 == 0);
+    public BooleanValue fakeResult() {
+        cpt++;
+        return new BooleanValue(cpt % 3 == 0);
     }
 }

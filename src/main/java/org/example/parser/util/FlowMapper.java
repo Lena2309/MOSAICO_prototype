@@ -2,7 +2,12 @@ package org.example.parser.util;
 
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
 import org.example.agents.MosaicoAgent;
-import org.example.dto.*;
+import org.example.dto.Task;
+import org.example.dto.TaskExecutionPlan;
+import org.example.dto.WorkflowType;
+import org.example.dto.expression.ExpressionBuilder;
+import org.example.dto.loop.LoopCondition;
+import org.example.dto.loop.LoopKind;
 import org.omg.sysml.lang.sysml.*;
 
 import java.util.*;
@@ -59,6 +64,14 @@ public interface FlowMapper {
         // Filter out purely structural control nodes
         if (isStartNode(e) || isDoneNode(e) || isJoinNode(e)) {
             return;
+        }
+
+        if (e instanceof TransitionUsage transitionUsage) {
+            var source = transitionUsage.getSource();
+            var target = transitionUsage.getTarget();
+            var condition = transitionUsage.getGuardExpression();
+            // TODO Julien: implement if support
+            // La condition est une liste d'Expression
         }
 
         // --- PARALLEL BLOCK HANDLING ---
@@ -227,8 +240,7 @@ public interface FlowMapper {
 
                     if (subChild instanceof SuccessionAsUsage flow) {
                         internalFlows.add(flow);
-                    }
-                    else if (isLoopNode(e) && subChild instanceof ActionUsage innerAction) {
+                    } else if (isLoopNode(e) && subChild instanceof ActionUsage innerAction) {
                         if (!isLoopNode(innerAction)) {
                             internalFlows.addAll(getInternalFlows(innerAction));
                         }
@@ -272,7 +284,7 @@ public interface FlowMapper {
     //                            NODE TYPE CHECKS
     // -----------------------------------------------------------------------------
     private static boolean isStartNode(Element e) {
-        var n = getSafeName(e) ;
+        var n = getSafeName(e);
         return (n.isPresent() && "start".equals(n.get())) || "InitialNode".equals(e.eClass().getName());
     }
 
@@ -282,12 +294,12 @@ public interface FlowMapper {
     }
 
     private static boolean isForkNode(Element e) {
-        var n = getSafeName(e) ;
+        var n = getSafeName(e);
         return e instanceof ForkNode || (n.isPresent() && "forkNode".equals(n.get()));
     }
 
     private static boolean isJoinNode(Element e) {
-        var n = getSafeName(e) ;
+        var n = getSafeName(e);
         return e instanceof JoinNode || (n.isPresent() && "joinNode".equals(n.get()));
     }
 
