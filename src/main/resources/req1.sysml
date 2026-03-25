@@ -1,12 +1,11 @@
-private import ScalarValues::*;
-private import Collections::*;
-private import CollectionFunctions::*;
-public import MOSAICO::*;
-
 package RequirementManagementAgentsNoParams {
+    private import ScalarValues::*;
+    private import SequenceFunctions::*;
+    private import MOSAICO::*;
+
     part def RequirementManagerAgent specializes SolutionAgent {
         :>> id = "eu.mosaico-project.requirement-manager-agent-type.v1";
-        constraint { licence == "MIT" } // licences is not defined
+        constraint { licences->includes("MIT") }
     }
 
     part def CheckCorrectNessAgent specializes SupervisionAgent {
@@ -26,67 +25,61 @@ package RequirementManagementAgentsNoParams {
     checkCorrectnessAgent : CheckCorrectNessAgent;
     checkNonRedundancyAgent : CheckNonRedundancyAgent;
     checkSatisfiabilityAgent : CheckSatisfiabilityAgent;
-    consensusAgent: ConsensusAgent;
-    evaluatorManagerAgent : MockSequenceEvaluatorAgent ;
+    consensusAgent : ConsensusAgent;
 
     action def GenerateRequirementsProcess {
-        
         first start;
-        
-        then action userInput : Step {
+
+        then action userInput : AgentStep {
             :>> description = "Get a system description from the user.";
             :>> agent = referenceAgent;
-            out biduleOUT : String;
         }
 
-        then loop action constructRequirementList  {
-
-            action decompose : Step {
+        then loop action constructRequirementList {
+            action decompose : AgentStep {
                 :>> description = "A new requirement is generated based on the system description.";
                 :>> agent = requirementManagerAgent;
-                out req ;
             }
 
-            then fork; then checkCorrectness; then checkNonRedundancy; then checkSatisfiability;
-            
-            action checkCorrectness : Step {
-                :>> description = "Checks whether the new Requirement is correct based on the system description.";
-                out correct : Boolean;
-            } then joinNode;
+            then fork;
+                then checkCorrectness;
+                then checkNonRedundancy;
+                then checkSatisfiability;
 
-            action checkNonRedundancy : Step {
-                :>> description = "Checks that the new requirement is not redundant based on the current list of accepted requirements";
-                out nonRedundant : Boolean;
-            } then joinNode;
+            action checkCorrectness : AgentStep {
+                :>> description =
+                    "Checks whether the new Requirement is correct based on the system description.";
+            }
+            then joinNode;
 
-            action checkSatisfiability : Step {
+            action checkNonRedundancy : AgentStep {
+                :>> description =
+                    "Checks that the new requirement is not redundant based on the current list of accepted requirements";
+            }
+            then joinNode;
+
+            action checkSatisfiability : AgentStep {
                 :>> description = "Checks whether the new requirement is satisfiable.";
-                out satisfiable : Boolean;
-            } then joinNode;
+            }
+            then joinNode;
 
-            then join joinNode;
+            join joinNode;
 
-            then action checkConsensus : Step {
+            then action checkConsensus : AgentStep {
                 :>> agent = consensusAgent;
-                in correct : Boolean;
-                in nonRedundant : Boolean;
-                in satisfiable : Boolean;
-                out consensus : Boolean;
             }
 
-            then action updateRequirements : Step {
-                :>> description = "Updates the list of accepted requirements and checks whether the list of accepted requirements is complete.";
-                :>> agent = evaluatorManagerAgent;
-                in consensus : Boolean;
+            then action updateRequirements : AgentStep {
+                :>> description =
+                    "Updates the list of accepted requirements and checks whether the list of accepted requirements is complete.";
+                :>> agent = requirementManagerAgent;
                 out isComplete : Boolean;
             }
         } until constructRequirementList.updateRequirements.isComplete;
 
-        then action outputToUser : Step {
+        then action outputToUser : AgentStep {
             :>> description = "Returns the list of completed requirements to the user.";
             :>> agent = referenceAgent;
-            in biduleOUT : String;
-            out userOutput;
         }
 
         then done;

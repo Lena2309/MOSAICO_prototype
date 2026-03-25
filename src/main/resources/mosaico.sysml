@@ -1,12 +1,12 @@
-private import ScalarValues::*;
-private import Collections::*;
-
 package MOSAICO {
+
+    private import ScalarValues::*;
+    private import Collections::*;
 
     part def Agent {
         attribute id : String[0..1];
         attribute version : String[0..1];
-        attribute licence : String;
+        attribute licences : String[0..*];
         attribute skills : String[0..*];
     }
 
@@ -21,29 +21,34 @@ package MOSAICO {
     }
 
     part def SolutionAgent specializes Agent;
-    part def EvaluatorAgent specializes Agent ;
-    part def SupervisionAgent specializes Agent;
 
-    part def MockTrueEvaluatorAgent specializes EvaluatorAgent ;
-    part def MockFalseEvaluatorAgent specializes EvaluatorAgent ;
-    part def MockSequenceEvaluatorAgent specializes EvaluatorAgent ;
+    part def SupervisionAgent specializes Agent;
 
     action def Step {
         attribute description : String[0..1];
-        ref agent: Agent[0..1];
     }
 
-    action def ReferenceStep specializes Step {
+    action def AgentStep specializes Step {
+        ref agent : Agent[0..1];
+    }
+
+    action def ReferenceStep specializes AgentStep {
         redefines agent : ReferenceAgent;
     }
-    
-    action def ConsensusStep specializes Step {
+
+    action def ConsensusStep specializes AgentStep {
         redefines agent : ConsensusAgent;
         attribute policy : String[0..1];
     }
 
-    action def SupervisionStep specializes Step {
+    action def SupervisionStep specializes AgentStep {
         redefines agent : SupervisionAgent;
+    }
+
+    action def ReplicationStep specializes AgentStep {
+        ref agents: Agent[0..*];
+        attribute repetitions : Integer[0..*];
+        attribute prompts : String[0..*];
     }
 
 }
