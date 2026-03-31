@@ -13,6 +13,9 @@ package RequirementManagementAgentsNoParams {
             }
 
     if updateRequirements.isComplete then outputToUser;
+    else updateRequirements;
+
+
 
         action outputToUser : AgentStep {
             :>> description = "Returns the list of completed requirements to the user.";

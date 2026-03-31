@@ -1,7 +1,7 @@
 package org.example.agents.mockAgent;
 
-import org.example.agents.SupervisionAgent;
-import org.example.dto.output.BooleanValue;
+import org.example.agents.mosaico.SupervisionAgent;
+import org.example.dto.task.output.BooleanValue;
 
 import java.util.List;
 
