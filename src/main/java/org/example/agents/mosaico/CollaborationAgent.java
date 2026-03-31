@@ -59,14 +59,7 @@ public class CollaborationAgent extends MosaicoAgent {
 
         // Traverse the linked graph sequentially
         while (currentStep != null) {
-
-            // Polymorphic execution:
-            // If it's a ParallelStep, it will spawn threads for its body.
-            // If it's a LoopStep, it will loop over its body.
-            // If it's a standard Step, it will just execute the AgentTask.
             currentStep.execute(taskOutputs);
-
-            // Move to the next linked step in the main sequence
             currentStep = currentStep.getNextStep().orElse(null);
         }
 

@@ -19,7 +19,6 @@ public class ConjunctionExpression extends Expression {
 
     @Override
     public boolean checkCondition(List<AgentTaskOutput> trace) {
-
         return e1.checkCondition(trace) && e2.checkCondition(trace);
     }
 }

@@ -25,21 +25,16 @@ public interface SysMLDecoder {
     static Step decode(String collaborationPatternPath) {
 
         final String libPrefix = "src/main/resources/sysml.library";
-        // Initialize SysML utility with custom library paths
         var sysml = new MySysMLUtil(libPrefix);
 
-        // Load the core Mosaico profile/library followed by the specific collaboration pattern
         sysml.readResource("src/main/resources/mosaico.sysml");
         var sysmlResource = sysml.readResource(collaborationPatternPath);
 
         var packages = (Namespace) sysmlResource.getContents().getFirst();
         var agentTypes = new HashMap<String, MosaicoAgent>();
         var mosaicoAgents = new ArrayList<MosaicoAgent>();
-
-        // CHANGED: Use a generic Element list so we can store both Succession and Transition usages
         var rootFlows = new ArrayList<Element>();
 
-        // Recursively traverse the model to populate agentTypes and control flows
         mapModelResources(packages, agentTypes, mosaicoAgents, rootFlows);
 
         return FlowMapper.parseSteps(rootFlows, mosaicoAgents);

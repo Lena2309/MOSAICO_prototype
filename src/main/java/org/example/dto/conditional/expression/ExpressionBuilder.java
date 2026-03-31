@@ -28,7 +28,7 @@ public class ExpressionBuilder {
             } catch (Exception ignored) {
             }
 
-            // 2. AST FALLBACK
+            // 2. AST fallback
             List<String> chainNames = extractChainNames(c);
             if (chainNames.isEmpty()) {
                 throw new InvalidParameterException("Could not extract names from FeatureChainExpression.");

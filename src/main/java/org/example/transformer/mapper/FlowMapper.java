@@ -30,8 +30,6 @@ public interface FlowMapper {
 
             if (source == null || target == null) continue;
 
-            // ISOLATION FIX 1: Transition flows are handled internally by IfStep synthesis.
-            // Do NOT let the main loop override their connections!
             if (flow instanceof TransitionUsage) {
                 getOrProcessNode(source, rootFlows, taskOutputParameters, mosaicoAgents, processedNodes, stepMap);
                 continue;
@@ -66,7 +64,6 @@ public interface FlowMapper {
 
         if (isStartNode(e) || isDoneNode(e) || isJoinNode(e)) return null;
 
-        // Prevent malformed AST nodes from processing as real steps
         if (e instanceof TransitionUsage || e instanceof SuccessionAsUsage) return null;
 
         if (!processedNodes.add(e)) {
@@ -105,7 +102,7 @@ public interface FlowMapper {
             return newStep;
         }
 
-        // --- ACTION & DECISION HANDLING (Merged Priority) ---
+        // --- ACTION & DECISION HANDLING ---
         if (e instanceof ActionUsage actionUsage) {
 
             // 1. Build the Action Task
@@ -118,9 +115,6 @@ public interface FlowMapper {
 
                 newStep = ActionMapper.mapActionToAgentTask(actionUsage, mosaicoAgents, dependencies, Optional.empty());
 
-                // EARLY CACHE FIX: Cache the action IMMEDIATELY.
-                // This guarantees that if the `else` branch loops back to this action,
-                // the cache intercepts it and safely closes the cyclic graph!
                 stepMap.put(e, newStep);
 
                 Step finalNewStep = newStep;
@@ -132,7 +126,7 @@ public interface FlowMapper {
                 stepMap.put(e, newStep);
             }
 
-            // 2. Synthesize an IfStep if this action also acts as a Decision Node
+            // 2. Synthesize an IfStep if this action also acts as a Decision/Transition Node
             var outgoingTransitions = scopeFlows.stream()
                     .filter(f -> f instanceof TransitionUsage tru && tru.getSource() != null && tru.getSource().equals(e))
                     .map(f -> (TransitionUsage) f)
@@ -238,7 +232,6 @@ public interface FlowMapper {
 
             if (source == null || target == null) continue;
 
-            // ISOLATION FIX 2
             if (flow instanceof TransitionUsage) {
                 getOrProcessNode(source, internalFlows, taskOutputParameters, mosaicoAgents, processedNodes, localStepMap);
                 continue;
@@ -331,11 +324,7 @@ public interface FlowMapper {
                     .filter(f -> getSource(f) != null && getSource(f).equals(finalCurrent))
                     .findFirst();
 
-            if (nextFlow.isPresent()) {
-                current = getTarget(nextFlow.get());
-            } else {
-                current = null;
-            }
+            current = nextFlow.map(FlowMapper::getTarget).orElse(null);
         }
         return ordered;
     }

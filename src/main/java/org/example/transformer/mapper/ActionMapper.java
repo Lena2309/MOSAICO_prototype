@@ -87,7 +87,7 @@ public interface ActionMapper {
      *                    Modifies the property map.
      */
     private static void populateActionProperties(Element e, Map<String, String> propertyMap) {
-        // Optimization: stop recursion if all required fields are found
+        // stop recursion if all required fields are found
         if (propertyMap.containsKey("description") && propertyMap.containsKey("agentName")) {
             return;
         }
@@ -95,7 +95,6 @@ public interface ActionMapper {
         var redefinedDescription = false;
         var redefinedAgentName = false;
 
-        // numerical loop because i+1 and i-1 are used below
         for (var i = 0; i < e.getOwnedRelationship().size(); i++) {
             if (e.getOwnedRelationship().get(i) instanceof Redefinition rd) {
                 var targetName = UtilAttributeMapper.getSafeName(rd.getRedefinedFeature());
