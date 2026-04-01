@@ -2,7 +2,6 @@ package org.example.transformer.mapper;
 
 import org.example.agents.mosaico.MosaicoAgent;
 import org.example.dto.conditional.Condition;
-import org.example.dto.conditional.LoopCondition;
 import org.example.dto.conditional.LoopKind;
 import org.example.dto.conditional.expression.Expression;
 import org.example.dto.conditional.expression.ExpressionBuilder;
@@ -49,7 +48,7 @@ public interface FlowMapper {
             }
         }
 
-        return extractOrderedSteps(rootFlows, stepMap).stream().findFirst().orElse(null);
+        return extractHeadStep(rootFlows, stepMap);
     }
 
     private static Step getOrProcessNode(
@@ -141,11 +140,9 @@ public interface FlowMapper {
                         .filter(t -> t.getGuardExpression() == null || t.getGuardExpression().isEmpty())
                         .findFirst().orElse(null);
 
-                var expressions = new ArrayList<Expression>();
+                Expression exp = null;
                 if (thenTransition != null) {
-                    for (var guardExpression : thenTransition.getGuardExpression()) {
-                        expressions.add(ExpressionBuilder.transpile(guardExpression));
-                    }
+                    exp = ExpressionBuilder.transpile(thenTransition.getGuardExpression().getFirst());
                 }
 
                 Step thenStep = null;
@@ -159,7 +156,7 @@ public interface FlowMapper {
                     elseStep = Optional.ofNullable(parsedElseStep);
                 }
 
-                IfStep ifStep = new IfStep(thenStep, elseStep, new Condition(expressions), Optional.empty());
+                IfStep ifStep = new IfStep(thenStep, elseStep, new Condition(exp), Optional.empty());
 
                 // Link the ActionStep directly into the new IfStep
                 newStep.setNextStep(ifStep);
@@ -187,11 +184,9 @@ public interface FlowMapper {
                     .filter(t -> t.getGuardExpression() == null || t.getGuardExpression().isEmpty())
                     .findFirst().orElse(null);
 
-            var expressions = new ArrayList<Expression>();
+            Expression exp = null;
             if (thenTransition != null) {
-                for (var guardExpression : thenTransition.getGuardExpression()) {
-                    expressions.add(ExpressionBuilder.transpile(guardExpression));
-                }
+                exp = ExpressionBuilder.transpile(thenTransition.getGuardExpression().getFirst());
             }
 
             Step thenStep = null;
@@ -205,7 +200,7 @@ public interface FlowMapper {
                 elseStep = Optional.ofNullable(parsedElseStep);
             }
 
-            newStep = new IfStep(thenStep, elseStep, new Condition(expressions), Optional.empty());
+            newStep = new IfStep(thenStep, elseStep, new Condition(exp), Optional.empty());
             stepMap.put(e, newStep);
 
             Element joinNode = findJoinNode(e, scopeFlows);
@@ -247,18 +242,21 @@ public interface FlowMapper {
             getOrProcessNode(target, internalFlows, taskOutputParameters, mosaicoAgents, processedNodes, localStepMap);
         }
 
-        List<Step> orderedBody = extractOrderedSteps(internalFlows, localStepMap);
+        var headStep = extractHeadStep(internalFlows, localStepMap);
 
-        LoopCondition condition = null;
+        Condition condition = null;
+        LoopKind kind = null;
         if (e instanceof WhileLoopActionUsage loopActionUsage) {
             if (loopActionUsage.getUntilArgument() != null) {
-                condition = new LoopCondition(LoopKind.UNTIL, ExpressionBuilder.transpile(loopActionUsage.getUntilArgument()));
+                kind = LoopKind.UNTIL;
+                condition = new Condition(ExpressionBuilder.transpile(loopActionUsage.getUntilArgument()));
             } else if (loopActionUsage.getWhileArgument() != null) {
-                condition = new LoopCondition(LoopKind.WHILE, ExpressionBuilder.transpile(loopActionUsage.getWhileArgument()));
+                kind = LoopKind.WHILE;
+                condition = new Condition(ExpressionBuilder.transpile(loopActionUsage.getWhileArgument()));
             }
         }
 
-        return new LoopStep(orderedBody, condition, Optional.empty());
+        return new LoopStep(headStep, condition, kind, Optional.empty());
     }
 
     private static void processBranch(
@@ -294,7 +292,11 @@ public interface FlowMapper {
         }
     }
 
-    private static List<Step> extractOrderedSteps(List<Element> flows, Map<Element, Step> stepMap) {
+    /**
+     * Traverses the flows topologically to generate the linked sequence of Steps,
+     * returning the head of the chain.
+     */
+    private static Step extractHeadStep(List<Element> flows, Map<Element, Step> stepMap) {
         List<Step> ordered = new ArrayList<>();
 
         Element current = flows.stream()
@@ -326,7 +328,16 @@ public interface FlowMapper {
 
             current = nextFlow.map(FlowMapper::getTarget).orElse(null);
         }
-        return ordered;
+
+        if (ordered.isEmpty()) {
+            return null;
+        }
+
+        for (int i = 0; i < ordered.size() - 1; i++) {
+            ordered.get(i).setNextStep(ordered.get(i + 1));
+        }
+
+        return ordered.getFirst();
     }
 
     private static Element findJoinNode(Element forkStart, List<Element> flows) {
