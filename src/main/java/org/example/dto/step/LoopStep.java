@@ -39,22 +39,29 @@ public class LoopStep extends Step {
         if (this.endCondition == null)
             throw new InvalidParameterException("Missing loop condition.");
         else {
-            var result = endCondition.evaluate(agentTaskOutputs);
-            result = switch (this.kind) {
-                case UNTIL -> !result;
-                case WHILE -> result;
-            };
+            boolean shouldContinue;
+            if (this.kind == LoopKind.WHILE) {
+                shouldContinue = endCondition.evaluate(agentTaskOutputs);
+            } else {
+                // until loops in SysML are evaluated after the body is executed
+                // so they always execute at least once
+                shouldContinue = true;
+            }
 
-            System.out.println("Result of evaluation of loop condition:" + result);
-            while (result && agentTaskOutputs.size() < 50) {
+            while (shouldContinue && agentTaskOutputs.size() < 50) {
+                System.out.println("Result of evaluation of loop condition:" + shouldContinue);
                 var currentStep = this.headStep;
                 while (currentStep != null) {
                     currentStep.execute(agentTaskOutputs);
                     currentStep = currentStep.getNextStep().orElse(null);
                 }
-                result = endCondition.evaluate(agentTaskOutputs);
+                var rawResult = endCondition.evaluate(agentTaskOutputs);
+                shouldContinue = switch (this.kind) {
+                    case UNTIL -> !rawResult;
+                    case WHILE -> rawResult;
+                };
             }
-            if (!result) System.out.println("Loop ended because loop Condition satisfied.");
+            if (!shouldContinue) System.out.println("Loop ended because loop Condition satisfied.");
             if (!(agentTaskOutputs.size() < 50)) System.out.println("[DEBUG MODE] Loop ended because trace too big.");
         }
 
