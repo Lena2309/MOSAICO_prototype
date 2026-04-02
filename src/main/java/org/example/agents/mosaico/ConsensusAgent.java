@@ -1,7 +1,8 @@
 package org.example.agents.mosaico;
 
-import org.example.dto.task.output.BooleanValue;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.AgentTask;
+import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.Channel;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public class ConsensusAgent extends MosaicoAgent {
     }
 
     @Override
-    public Value fakeResult() {
-        return new BooleanValue(true);
+    public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
+        return null;
     }
 }

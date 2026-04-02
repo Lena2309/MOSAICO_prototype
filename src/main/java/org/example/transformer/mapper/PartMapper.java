@@ -1,10 +1,7 @@
 package org.example.transformer.mapper;
 
-import org.example.agents.mockAgent.*;
-import org.example.agents.mosaico.ConsensusAgent;
-import org.example.agents.mosaico.MosaicoAgent;
-import org.example.agents.mosaico.ReferenceAgent;
-import org.example.agents.mosaico.SupervisionAgent;
+import org.example.agents.FallbackAgent;
+import org.example.agents.mosaico.*;
 import org.omg.sysml.lang.sysml.*;
 
 import java.util.*;
@@ -183,11 +180,7 @@ public interface PartMapper {
             case "ReferenceAgent" -> new ReferenceAgent(id, agentName, description, constraints);
             case "ConsensusAgent" -> new ConsensusAgent(id, agentName, description, constraints);
             case "SupervisionAgent" -> new SupervisionAgent(id, agentName, description, constraints);
-            case "EvaluatorAgent" -> new EvaluatorAgent(id, agentName, description, constraints);
-            case "MockTrueEvaluatorAgent" -> new MockTrueEvaluatorAgent(id, agentName, description, constraints);
-            case "MockFalseEvaluatorAgent" -> new MockFalseEvaluatorAgent(id, agentName, description, constraints);
-            case "MockSequenceEvaluatorAgent" ->
-                    new MockSequenceEvaluatorAgent(id, agentName, description, constraints);
+            case "SolutionAgent" -> new SolutionAgent(id, agentName, description, constraints);
             default -> new FallbackAgent(id, agentName, description, constraints);
         };
     }

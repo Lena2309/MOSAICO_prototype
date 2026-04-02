@@ -29,7 +29,7 @@ public interface ActionMapper {
 
         var finalAgentName = propertyMap.get("agentName");
         if (finalAgentName == null)
-            System.out.println("[WARNING] No agent name specification found.");
+            System.out.println("[WARNING] No agent specification found for task: " + action.getDeclaredName() + ".");
 
         // Attempt to find an existing agent that matches the requirement
         var agentForTask = mosaicoAgents.stream()
@@ -38,7 +38,8 @@ public interface ActionMapper {
 
         // Fallback: Create a generic SolutionAgent if no specific match is found
         if (agentForTask.isEmpty()) {
-            System.out.println("[WARNING] Convenient agent not found, using a fallback solution agent instead.");
+            if (finalAgentName != null)
+                System.out.println("[ERROR] Convenient agent not found despite being specified, using a fallback solution agent instead.");
             agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), propertyMap.get("agentName"), null, null));
         }
 
@@ -51,11 +52,29 @@ public interface ActionMapper {
             outputs.add(new Channel(name, type));
         }
 
+        var inputs = new ArrayList<Channel>();
+        if (!(outputDependencies.isEmpty())) {
+            for (var e : action.getInput()) {
+                var inputFound = false;
+                for (var task : outputDependencies) {
+                    for (var channel : task.getOutputChannels()) {
+                        if (Objects.equals(channel.getName(), e.getDeclaredName())) {
+                            inputs.add(channel);
+                            inputFound = true;
+                            break;
+                        }
+                    }
+                    if (inputFound) break;
+                }
+            }
+        }
+
         var newStep = new Step(new AgentTask(
                 action.getDeclaredName(),
                 propertyMap.get("description"),
                 outputs,
                 agentForTask.get(),
+                inputs,
                 outputDependencies
         ));
 

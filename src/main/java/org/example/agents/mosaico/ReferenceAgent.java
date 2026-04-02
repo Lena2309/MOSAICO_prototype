@@ -1,7 +1,8 @@
 package org.example.agents.mosaico;
 
-import org.example.dto.task.output.StringValue;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.AgentTask;
+import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.Channel;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class ReferenceAgent extends MosaicoAgent {
     }
 
     @Override
-    public Value fakeResult() {
-        return new StringValue("hello");
+    public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
+        return null;
     }
 }
