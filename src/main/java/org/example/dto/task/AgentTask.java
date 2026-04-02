@@ -108,6 +108,14 @@ public class AgentTask {
 
 
     public String toString() {
-        return this.taskName;
+        String dependenciesStr = (inputTaskDependencies != null && !inputTaskDependencies.isEmpty())
+                ? ", dependencies=[" + inputTaskDependencies.stream().map(AgentTask::getTaskName).collect(Collectors.joining(", ")) + "]"
+                : "";
+
+        return String.format("AgentTask{name='%s', description='%s', agent='%s'%s}",
+                taskName,
+                taskDescription,
+                bestAgent != null ? bestAgent.getName() : "None",
+                dependenciesStr);
     }
 }

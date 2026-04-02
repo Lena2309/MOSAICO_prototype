@@ -49,4 +49,40 @@ public class Step {
     private Optional<AgentTaskOutput> executeTask(List<AgentTaskOutput> taskDependencies) {
         return this.agentTask.execute(taskDependencies);
     }
+
+    // Helper so steps can identify themselves to the next step
+    protected String getStepName() {
+        return this.agentTask != null ? this.agentTask.getTaskName() : "Unknown Task";
+    }
+
+    @Override
+    public String toString() {
+        return "\n" + buildString("", new java.util.HashSet<>(), new java.util.concurrent.atomic.AtomicInteger(1), "None");
+    }
+
+    protected String buildString(String indent, java.util.Set<Step> visited, java.util.concurrent.atomic.AtomicInteger counter, String prevName) {
+        if (visited.contains(this)) {
+            return indent + "[Cycle Detected] -> " + getStepName() + "\n";
+        }
+        visited.add(this);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(indent).append(counter.getAndIncrement()).append(". |- [Step] ");
+
+        if (this.agentTask != null) {
+            sb.append(this.agentTask.toString());
+        } else {
+            sb.append("Empty Task");
+        }
+
+        if (prevName != null && !prevName.equals("None")) {
+            sb.append(" (next of ").append(prevName).append(")");
+        }
+        sb.append("\n");
+
+        if (this.nextStep != null && this.nextStep.isPresent()) {
+            sb.append(this.nextStep.get().buildString(indent, visited, counter, this.getStepName()));
+        }
+        return sb.toString();
+    }
 }

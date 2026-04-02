@@ -30,4 +30,39 @@ public class IfStep extends Step {
             elseStep.ifPresent(elseStep -> elseStep.execute(agentTaskOutputs));
         }
     }
+
+    @Override
+    protected String getStepName() {
+        return "IfStep";
+    }
+
+    @Override
+    protected String buildString(String indent, java.util.Set<Step> visited, java.util.concurrent.atomic.AtomicInteger counter, String prevName) {
+        if (visited.contains(this)) return indent + "[Cycle Detected] -> IfStep\n";
+        visited.add(this);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(indent).append(counter.getAndIncrement()).append(". |- [IfStep] Condition: ")
+                .append(ifCondition != null ? ifCondition.toString() : "None");
+
+        if (prevName != null && !prevName.equals("None")) {
+            sb.append(" (next of ").append(prevName).append(")");
+        }
+        sb.append("\n");
+
+        sb.append(indent).append("   |-- Then:\n");
+        if (this.thenStep != null) {
+            sb.append(this.thenStep.buildString(indent + "       ", new java.util.HashSet<>(visited), counter, "IfStep (Then)"));
+        }
+
+        if (this.elseStep != null && this.elseStep.isPresent()) {
+            sb.append(indent).append("   |-- Else:\n");
+            sb.append(this.elseStep.get().buildString(indent + "       ", new java.util.HashSet<>(visited), counter, "IfStep (Else)"));
+        }
+
+        if (this.getNextStep() != null && this.getNextStep().isPresent()) {
+            sb.append(this.getNextStep().get().buildString(indent, visited, counter, this.getStepName()));
+        }
+        return sb.toString();
+    }
 }

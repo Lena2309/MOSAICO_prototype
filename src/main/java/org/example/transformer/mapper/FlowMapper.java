@@ -66,7 +66,7 @@ public interface FlowMapper {
         if (e instanceof TransitionUsage || e instanceof SuccessionAsUsage) return null;
 
         if (!processedNodes.add(e)) {
-            System.out.println("[WARNING] Graph cycle detected at node: " + getSafeName(e).orElse("Unknown") + ". Breaking AST recursion.");
+            // System.out.println("[WARNING] Graph cycle detected at node: " + getSafeName(e).orElse("Unknown") + ". Breaking AST recursion.");
             return null;
         }
 

@@ -12,7 +12,6 @@ public record Condition(Expression expression) {
      */
     public boolean evaluate(List<AgentTaskOutput> trace) {
         System.out.println("Tested condition: " + this.expression.toString());
-        System.out.println("Context: " + trace.toString());
         var b = expression.checkCondition(trace);
         System.out.println("[DEBUG] Evaluation of loop condition: " + b);
         return b;

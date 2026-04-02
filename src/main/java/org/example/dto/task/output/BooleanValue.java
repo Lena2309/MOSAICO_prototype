@@ -30,4 +30,8 @@ public class BooleanValue extends Value {
     public boolean value() {
         return this.value;
     }
+
+    public String print() {
+        return value ? "true" : "false";
+    }
 }

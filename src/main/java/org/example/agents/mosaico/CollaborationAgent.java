@@ -52,19 +52,19 @@ public class CollaborationAgent extends MosaicoAgent {
      * @return String representation of the outputs.
      */
     public String run(Step firstStep) {
-        System.out.println("--- Starting CollaborationAgent Orchestration ---");
+        System.out.println("--- Starting Collaboration Agent Orchestration ---");
 
-        List<AgentTaskOutput> taskOutputs = new ArrayList<>();
+        List<AgentTaskOutput> allTaskOutputs = new ArrayList<>();
         Step currentStep = firstStep;
 
         // Traverse the linked graph sequentially
         while (currentStep != null) {
-            currentStep.execute(taskOutputs);
+            currentStep.execute(allTaskOutputs);
             currentStep = currentStep.getNextStep().orElse(null);
         }
 
-        System.out.println("--- Finished CollaborationAgent Orchestration ---");
-        return taskOutputs.toString();
+        System.out.println("--- Finished Collaboration Agent Orchestration ---");
+        return allTaskOutputs.toString();
     }
 
     @Override

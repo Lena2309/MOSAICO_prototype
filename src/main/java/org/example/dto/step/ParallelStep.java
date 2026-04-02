@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ParallelStep extends Step {
     private final List<Step> body;
@@ -33,7 +34,6 @@ public class ParallelStep extends Step {
         // Try-with-resources on the executor ensures proper shutdown and
         // waits for all virtual threads to terminate before exiting the block.
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-
             List<CompletableFuture<Void>> futures = this.body.stream()
                     .map(step -> CompletableFuture.runAsync(() -> {
                                 System.out.println("  [Parallel] Starting: " + step.getAgentTask().getTaskName());
@@ -53,5 +53,37 @@ public class ParallelStep extends Step {
         }
 
         System.out.println("--- Finished Parallel Step Execution ---");
+    }
+
+    @Override
+    protected String getStepName() {
+        return "ParallelStep";
+    }
+
+    @Override
+    protected String buildString(String indent, java.util.Set<Step> visited, java.util.concurrent.atomic.AtomicInteger counter, String prevName) {
+        if (visited.contains(this)) return indent + "[Cycle Detected] -> ParallelStep\n";
+        visited.add(this);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(indent).append(counter.getAndIncrement()).append(". |- [ParallelStep] (Branches: ")
+                .append(body != null ? body.size() : 0).append(")");
+
+        if (prevName != null && !prevName.equals("None")) {
+            sb.append(" (next of ").append(prevName).append(")");
+        }
+        sb.append("\n");
+
+        if (this.body != null) {
+            for (int i = 0; i < body.size(); i++) {
+                sb.append(indent).append("   |-- Branch ").append(i + 1).append(":\n");
+                sb.append(body.get(i).buildString(indent + "       ", new java.util.HashSet<>(visited), new AtomicInteger(1), "Parallel Split"));
+            }
+        }
+
+        if (this.getNextStep() != null && this.getNextStep().isPresent()) {
+            sb.append(this.getNextStep().get().buildString(indent, visited, counter, this.getStepName()));
+        }
+        return sb.toString();
     }
 }

@@ -24,4 +24,8 @@ public class StringValue extends Value {
                 "value='" + value + '\'' +
                 '}';
     }
+
+    public String print() {
+        return value;
+    }
 }

@@ -7,6 +7,7 @@ import org.example.dto.task.AgentTaskOutput;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoopStep extends Step {
     private final Step headStep;
@@ -49,7 +50,6 @@ public class LoopStep extends Step {
             }
 
             while (shouldContinue && agentTaskOutputs.size() < 50) {
-                System.out.println("Result of evaluation of loop condition:" + shouldContinue);
                 var currentStep = this.headStep;
                 while (currentStep != null) {
                     currentStep.execute(agentTaskOutputs);
@@ -62,9 +62,42 @@ public class LoopStep extends Step {
                 };
             }
             if (!shouldContinue) System.out.println("Loop ended because loop Condition satisfied.");
-            if (!(agentTaskOutputs.size() < 50)) System.out.println("[DEBUG MODE] Loop ended because trace too big.");
+            if (!(agentTaskOutputs.size() < 50)) System.out.println("[WARNING] Loop ended because trace too big.");
         }
 
-        System.out.println("--- Finished Parallel Loop Execution ---");
+        System.out.println("--- Finished Loop Step Execution ---");
+    }
+
+    @Override
+    protected String getStepName() {
+        return "LoopStep";
+    }
+
+    @Override
+    protected String buildString(String indent, java.util.Set<Step> visited, java.util.concurrent.atomic.AtomicInteger counter, String prevName) {
+        if (visited.contains(this)) return indent + "[Cycle Detected] -> LoopStep\n";
+        visited.add(this);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(indent).append(counter.getAndIncrement()).append(". |- [LoopStep] Kind: ")
+                .append(kind)
+                .append("; Condition: ")
+                .append(endCondition != null ? endCondition.toString() : "None");
+
+        if (prevName != null && !prevName.equals("None")) {
+            sb.append(" (next of ").append(prevName).append(")");
+        }
+        sb.append("\n");
+
+        var subCounter = new AtomicInteger(1);
+
+        if (this.headStep != null) {
+            sb.append(this.headStep.buildString(indent + "       ", new java.util.HashSet<>(visited), subCounter, "Loop Start"));
+        }
+
+        if (this.getNextStep() != null && this.getNextStep().isPresent()) {
+            sb.append(this.getNextStep().get().buildString(indent, visited, counter, this.getStepName()));
+        }
+        return sb.toString();
     }
 }
