@@ -14,18 +14,13 @@ import java.time.Duration;
 import java.util.List;
 
 public class SolutionAgent extends MosaicoAgent {
-    private static final String OPENAI_API_KEY = System.getenv().getOrDefault("OPENAI_API_KEY", "demo");
-    private final OpenAiChatModel chatModel;
+
+    final LLM llm ;
 
     public SolutionAgent(String id, String name, String description, List<String> constraints) {
         super(id, name, description, constraints);
-        this.chatModel = OpenAiChatModel.builder()
-                .apiKey(OPENAI_API_KEY)
-                .modelName("gpt-4o-mini")
-                .timeout(Duration.ofSeconds(60))
-                .logRequests(true)
-                .logResponses(true)
-                .build();
+        this.llm = new LLMOpenAI(); // CHOOSE YOUR LLM HERE
+        //this.llm = new LLMHuggingFace(); // CHOOSE YOUR LLM HERE
     }
 
     @Override
@@ -40,8 +35,7 @@ public class SolutionAgent extends MosaicoAgent {
         var userMessage = UserMessage.from(finalPrompt);
 
         // 3. Execute the LLM call using LangChain4j
-        var response = chatModel.chat(systemMessage, userMessage);
-        String generatedText = response.aiMessage().text();
+        String generatedText = llm.chat(systemMessage, userMessage);
 
         // 4. Wrap and return the output
         Value resultValue;
