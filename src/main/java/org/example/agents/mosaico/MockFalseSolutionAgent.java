@@ -14,6 +14,6 @@ public class MockFalseSolutionAgent extends SolutionAgent {
 
     @Override
     public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
-        return new AgentTaskOutput(task, channel, new BooleanValue(true));
+        return new AgentTaskOutput(task, channel, new BooleanValue(false));
     }
 }

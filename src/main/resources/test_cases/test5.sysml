@@ -5,7 +5,7 @@ package RequirementManagementAgentsNoParams {
     private import SequenceFunctions::*;
     private import MOSAICO::*;
 
-    part def CompletionEvaluatorAgent specializes MockTrueAgent {
+    part def CompletionEvaluatorAgent specializes MockFalseAgent {
          :>> id = "eu.mosaico-project.check-cp-eval-agent-type.v1";
     }
 

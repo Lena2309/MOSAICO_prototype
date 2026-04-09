@@ -1,4 +1,4 @@
-// Test case : FeatureChain (dot notation) in loop condition
+// Test case : behavior of FeatureChain (dot notation) in loop condition
 
 private import ScalarValues::*;
 private import Collections::*;
@@ -6,21 +6,26 @@ private import CollectionFunctions::*;
 public import MOSAICO::*;
 
 package RequirementManagementAgentsNoParams {
-    part def RequirementManagerAgent specializes SolutionAgent {
+
+    part def RequirementManagerAgent specializes MockStringAgent {
         :>> id = "eu.mosaico-project.requirement-manager-agent-type.v1";
         constraint { licence == "MIT" } // licences is not defined
     }
 
-    part def CheckCorrectNessAgent specializes SupervisionAgent {
+    part def CheckCorrectNessAgent specializes MockTrueAgent {
         :>> id = "eu.mosaico-project.check-correctness-agent-type.v1";
     }
 
-    part def CheckNonRedundancyAgent specializes SupervisionAgent {
+    part def CheckNonRedundancyAgent specializes MockTrueAgent {
         :>> id = "eu.mosaico-project.check-non-redundancy-agent-type.v1";
     }
 
-    part def CheckSatisfiabilityAgent specializes SupervisionAgent {
+    part def CheckSatisfiabilityAgent specializes MockTrueAgent {
         :>> id = "eu.mosaico-project.check-satisfiability-agent-type.v1";
+    }
+
+    part def CompletionEvaluatorAgent specializes MockTrueAgent {
+         :>> id = "eu.mosaico-project.check-cp-eval-agent-type.v1";
     }
 
     referenceAgent : ReferenceAgent;
@@ -29,7 +34,7 @@ package RequirementManagementAgentsNoParams {
     checkNonRedundancyAgent : CheckNonRedundancyAgent;
     checkSatisfiabilityAgent : CheckSatisfiabilityAgent;
     consensusAgent: ConsensusAgent;
-    evaluatorAgent : MockSequenceEvaluatorAgent ;
+    evaluatorAgent : CompletionEvaluatorAgent;
 
     action def GenerateRequirementsProcess {
         
@@ -53,16 +58,19 @@ package RequirementManagementAgentsNoParams {
             
             action checkCorrectness : AgentStep {
                 :>> description = "Checks whether the new Requirement is correct based on the system description.";
+                :>> agent = evaluatorAgent ;
                 out correct : Boolean;
             } then joinNode;
 
             action checkNonRedundancy : AgentStep {
                 :>> description = "Checks that the new requirement is not redundant based on the current list of accepted requirements";
+                :>> agent = checkNonRedundancyAgent ;
                 out nonRedundant : Boolean;
             } then joinNode;
 
             action checkSatisfiability : AgentStep {
                 :>> description = "Checks whether the new requirement is satisfiable.";
+                :>> agent = checkSatisfiabilityAgent ;
                 out satisfiable : Boolean;
             } then joinNode;
 

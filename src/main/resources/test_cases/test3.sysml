@@ -7,14 +7,6 @@ public import MOSAICO::*;
 
 package RequirementManagementAgentsNoParams {
 
-    part def MockTrueAgent specializes SolutionAgent {
-        :>> id = "mock.true"
-    }
-
-    part def MockStringAgent specializes SolutionAgent {
-        :>> id = "mock.bla"
-    }
-
     part def RequirementManagerAgent specializes MockStringAgent {
         :>> id = "eu.mosaico-project.requirement-manager-agent-type.v1";
         constraint { licence == "MIT" } // licences is not defined
@@ -35,9 +27,10 @@ package RequirementManagementAgentsNoParams {
     part def CompletionEvaluatorAgent specializes MockTrueAgent {
          :>> id = "eu.mosaico-project.check-cp-eval-agent-type.v1";
     }
+
     part def OtherCompletionEvaluatorAgent specializes MockTrueAgent {
-             :>> id = "eu.mosaico-project.check-alt-cp-eval-agent-type.v1";
-        }
+         :>> id = "eu.mosaico-project.check-alt-cp-eval-agent-type.v1";
+    }
 
 
 
@@ -47,7 +40,7 @@ package RequirementManagementAgentsNoParams {
     checkNonRedundancyAgent : CheckNonRedundancyAgent;
     checkSatisfiabilityAgent : CheckSatisfiabilityAgent;
     consensusAgent: ConsensusAgent;
-    evaluatorAgent :      CompletionEvaluatorAgent;
+    evaluatorAgent : CompletionEvaluatorAgent;
     otherEvaluatorAgent : OtherCompletionEvaluatorAgent;
 
     action def GenerateRequirementsProcess {
