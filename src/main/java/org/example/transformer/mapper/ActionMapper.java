@@ -39,7 +39,7 @@ public interface ActionMapper {
         // Fallback: Create a generic SolutionAgent if no specific match is found
         if (agentForTask.isEmpty()) {
             if (finalAgentName != null)
-                System.out.println("[ERROR] Convenient agent not found despite being specified, using a fallback solution agent instead.");
+                System.out.println("[ERROR] Convenient agent not found despite being specified, using a fallback solution agent instead. (" + finalAgentName +")");
             agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), propertyMap.get("agentName"), null, null));
         }
 

@@ -90,6 +90,7 @@ public interface SysMLDecoder {
                     // Clone or reference the template and set the specific instance name
                     var newAgent = agents.get(agentType);
                     newAgent.setName(rf.getDeclaredName());
+                    // FIXME  : if the agent already has a name, this setName overwrites the name, and the old name reference is lost.
                     mosaicoAgents.add(newAgent);
                 } else {
                     // Fallback: Create a generic agent if the type definition is missing

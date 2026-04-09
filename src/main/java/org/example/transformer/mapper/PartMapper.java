@@ -30,6 +30,7 @@ public interface PartMapper {
         collectConstraints(partDefinition, constraints);
 
         if (typeName.isEmpty()) {
+            System.out.println("[WARNING] No type of agent specified for this part: " + partDefinition.getDeclaredName() + ". Fallback to SolutionAgent.");
             typeName = Optional.of("SolutionAgent");
         }
         if (agentId == null || agentId.isBlank()) {
@@ -181,7 +182,13 @@ public interface PartMapper {
             case "ConsensusAgent" -> new ConsensusAgent(id, agentName, description, constraints);
             case "SupervisionAgent" -> new SupervisionAgent(id, agentName, description, constraints);
             case "SolutionAgent" -> new SolutionAgent(id, agentName, description, constraints);
-            default -> new FallbackAgent(id, agentName, description, constraints);
+            case "MockTrueAgent" -> new MockTrueSolutionAgent(id, agentName, description, constraints);
+            case "MockFalseAgent" -> new MockFalseSolutionAgent(id, agentName, description, constraints);
+            case "MockStringAgent" -> new MockStringSolutionAgent(id, agentName, description, constraints);
+            default -> {
+                System.out.println("[WARNING] Fallback agent for " + typeName) ;
+                yield new FallbackAgent(id, agentName, description, constraints);
+            }
         };
     }
 }
