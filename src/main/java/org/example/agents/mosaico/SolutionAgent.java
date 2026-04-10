@@ -2,15 +2,16 @@ package org.example.agents.mosaico;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
-import dev.langchain4j.model.openai.OpenAiChatModel;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.AgentTaskOutput;
 import org.example.dto.task.output.BooleanValue;
 import org.example.dto.task.output.Channel;
 import org.example.dto.task.output.StringValue;
 import org.example.dto.task.output.Value;
+import org.example.llm.LLM;
+import org.example.llm.LLMHuggingFace;
+import org.example.llm.LLMOpenAI;
 
-import java.time.Duration;
 import java.util.List;
 
 public class SolutionAgent extends MosaicoAgent {

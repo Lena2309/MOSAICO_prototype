@@ -1,4 +1,4 @@
-package org.example.agents.mosaico;
+package org.example.llm;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
@@ -10,7 +10,8 @@ import java.time.Duration;
 public class LLMHuggingFace implements LLM {
 
     final OpenAiChatModel chatModel;
-    LLMHuggingFace(){
+
+    public LLMHuggingFace(){
         this.chatModel = OpenAiChatModel.builder()
                 .apiKey(System.getenv("HUGGING_FACE_KEY"))
                 .baseUrl("https://router.huggingface.co/v1")

@@ -1,4 +1,4 @@
-package org.example.agents.mosaico;
+package org.example.llm;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
@@ -11,7 +11,8 @@ public class LLMOpenAI implements LLM {
     static final String OPENAI_API_KEY = System.getenv().getOrDefault("OPENAI_API_KEY", "demo");
 
     final OpenAiChatModel chatModel;
-    LLMOpenAI(){
+
+    public LLMOpenAI(){
         this.chatModel = OpenAiChatModel.builder()
                 .apiKey(LLMOpenAI.OPENAI_API_KEY)
                 .modelName("gpt-4o-mini")

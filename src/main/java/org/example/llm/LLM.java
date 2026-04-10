@@ -1,4 +1,4 @@
-package org.example.agents.mosaico;
+package org.example.llm;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
