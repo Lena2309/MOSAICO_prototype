@@ -4,6 +4,7 @@ import org.example.dto.task.AgentTask;
 import org.example.dto.task.AgentTaskOutput;
 import org.example.dto.task.output.Channel;
 
+import java.util.Scanner ;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,5 +24,10 @@ public class ReferenceAgent extends MosaicoAgent {
 
     public void showToUser(String s){
         System.out.println("[OUTPUT] " + s);
+    }
+
+    public String askToUser(){
+        System.out.println("Your input is expected:\n");
+        return new Scanner(System.in).nextLine();
     }
 }

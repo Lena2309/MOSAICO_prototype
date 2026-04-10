@@ -66,6 +66,7 @@ public class LoopStep extends Step {
             if (agentTaskOutputs.size() >= MAX_TRACE_SIZE) {
                 System.out.println("[ERROR] Loop ended because trace too big.");
                 System.out.println("[ERROR] MAX_TRACE_SIZE = " + MAX_TRACE_SIZE);
+                System.out.println("[LOG] Trace = " + agentTaskOutputs);
                 throw new RuntimeException("Loop ended because trace too big.");
             }
         }

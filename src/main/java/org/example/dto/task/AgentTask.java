@@ -6,6 +6,7 @@ import org.example.agents.mosaico.MosaicoAgent;
 import org.example.agents.mosaico.ReferenceAgent;
 import org.example.agents.mosaico.SupervisionAgent;
 import org.example.dto.task.output.Channel;
+import org.example.dto.task.output.StringValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,18 @@ public class AgentTask {
 
         if (this.outputChannels.isEmpty()) {
             System.out.println("    [WARNING] No output for this task.");
+            if (this.inputChannels.isEmpty())
+                System.out.println("    [WARNING] No input for this task.");
+            for (var channel: this.inputChannels){
+                switch (bestAgent){
+                    case ReferenceAgent referenceAgent -> {
+                        // Note: We use reference agent in-channel only if it has no out-channel
+                        referenceAgent.showToUser(this.taskDescription);
+                        // FIXME: print the content of the input channel in addition to the description
+                    }
+                    default -> {}
+                }
+            }
             return List.of();
         } else {
             var outputList = new ArrayList<AgentTaskOutput>();
@@ -82,7 +95,9 @@ public class AgentTask {
                         outputList.add(new FallbackAgent().callLLM(this, allTaskOutputs, channel));
                     }
                     case ReferenceAgent referenceAgent -> {
-                        referenceAgent.showToUser(this.taskDescription);
+                        var res = referenceAgent.askToUser();
+                        AgentTaskOutput out = new AgentTaskOutput(this, channel, new StringValue(res));
+                        outputList.add(out);
                     }
                     case SupervisionAgent supervisionAgent -> {
                         // pass

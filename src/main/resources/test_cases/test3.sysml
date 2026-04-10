@@ -43,8 +43,7 @@ package Test3 {
         then action outputToUser : AgentStep {
             :>> description = "Test KO : The loop should never terminate.";
             :>> agent = referenceAgent;
-            in biduleOUT : String;
-            out userOutput;
+             in req : Boolean ;
         }
 
         then done;

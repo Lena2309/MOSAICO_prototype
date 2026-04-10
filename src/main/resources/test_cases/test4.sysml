@@ -17,13 +17,13 @@ package TestConditionTrue {
         action setTestPassed : AgentStep {
             :>> description = "Test OK";
             :>> agent = referenceAgent;
-            out notUsed : String ;
+             in result : Boolean ;
         }
 
         action setTestFailed : AgentStep {
             :>> description = "Test KO";
             :>> agent = referenceAgent;
-            out notUsed : String ;
+             in result : Boolean ;
         }
 
         first start;

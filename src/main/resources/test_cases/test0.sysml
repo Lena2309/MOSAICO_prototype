@@ -43,8 +43,7 @@ package Test0 {
         then action outputToUser : AgentStep {
             :>> description = "Test OK";
             :>> agent = referenceAgent;
-            in biduleOUT : String;
-            out userOutput;
+            in req : String ;
         }
 
         then done;
