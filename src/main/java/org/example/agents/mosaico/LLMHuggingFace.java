@@ -22,7 +22,7 @@ public class LLMHuggingFace implements LLM {
     }
 
     public String chat(SystemMessage sm, UserMessage um){
-        System.out.println("[DEBUG][REQUEST TO LLM]");
+        //System.out.println("[DEBUG][REQUEST TO LLM]");
         ChatResponse chat = this.chatModel.chat(sm, um);
         System.out.println("[LOG] " + chat.tokenUsage().toString());
         String res =  chat.aiMessage().text();
