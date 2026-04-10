@@ -14,7 +14,7 @@ public class ConjunctionExpression extends Expression {
 
     @Override
     public String toString() {
-        return e1.toString() + "&" + e2.toString();
+        return "CONJ: " + e1.toString() + " & " + e2.toString();
     }
 
     @Override
