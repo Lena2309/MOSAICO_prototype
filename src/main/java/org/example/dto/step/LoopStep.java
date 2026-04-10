@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LoopStep extends Step {
+    public static final int MAX_TRACE_SIZE = 50;
     private final Step headStep;
     private final Condition endCondition;
     private final String name = "loop";
@@ -49,7 +50,7 @@ public class LoopStep extends Step {
                 shouldContinue = true;
             }
 
-            while (shouldContinue && agentTaskOutputs.size() < 50) {
+            while (shouldContinue && agentTaskOutputs.size() < MAX_TRACE_SIZE) {
                 var currentStep = this.headStep;
                 while (currentStep != null) {
                     currentStep.execute(agentTaskOutputs);
@@ -62,7 +63,11 @@ public class LoopStep extends Step {
                 };
             }
             if (!shouldContinue) System.out.println("Loop ended because loop Condition satisfied.");
-            if (!(agentTaskOutputs.size() < 50)) System.out.println("[WARNING] Loop ended because trace too big.");
+            if (agentTaskOutputs.size() >= MAX_TRACE_SIZE) {
+                System.out.println("[ERROR] Loop ended because trace too big.");
+                System.out.println("[ERROR] MAX_TRACE_SIZE = " + MAX_TRACE_SIZE);
+                throw new RuntimeException("Loop ended because trace too big.");
+            }
         }
 
         System.out.println("--- Finished Loop Step Execution ---");
