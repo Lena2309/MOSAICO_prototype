@@ -1,6 +1,9 @@
 package org.example.transformer.mapper;
 
 import org.example.agents.FallbackAgent;
+import org.example.agents.mock.MockFalseSolutionAgent;
+import org.example.agents.mock.MockStringSolutionAgent;
+import org.example.agents.mock.MockTrueSolutionAgent;
 import org.example.agents.mosaico.*;
 import org.omg.sysml.lang.sysml.*;
 
