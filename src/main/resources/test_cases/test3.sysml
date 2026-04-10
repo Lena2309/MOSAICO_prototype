@@ -41,7 +41,7 @@ package Test3 {
         } until (constructRequirementList.updateRequirements.isComplete & false) ;
 
         then action outputToUser : AgentStep {
-            :>> description = "Test KO (this should not happen in this test).";
+            :>> description = "Test KO : The loop should never terminate.";
             :>> agent = referenceAgent;
             in biduleOUT : String;
             out userOutput;
