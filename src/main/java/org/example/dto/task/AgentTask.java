@@ -82,7 +82,7 @@ public class AgentTask {
                         outputList.add(new FallbackAgent().callLLM(this, allTaskOutputs, channel));
                     }
                     case ReferenceAgent referenceAgent -> {
-                        // pass
+                        referenceAgent.showToUser(this.taskDescription);
                     }
                     case SupervisionAgent supervisionAgent -> {
                         // pass

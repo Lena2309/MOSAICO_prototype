@@ -20,4 +20,8 @@ public class ReferenceAgent extends MosaicoAgent {
     public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
         return null;
     }
+
+    public void showToUser(String s){
+        System.out.println("[OUTPUT] " + s);
+    }
 }

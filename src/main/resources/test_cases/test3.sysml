@@ -100,7 +100,7 @@ package RequirementManagementAgentsNoParams {
         } until (constructRequirementList.updateRequirements.isComplete & false) ;
 
         then action outputToUser : AgentStep {
-            :>> description = "Returns the list of completed requirements to the user.";
+            :>> description = "Test KO (this should not happen in this test).";
             :>> agent = referenceAgent;
             in biduleOUT : String;
             out userOutput;

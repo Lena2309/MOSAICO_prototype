@@ -15,15 +15,15 @@ package TestConditionFalse {
     action def Process {
 
         action setTestPassed : AgentStep {
-            :>> description = "OK";
+            :>> description = "Test OK";
             :>> agent = referenceAgent;
-            out userOut : String ;
+            out notUsed : String ;
         }
 
         action setTestFailed : AgentStep {
-            :>> description = "KO";
+            :>> description = "Test KO";
             :>> agent = referenceAgent;
-            out userOut : String ;
+            out notUsed : String ;
         }
 
         first start;
