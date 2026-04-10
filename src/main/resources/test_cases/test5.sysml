@@ -1,25 +1,26 @@
 // Test case : behavior of value 'true' in 'if' condition
 
-package RequirementManagementAgentsNoParams {
+package TestConditionFalse {
     private import ScalarValues::*;
     private import SequenceFunctions::*;
     private import MOSAICO::*;
 
-    part def CompletionEvaluatorAgent specializes MockFalseAgent {
-         :>> id = "eu.mosaico-project.check-cp-eval-agent-type.v1";
+    part def EvaluatorAgent specializes MockFalseAgent {
+         :>> id = "eval1" ;
     }
 
     referenceAgent : ReferenceAgent;
-    evaluatorAgent : CompletionEvaluatorAgent;
+    evaluatorAgent : EvaluatorAgent;
 
-    action def GenerateRequirementsProcess {
-        action outputOKToUser : AgentStep {
+    action def Process {
+
+        action setTestPassed : AgentStep {
             :>> description = "OK";
             :>> agent = referenceAgent;
             out userOut : String ;
         }
 
-        action outputKOToUser : AgentStep {
+        action setTestFailed : AgentStep {
             :>> description = "KO";
             :>> agent = referenceAgent;
             out userOut : String ;
@@ -27,15 +28,14 @@ package RequirementManagementAgentsNoParams {
 
         first start;
 
-        then action updateRequirements : AgentStep {
-                :>> description =
-                    "Updates the list of accepted requirements and checks whether the list of accepted requirements is complete.";
-                :>> agent = evaluatorAgent ;
-                out isComplete : Boolean;
-            }
+        then action evaluation : AgentStep {
+            :>> description = "Check something." ;
+            :>> agent = evaluatorAgent ;
+            out result : Boolean;
+        }
 
-        if updateRequirements.isComplete then outputOKToUser;
-        else outputKOToUser;
+        if evaluation.result then setTestFailed;
+        else setTestPassed;
 
         then done;
     }
