@@ -110,6 +110,7 @@ package RequirementManagementAgents {
         then action outputToUser : AgentStep {
             :>> description = "Returns the list of completed requirements to the user.";
             :>> agent = referenceAgent;
+            in requirements ;
         }
 
         then done;

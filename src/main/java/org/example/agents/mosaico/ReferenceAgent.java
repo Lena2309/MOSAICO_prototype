@@ -26,8 +26,9 @@ public class ReferenceAgent extends MosaicoAgent {
         System.out.println("[OUTPUT] " + s);
     }
 
-    public String askToUser(){
-        System.out.println("Your input is expected:\n");
+    public String askToUser(String comment){
+        System.out.println("[INPUT REQUIRED] " + comment);
+        System.out.println("Your input:\n");
         return new Scanner(System.in).nextLine();
     }
 }

@@ -95,7 +95,7 @@ public class AgentTask {
                         outputList.add(new FallbackAgent().callLLM(this, allTaskOutputs, channel));
                     }
                     case ReferenceAgent referenceAgent -> {
-                        var res = referenceAgent.askToUser();
+                        var res = referenceAgent.askToUser(this.taskDescription);
                         AgentTaskOutput out = new AgentTaskOutput(this, channel, new StringValue(res));
                         outputList.add(out);
                     }
@@ -125,6 +125,11 @@ public class AgentTask {
     public List<Channel> getOutputChannels() {
         return outputChannels;
     }
+
+    public List<Channel> getInputChannels() {
+        return inputChannels;
+    }
+
 
     public String toString() {
         String dependenciesStr = (inputTaskDependencies != null && !inputTaskDependencies.isEmpty())
