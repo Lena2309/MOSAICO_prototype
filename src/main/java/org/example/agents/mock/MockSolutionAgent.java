@@ -7,7 +7,6 @@ import org.example.dto.task.AgentTaskOutput;
 import org.example.dto.task.output.Channel;
 import org.example.dto.task.output.Value;
 
-import javax.xml.validation.Validator;
 import java.util.List;
 
 public abstract class MockSolutionAgent extends SolutionAgent {
@@ -21,9 +20,9 @@ public abstract class MockSolutionAgent extends SolutionAgent {
     abstract Value mockOutput();
 
     public void logInputs(AgentTask task, List<AgentTaskOutput> dependencies){
-        System.out.println(input_prefix + task.getTaskDescription());
+        System.out.println(input_prefix + "Task description= '" + task.getTaskDescription() + "'");
         for (Channel c : task.getInputChannels())
-            System.out.println(input_prefix + MosaicoAgent.readChannel(c, dependencies));
+            System.out.println(input_prefix + "Channel " + c.getName() + "= " + MosaicoAgent.readChannel(c, dependencies));
     }
 
     @Override
