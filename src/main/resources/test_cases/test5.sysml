@@ -1,4 +1,4 @@
-// Test case : behavior of value 'true' in 'if' condition
+// Test case : behavior of value 'false' in 'if' condition
 
 package TestConditionFalse {
     private import ScalarValues::*;

@@ -20,7 +20,7 @@ public class StringValue extends Value {
 
     @Override
     public String toString() {
-        return "String:" +"'" + value + "\'";
+        return "String:" +"'" + value + "'";
     }
 
     public String print() {
