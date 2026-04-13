@@ -47,8 +47,14 @@ public interface ActionMapper {
         for (Feature e : action.getOutput()) {
             var name = e.getDeclaredName();
             var type = extractChannelType(e, name);
+            var multi = e.getMultiplicity();
+            int maxBound = 0;
+            if (multi != null)
+                maxBound = multi.getOwnedRelationship().getLast() instanceof LiteralInteger li ? li.getValue() : 0;
 
-            outputs.add(new Channel(name, type));
+
+            outputs.add(new Channel(name, type, multi != null, maxBound));
+
         }
 
         var newStep = new Step(new AgentTask(
