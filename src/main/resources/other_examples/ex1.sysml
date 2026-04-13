@@ -23,7 +23,7 @@ package Example {
         first start;
 
         then action userInput : AgentStep {
-            :>> description = "The user inputs its specification.";
+            :>> description = "Please give a specification.";
             :>> agent = referenceAgent;
             out userSpec : String ;
         }
@@ -40,6 +40,7 @@ package Example {
                 :>> description = "Check that the generated requirement is correct." ;
                 :>> agent = evaluatorAgent ;
                 in req ;
+                in userSpec : String ;
                 out result : Boolean;
             }
         } until repeatGeneration.evaluation.result ;
