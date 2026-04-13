@@ -40,14 +40,11 @@ public class LoopStep extends Step {
         if (this.endCondition == null)
             throw new InvalidParameterException("Missing loop condition.");
         else {
-            boolean shouldContinue;
-            if (this.kind == LoopKind.WHILE) {
-                shouldContinue = endCondition.evaluate(agentTaskOutputs);
-            } else {
-                // until loops in SysML are evaluated after the body is executed
-                // so they always execute at least once
-                shouldContinue = true;
-            }
+            var rawResult = endCondition.evaluate(agentTaskOutputs);
+            var shouldContinue = switch (this.kind) {
+                case UNTIL -> !rawResult;
+                case WHILE -> rawResult;
+            };
 
             while (shouldContinue && agentTaskOutputs.size() < 50) {
                 var currentStep = this.headStep;
@@ -55,7 +52,7 @@ public class LoopStep extends Step {
                     currentStep.execute(agentTaskOutputs);
                     currentStep = currentStep.getNextStep().orElse(null);
                 }
-                var rawResult = endCondition.evaluate(agentTaskOutputs);
+                rawResult = endCondition.evaluate(agentTaskOutputs);
                 shouldContinue = switch (this.kind) {
                     case UNTIL -> !rawResult;
                     case WHILE -> rawResult;
