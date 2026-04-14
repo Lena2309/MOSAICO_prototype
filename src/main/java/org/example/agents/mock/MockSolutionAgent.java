@@ -26,7 +26,7 @@ public abstract class MockSolutionAgent extends SolutionAgent {
     }
 
     @Override
-    public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
+    public AgentTaskOutput performTask(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
         logInputs(task, dependencies);
         System.out.println(output_prefix + mockOutput());
         return new AgentTaskOutput(task, channel, mockOutput());

@@ -60,9 +60,10 @@ public abstract class MosaicoAgent {
         this.skills = skills;
     }
 
-    @Deprecated
-    abstract public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel);
 
+    abstract public AgentTaskOutput performTask(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel);
+
+    /** Utility to read the value of a channel in a trace. */
     public static Value readChannel(Channel c, List<AgentTaskOutput> trace){
         var res = trace.stream().filter((AgentTaskOutput out)->out.channel().equals(c)).findAny();
         if (res.isPresent())

@@ -25,7 +25,7 @@ public class SolutionAgent extends MosaicoAgent {
     }
 
     @Override
-    public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
+    public AgentTaskOutput performTask(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
         // 1. Build the context and prompt
         String promptContext = buildContext(dependencies);
         String finalPrompt = "Task Description:\n" + task.getTaskDescription() + "\n\n" + promptContext

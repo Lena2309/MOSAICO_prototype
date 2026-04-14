@@ -92,7 +92,7 @@ public class AgentTask {
                 switch (bestAgent) {
                     case null -> {
                         System.out.print("[WARNING] Using a fallback agent.");
-                        outputList.add(new FallbackAgent().callLLM(this, allTaskOutputs, channel));
+                        outputList.add(new FallbackAgent().performTask(this, allTaskOutputs, channel));
                     }
                     case ReferenceAgent referenceAgent -> {
                         var res = referenceAgent.askToUser(this.taskDescription);
@@ -105,7 +105,7 @@ public class AgentTask {
                     case ConsensusAgent consensusAgent -> {
                         // pass
                     }
-                    default -> outputList.add(bestAgent.callLLM(this, allTaskOutputs, channel));
+                    default -> outputList.add(bestAgent.performTask(this, allTaskOutputs, channel));
                 }
                 // System.out.println("Task " + getTaskName() + ", with channel " + channel.getName() + ", executed successfully.");
             }

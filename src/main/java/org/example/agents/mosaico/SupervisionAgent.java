@@ -12,7 +12,7 @@ public class SupervisionAgent extends MosaicoAgent {
     }
 
     @Override
-    public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
+    public AgentTaskOutput performTask(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
         return null;
     }
 }
