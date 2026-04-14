@@ -13,6 +13,7 @@ public class Main {
 
         var parsed = SysMLDecoder.decode("src/main/resources/req1.sysml");
         //var parsed = SysMLDecoder.decode("src/main/resources/test_cases/test4.sysml");
+        //var parsed = SysMLDecoder.decode("src/main/resources/other_examples/ex1.sysml");
         System.out.println(parsed.toString());
         var collabAgent = new CollaborationAgent();
         var outputsString = collabAgent.run(parsed);

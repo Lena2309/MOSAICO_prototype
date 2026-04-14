@@ -80,7 +80,11 @@ public class AgentTask {
                     case ReferenceAgent referenceAgent -> {
                         // Note: We use reference agent in-channel only if it has no out-channel
                         referenceAgent.showToUser(this.taskDescription);
-                        // FIXME: print the content of the input channel in addition to the description
+                        var res = MosaicoAgent.readChannel(channel, allTaskOutputs).toString();
+                        if (res != null)
+                            referenceAgent.showToUser(res + "(" + channel.toString() + ")");
+                        else
+                            System.out.println("[ERROR] No value for this channel: " + channel.getName());
                     }
                     default -> {}
                 }
