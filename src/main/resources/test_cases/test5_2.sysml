@@ -1,0 +1,42 @@
+// Test case : behavior of or disjunction in 'if' condition
+
+package TestConditionFalse {
+    private import ScalarValues::*;
+    private import SequenceFunctions::*;
+    private import MOSAICO::*;
+
+    part def EvaluatorAgent specializes MockFalseAgent {
+         :>> id = "eval1" ;
+    }
+
+    referenceAgent : ReferenceAgent;
+    evaluatorAgent : EvaluatorAgent;
+
+    action def Process {
+
+        action setTestPassed : AgentStep {
+            :>> description = "Test OK";
+            :>> agent = referenceAgent;
+             in result : Boolean ;
+        }
+
+        action setTestFailed : AgentStep {
+            :>> description = "Test KO";
+            :>> agent = referenceAgent;
+            in result : Boolean ;
+        }
+
+        first start;
+
+        then action evaluation : AgentStep {
+            :>> description = "Check something." ;
+            :>> agent = evaluatorAgent ;
+            out result : Boolean;
+        }
+
+        if evaluation.result | false then setTestFailed;
+        else setTestPassed;
+
+        then done;
+    }
+}

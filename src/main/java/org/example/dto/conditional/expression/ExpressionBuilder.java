@@ -54,15 +54,28 @@ public class ExpressionBuilder {
         if (e instanceof OperatorExpression op) {
             var operator = op.getOperator();
             List<org.omg.sysml.lang.sysml.Expression> operands = findOperands(op);
+            final int nbOperands = operands.size();
 
-            // TODO : add operators ( |, ||, ==, !=)
-            if ("&".equals(operator) || "and".equalsIgnoreCase(operator)) {
-                if (operands.size() < 2) {
-                    throw new InvalidParameterException("Operator '&' requires 2 operands, found: " + operands.size());
+            // TODO : add operators ( |, ||, ==, !=, not)
+            switch (operator) {
+
+                case "&": {
+                    if (nbOperands != 2)
+                        throw new InvalidParameterException("Operator\" + operator + \"  requires 2 operands, found: " + nbOperands);
+                    else
+                        return new ConjunctionExpression(transpile(operands.get(0)), transpile(operands.get(1)));
                 }
-                return new ConjunctionExpression(transpile(operands.get(0)), transpile(operands.get(1)));
+
+                case "|": {
+                    if (nbOperands != 2)
+                        throw new InvalidParameterException("Operator" + operator + "  requires 2 operands, found: " + nbOperands);
+                    else
+                        return new DisjunctionExpression(transpile(operands.get(0)), transpile(operands.get(1)));
+                }
+
+                default:
+                    throw new InvalidParameterException("Operator not implemented: " + operator);
             }
-            throw new InvalidParameterException("Operator not implemented: " + operator);
         }
         throw new InvalidParameterException("Expression not supported: " + e.getClass().getSimpleName());
     }
