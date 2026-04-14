@@ -1,12 +1,12 @@
-// Test case : behavior of literal 'false' in loop condition
-// Expected behavior : the loop does not terminate and is halted by the system.
+// Test case : behavior of literal 'false' in 'while' loop condition
+// Expected behavior : the loop terminates without executing its body.
 
 private import ScalarValues::*;
 private import Collections::*;
 private import CollectionFunctions::*;
 public import MOSAICO::*;
 
-package Test3 {
+package Test3.2 {
 
     part def GeneratorAgent specializes MockStringAgent {
         :>> id = "gen1" ;
@@ -25,7 +25,7 @@ package Test3 {
         
         first start;
 
-        then loop action constructRequirementList  {
+        then while false action constructRequirementList  {
 
             action decompose : AgentStep {
                 :>> description = "Generate a new requirement." ;
@@ -38,10 +38,16 @@ package Test3 {
                 :>> agent = evaluatorAgent;
                 out isComplete : Boolean;
             }
-        } until (constructRequirementList.updateRequirements.isComplete & false) ;
+
+            then action outputToUser : AgentStep {
+                :>> description = "Test KO";
+                :>> agent = referenceAgent;
+                 in req : Boolean ;
+            }
+        }
 
         then action outputToUser : AgentStep {
-            :>> description = "Test KO : The loop should never terminate.";
+            :>> description = "Test OK (if not entered into the loop body).";
             :>> agent = referenceAgent;
              in req : Boolean ;
         }

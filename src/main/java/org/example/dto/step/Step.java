@@ -36,17 +36,14 @@ public class Step {
     }
 
     public void execute(List<AgentTaskOutput> taskDependencies) {
-        System.out.println("--- Starting Sequential Step Execution ---");
         var optionalTaskOutput = this.executeTask(taskDependencies);
-        if (optionalTaskOutput.isPresent()) {
-            taskDependencies.add(optionalTaskOutput.get());
-        } else {
-            System.out.println("[WARNING] No task output for this step.");
+        if (!optionalTaskOutput.isEmpty()) {
+            taskDependencies.addAll(optionalTaskOutput);
         }
-        System.out.println("--- Finished Parallel Step Execution ---");
+        System.out.println("    Task " + this.agentTask.getTaskName() + " has been executed successfully.");
     }
 
-    private Optional<AgentTaskOutput> executeTask(List<AgentTaskOutput> taskDependencies) {
+    private List<AgentTaskOutput> executeTask(List<AgentTaskOutput> taskDependencies) {
         return this.agentTask.execute(taskDependencies);
     }
 

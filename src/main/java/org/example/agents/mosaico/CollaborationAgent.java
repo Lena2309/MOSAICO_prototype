@@ -1,9 +1,9 @@
 package org.example.agents.mosaico;
 
 import org.example.dto.step.Step;
+import org.example.dto.task.AgentTask;
 import org.example.dto.task.AgentTaskOutput;
-import org.example.dto.task.output.StringValue;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.output.Channel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class CollaborationAgent extends MosaicoAgent {
     }
 
     @Override
-    public Value fakeResult() {
-        return new StringValue("my result is bla");
+    public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
+        return null;
     }
 }

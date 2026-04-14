@@ -12,8 +12,10 @@ public class Main {
         IO.println(String.format("Hello and welcome!"));
 
         var parsed = SysMLDecoder.decode("src/main/resources/req1.sysml");
+        //var parsed = SysMLDecoder.decode("src/main/resources/test_cases/test4.sysml");
         System.out.println(parsed.toString());
         var collabAgent = new CollaborationAgent();
-        collabAgent.run(parsed);
+        var outputsString = collabAgent.run(parsed);
+        System.out.println("\nFinal Stack Trace:\n" + outputsString);
     }
 }

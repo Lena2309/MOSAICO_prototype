@@ -1,10 +1,10 @@
 package org.example.transformer.mapper;
 
-import org.example.agents.mockAgent.*;
-import org.example.agents.mosaico.ConsensusAgent;
-import org.example.agents.mosaico.MosaicoAgent;
-import org.example.agents.mosaico.ReferenceAgent;
-import org.example.agents.mosaico.SupervisionAgent;
+import org.example.agents.FallbackAgent;
+import org.example.agents.mock.MockFalseSolutionAgent;
+import org.example.agents.mock.MockStringSolutionAgent;
+import org.example.agents.mock.MockTrueSolutionAgent;
+import org.example.agents.mosaico.*;
 import org.omg.sysml.lang.sysml.*;
 
 import java.util.*;
@@ -33,6 +33,7 @@ public interface PartMapper {
         collectConstraints(partDefinition, constraints);
 
         if (typeName.isEmpty()) {
+            System.out.println("[WARNING] No type of agent specified for this part: " + partDefinition.getDeclaredName() + ". Fallback to SolutionAgent.");
             typeName = Optional.of("SolutionAgent");
         }
         if (agentId == null || agentId.isBlank()) {
@@ -183,12 +184,14 @@ public interface PartMapper {
             case "ReferenceAgent" -> new ReferenceAgent(id, agentName, description, constraints);
             case "ConsensusAgent" -> new ConsensusAgent(id, agentName, description, constraints);
             case "SupervisionAgent" -> new SupervisionAgent(id, agentName, description, constraints);
-            case "EvaluatorAgent" -> new EvaluatorAgent(id, agentName, description, constraints);
-            case "MockTrueEvaluatorAgent" -> new MockTrueEvaluatorAgent(id, agentName, description, constraints);
-            case "MockFalseEvaluatorAgent" -> new MockFalseEvaluatorAgent(id, agentName, description, constraints);
-            case "MockSequenceEvaluatorAgent" ->
-                    new MockSequenceEvaluatorAgent(id, agentName, description, constraints);
-            default -> new FallbackAgent(id, agentName, description, constraints);
+            case "SolutionAgent" -> new SolutionAgent(id, agentName, description, constraints);
+            case "MockTrueAgent" -> new MockTrueSolutionAgent(id, agentName, description, constraints);
+            case "MockFalseAgent" -> new MockFalseSolutionAgent(id, agentName, description, constraints);
+            case "MockStringAgent" -> new MockStringSolutionAgent(id, agentName, description, constraints);
+            default -> {
+                System.out.println("[WARNING] Fallback agent for " + typeName) ;
+                yield new FallbackAgent(id, agentName, description, constraints);
+            }
         };
     }
 }

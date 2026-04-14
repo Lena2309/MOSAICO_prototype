@@ -11,9 +11,9 @@ public record Condition(Expression expression) {
      * @param trace is the reference to resolve names in the expression.
      */
     public boolean evaluate(List<AgentTaskOutput> trace) {
-        System.out.println("Tested condition: " + this.expression.toString());
+        System.out.println("[DEBUG] Tested condition: " + this.expression.toString());
         var b = expression.checkCondition(trace);
-        System.out.println("[DEBUG] Evaluation of loop condition: " + b);
+        System.out.println("[DEBUG] Evaluation of condition: " + b);
         return b;
     }
 }

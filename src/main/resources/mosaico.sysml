@@ -24,6 +24,18 @@ package MOSAICO {
 
     part def SupervisionAgent specializes Agent;
 
+    part def MockTrueAgent specializes SolutionAgent {
+        :>> id = "mock.true"
+    }
+
+    part def MockFalseAgent specializes SolutionAgent {
+        :>> id = "mock.false"
+    }
+
+    part def MockStringAgent specializes SolutionAgent {
+        :>> id = "mock.bla"
+    }
+
     action def Step {
         attribute description : String[0..1];
     }

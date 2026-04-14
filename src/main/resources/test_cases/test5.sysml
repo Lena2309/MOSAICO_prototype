@@ -1,11 +1,11 @@
-// Test case : behavior of value 'true' in 'if' condition
+// Test case : behavior of value 'false' in 'if' condition
 
-package TestConditionTrue {
+package TestConditionFalse {
     private import ScalarValues::*;
     private import SequenceFunctions::*;
     private import MOSAICO::*;
 
-    part def EvaluatorAgent specializes MockTrueAgent {
+    part def EvaluatorAgent specializes MockFalseAgent {
          :>> id = "eval1" ;
     }
 
@@ -23,7 +23,7 @@ package TestConditionTrue {
         action setTestFailed : AgentStep {
             :>> description = "Test KO";
             :>> agent = referenceAgent;
-             in result : Boolean ;
+            in result : Boolean ;
         }
 
         first start;
@@ -34,8 +34,8 @@ package TestConditionTrue {
             out result : Boolean;
         }
 
-        if evaluation.result then setTestPassed;
-        else setTestFailed;
+        if evaluation.result then setTestFailed;
+        else setTestPassed;
 
         then done;
     }

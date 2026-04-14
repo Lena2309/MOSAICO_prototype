@@ -22,9 +22,7 @@ public class BooleanValue extends Value {
 
     @Override
     public String toString() {
-        return "BooleanValue{" +
-                "value=" + value +
-                '}';
+        return "Boolean:" + value ;
     }
 
     public boolean value() {

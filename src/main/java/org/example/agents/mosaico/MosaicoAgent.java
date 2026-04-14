@@ -1,6 +1,9 @@
 package org.example.agents.mosaico;
 
 import org.example.agents.MosaicoAgentType;
+import org.example.dto.task.AgentTask;
+import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.Channel;
 import org.example.dto.task.output.Value;
 
 import java.util.List;
@@ -58,5 +61,13 @@ public abstract class MosaicoAgent {
     }
 
     @Deprecated
-    abstract public Value fakeResult();
+    abstract public AgentTaskOutput callLLM(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel);
+
+    public static Value readChannel(Channel c, List<AgentTaskOutput> trace){
+        var res = trace.stream().filter((AgentTaskOutput out)->out.channel().equals(c)).findAny();
+        if (res.isPresent())
+            return res.get().value();
+        else
+            return null ;
+    }
 }
