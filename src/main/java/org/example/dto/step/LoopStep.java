@@ -42,14 +42,21 @@ public class LoopStep extends Step {
             throw new InvalidParameterException("Missing loop condition.");
         else {
             boolean shouldContinue;
-            if (this.kind == LoopKind.WHILE) {
-                shouldContinue = endCondition.evaluate(agentTaskOutputs);
-            } else {
-                // until loops in SysML are evaluated after the body is executed
-                // so they always execute at least once
-                shouldContinue = true;
-            }
 
+            // First evaluation
+            shouldContinue =
+                    switch (this.kind){
+                        case LoopKind.WHILE : {
+                            // In a 'while' loop, we first evaluate the condition before the body.
+                            yield endCondition.evaluate(agentTaskOutputs);
+                        }
+                        case LoopKind.UNTIL: {
+                            // In a 'until' loop, we first evaluate the body, then the condition.
+                            yield true;
+                        }
+                    };
+
+            // Repetition
             while (shouldContinue && agentTaskOutputs.size() < MAX_TRACE_SIZE) {
                 var currentStep = this.headStep;
                 while (currentStep != null) {
@@ -64,10 +71,10 @@ public class LoopStep extends Step {
             }
             if (!shouldContinue) System.out.println("Loop ended because loop Condition satisfied.");
             if (agentTaskOutputs.size() >= MAX_TRACE_SIZE) {
-                System.out.println("[ERROR] Loop ended because trace too big.");
+                System.out.println("[ERROR] Loop ended because trace too large.");
                 System.out.println("[ERROR] MAX_TRACE_SIZE = " + MAX_TRACE_SIZE);
                 System.out.println("[LOG] Trace = " + agentTaskOutputs);
-                throw new RuntimeException("Loop ended because trace too big.");
+                throw new RuntimeException("Loop ended because trace too large.");
             }
         }
 
