@@ -9,24 +9,45 @@ import java.util.List;
 
 public class DotExpression extends Expression {
     static final Value trueVal = new BooleanValue(true);
-    final List<String> chain;
+    final String channelName ;
+    final List<String> otherParents;
+    final String taskName ;
 
     public DotExpression(List<String> chain) {
-        if (chain.isEmpty()) throw new InvalidParameterException();
-        this.chain = chain;
+        if (chain.size()<2) throw new InvalidParameterException();
+
+        this.channelName = chain.getLast();
+        this.taskName = chain.get(chain.size()-2);
+        this.otherParents = chain.subList(0, chain.size()-2);
     }
 
     @Override
     public String toString() {
-        return "DotExpression[" + chain + ']';
+        return "DotExpression[" + otherParents + ']';
     }
 
     @Override
     public boolean checkCondition(List<AgentTaskOutput> trace) {
-        assert (this.chain.size()>1);
-        String channelName = this.chain.getLast();
-        String previous = this.chain.get(this.chain.size()-2);
 
-        return trace.stream().anyMatch((t) -> t.channel().getName().equals(channelName) && t.value().equals(trueVal) && t.task().getTaskName().equals(previous));
+
+
+
+        return trace.stream().anyMatch((t) ->  nameMatch(t) && t.value().equals(trueVal));
     }
+
+    boolean nameMatch(AgentTaskOutput t){
+        var b1 = t.channel().getName().equals(this.channelName) ;
+        var b2 = t.task().getTaskName().equals(this.taskName) ;
+        var b3 = isSuffixOf(otherParents, t.task().parents) ;
+        return b1 && b2 && b3;
+
+    }
+
+    static <T> boolean isSuffixOf(List<T> l1, List<T> l2){
+        int s1 = l1.size();
+        int s2 = l2.size();
+
+        return l2.subList(s2-s1, s2).equals(l1);
+    }
+
 }

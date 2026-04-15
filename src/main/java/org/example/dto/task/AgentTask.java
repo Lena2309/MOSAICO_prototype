@@ -20,19 +20,23 @@ public class AgentTask {
     private final List<AgentTask> inputTaskDependencies;
     private MosaicoAgent bestAgent;
 
+
+    public final List<String> parents;
+
     public AgentTask(String taskName, String taskDescription, MosaicoAgent bestAgent) {
-        this(taskName, taskDescription, new ArrayList<>(), bestAgent, new ArrayList<>(), new ArrayList<>());
+        this(taskName, taskDescription, new ArrayList<>(), bestAgent, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     public AgentTask(String taskName, String taskDescription,
                      List<Channel> taskOutputsNames, MosaicoAgent bestAgent,
-                     List<Channel> inputChannels, List<AgentTask> inputTaskDependencies) {
+                     List<Channel> inputChannels, List<AgentTask> inputTaskDependencies, List<String> parents) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.outputChannels = taskOutputsNames;
         this.bestAgent = bestAgent;
         this.inputChannels = inputChannels;
         this.inputTaskDependencies = inputTaskDependencies;
+        this.parents = parents;
     }
 
     // TODO: implement repo talk

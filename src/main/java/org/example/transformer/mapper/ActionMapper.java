@@ -75,13 +75,22 @@ public interface ActionMapper {
             }
         }
 
+        // Fill the parents for absolute names of channels.
+        final List<String> parents = new ArrayList<>();
+        Element tmp = action;
+        while (tmp.getOwner() != null && tmp.getOwner().getDeclaredName() != null){
+            parents.add(tmp.getOwner().getDeclaredName());
+            tmp = tmp.getOwner();
+        }
+
         var newStep = new Step(new AgentTask(
                 action.getDeclaredName(),
                 propertyMap.get("description"),
                 outputs,
                 agentForTask.get(),
                 inputs,
-                outputDependencies
+                outputDependencies,
+                parents
         ));
 
         previousStep.ifPresent(step -> step.setNextStep(newStep));
