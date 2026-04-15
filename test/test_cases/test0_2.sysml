@@ -42,7 +42,7 @@ package Test0_2 {
         } until constructRequirementList.updateRequirements.isComplete; // bad prefix
 
         then action outputToUser : AgentStep {
-            :>> description = "Test K0";
+            :>> description = "Test KO";
             :>> agent = referenceAgent;
             in req : String ;
         }
