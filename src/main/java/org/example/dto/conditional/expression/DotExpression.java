@@ -8,7 +8,7 @@ import java.security.InvalidParameterException;
 import java.util.List;
 
 public class DotExpression extends Expression {
-    static Value trueVal = new BooleanValue(true);
+    static final Value trueVal = new BooleanValue(true);
     final List<String> chain;
 
     public DotExpression(List<String> chain) {
@@ -23,9 +23,10 @@ public class DotExpression extends Expression {
 
     @Override
     public boolean checkCondition(List<AgentTaskOutput> trace) {
-        assert (!this.chain.isEmpty());
-        String id = this.chain.getLast(); // FIXME
+        assert (this.chain.size()>1);
+        String channelName = this.chain.getLast();
+        String previous = this.chain.get(this.chain.size()-2);
 
-        return trace.stream().anyMatch((t) -> t.channel().getName().equals(id) && t.value().equals(trueVal));  // FIXME
+        return trace.stream().anyMatch((t) -> t.channel().getName().equals(channelName) && t.value().equals(trueVal) && t.task().getTaskName().equals(previous));
     }
 }

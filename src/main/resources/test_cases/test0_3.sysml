@@ -1,11 +1,12 @@
-// Test case : behavior of FeatureChain (dot notation) in loop condition
+// Test case : behavior of FeatureChain (dot notation) in loop condition with bad reference
+// Expected behavior : Either syntactically rejected because of undefined reference, or infinite loop.
 
 private import ScalarValues::*;
 private import Collections::*;
 private import CollectionFunctions::*;
 public import MOSAICO::*;
 
-package Test0 {
+package Test0_2 {
 
     part def GeneratorAgent specializes MockStringAgent {
         :>> id = "gen1" ;
@@ -38,10 +39,10 @@ package Test0 {
                 in req ;
                 out isComplete : Boolean;
             }
-        } until constructRequirementList.evaluate.isComplete; // FIXME : prefix not used
+        } until other.evaluate.isComplete; // bad prefix
 
         then action outputToUser : AgentStep {
-            :>> description = "Test OK";
+            :>> description = "Test K0";
             :>> agent = referenceAgent;
             in req : String ;
         }
