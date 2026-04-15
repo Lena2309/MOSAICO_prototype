@@ -2,6 +2,7 @@ package org.example.transformer.mapper;
 
 import org.example.agents.FallbackAgent;
 import org.example.agents.mock.MockFalseSolutionAgent;
+import org.example.agents.mock.MockMultipleValueSolutionAgent;
 import org.example.agents.mock.MockStringSolutionAgent;
 import org.example.agents.mock.MockTrueSolutionAgent;
 import org.example.agents.mosaico.*;
@@ -188,6 +189,7 @@ public interface PartMapper {
             case "MockTrueAgent" -> new MockTrueSolutionAgent(id, agentName, description, constraints);
             case "MockFalseAgent" -> new MockFalseSolutionAgent(id, agentName, description, constraints);
             case "MockStringAgent" -> new MockStringSolutionAgent(id, agentName, description, constraints);
+            case "MockMultipleValueAgent" -> new MockMultipleValueSolutionAgent(id, agentName, description, constraints);
             default -> {
                 System.out.println("[WARNING] Fallback agent for " + typeName) ;
                 yield new FallbackAgent(id, agentName, description, constraints);

@@ -35,6 +35,9 @@ package MOSAICO {
     part def MockStringAgent specializes SolutionAgent {
         :>> id = "mock.bla"
     }
+    part def MockMultipleValueAgent specializes SolutionAgent {
+            :>> id = "mock.multi"
+    }
 
     action def Step {
         attribute description : String[0..1];
