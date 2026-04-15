@@ -6,14 +6,18 @@ import org.example.transformer.SysMLDecoder;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    static void main() {
+    static void main(String[] args) {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
         IO.println(String.format("Hello and welcome!"));
 
-        var parsed = SysMLDecoder.decode("src/main/resources/req1.sysml");
-        //var parsed = SysMLDecoder.decode("src/main/resources/test_cases/test4.sysml");
-        //var parsed = SysMLDecoder.decode("src/main/resources/other_examples/ex1.sysml");
+        final String inputFile ;
+        if (args.length == 0)
+            inputFile = "src/main/resources/req1.sysml";
+        else
+            inputFile = args[0];
+
+        var parsed = SysMLDecoder.decode(inputFile);
         System.out.println(parsed.toString());
         var collabAgent = new CollaborationAgent();
         var outputsString = collabAgent.run(parsed);
