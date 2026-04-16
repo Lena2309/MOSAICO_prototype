@@ -23,7 +23,7 @@ public class DotExpression extends Expression {
 
     @Override
     public String toString() {
-        return "DotExpression[" + otherParents + ']';
+        return "DotExpression[" + otherParents +  "," + taskName + "," + channelName + ']';
     }
 
     @Override
