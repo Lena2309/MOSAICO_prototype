@@ -40,7 +40,8 @@ public class Step {
         if (!optionalTaskOutput.isEmpty()) {
             taskDependencies.addAll(optionalTaskOutput);
         }
-        System.out.println("    Task " + this.agentTask.getTaskName() + " has been executed successfully.");
+        System.out.println("[LOG] Task " + this.agentTask.getTaskName() + " has been executed successfully.");
+        System.out.println("[LOG] Trace: " + taskDependencies);
     }
 
     private List<AgentTaskOutput> executeTask(List<AgentTaskOutput> taskDependencies) {

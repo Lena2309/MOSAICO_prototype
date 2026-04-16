@@ -103,8 +103,8 @@ public class AgentTask {
                         outputList.add(new FallbackAgent().performTask(this, allTaskOutputs, channel));
                     }
                     case ReferenceAgent referenceAgent -> {
-                        var res = referenceAgent.askToUser(this.taskDescription);
-                        AgentTaskOutput out = new AgentTaskOutput(this, channel, new StringValue(res));
+                        var res = referenceAgent.askToUser(this.taskDescription, channel);
+                        AgentTaskOutput out = new AgentTaskOutput(this, channel, res);
                         outputList.add(out);
                     }
                     case SupervisionAgent supervisionAgent -> {
