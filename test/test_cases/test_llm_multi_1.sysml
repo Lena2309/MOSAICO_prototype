@@ -5,7 +5,7 @@ package TestConditionTrue {
     private import SequenceFunctions::*;
     private import MOSAICO::*;
 
-    splitterAgent : SolutionAgent;
+    listerAgent : SolutionAgent;
 
     action def Process {
 
@@ -13,7 +13,7 @@ package TestConditionTrue {
 
         then action identifyNouns : AgentStep {
             :>> description = "Give me a list of 5 keywords in Java, separated by a comma.";
-            :>> agent = splitterAgent;
+            :>> agent = listerAgent;
             out nouns : String [0..*];
         }
 

@@ -38,39 +38,37 @@ public class SolutionAgent extends MosaicoAgent {
         String generatedText = llm.chat(systemMessage, userMessage);
 
         // 4. Wrap and return the output
-        Value resultValue;
-        try {
-            String t = channel.getType().toLowerCase();
-            if (!channel.isMultiple()) {
-                resultValue = switch (t) {
-                    case "string" -> new StringValue(generatedText);
-                    case "boolean" -> new BooleanValue(generatedText.toLowerCase().contains("true"));
-                    default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
-                };
-            }
-            else{
-                var tab = generatedText.split(",");
-                var res = new MultipleValue();
-                switch (t) {
-                    case "string" -> {
-                        for (String s : tab)
-                            res.addValue(new StringValue(s));
-                    }
-                    case "boolean" -> {
-                        for (String s :tab){
-                            var b = new BooleanValue(s.toLowerCase().contains("true"));
-                            res.addValue(b);
-                        }
-                    }
-                    default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
-                }
-                resultValue = res ;
-            }
-        } catch (Exception e) {
-            resultValue = new StringValue("Exception while execution: " + e.getMessage());
-        }
+        Value resultValue = decode(channel, generatedText);
 
         return new AgentTaskOutput(task, channel, resultValue);
+    }
+
+    /**
+     * Decode the answer of an LLM into a value according to the type and multiplicity of a given channel.
+     * */
+    Value decode(Channel channel, String generatedText){
+        String t = channel.getType().toLowerCase();
+        if (!channel.isMultiple()) {
+            return switch (t) {
+                case "string" -> new StringValue(generatedText);
+                case "boolean" -> new BooleanValue(generatedText);
+                default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
+            };
+        }
+        else{
+            var tab = generatedText.split(", *");
+            var res = new MultipleValue();
+            switch (t) {
+                case "string" -> {
+                    for (String s : tab) res.addValue(new StringValue(s));
+                }
+                case "boolean" -> {
+                    for (String s : tab) res.addValue(new BooleanValue(s));
+                }
+                default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
+            }
+            return res ;
+        }
     }
 
     /**
