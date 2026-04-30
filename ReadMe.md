@@ -10,4 +10,4 @@ Specifically: https://docs.github.com/en/packages/working-with-a-github-packages
 
  * Also check the path of the library stored in the variable `libPrefix` of `SysMLDecoder.java` .
 
- * The LLM can be chosen in the `SolutionAgent` constructor.
+ * The LLM can be chosen in the `LLMProvider` class.

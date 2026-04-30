@@ -6,8 +6,7 @@ import org.example.dto.task.AgentTask;
 import org.example.dto.task.AgentTaskOutput;
 import org.example.dto.task.output.*;
 import org.example.llm.LLM;
-import org.example.llm.LLMHuggingFace;
-import org.example.llm.LLMOpenAI;
+import org.example.llm.LLMProvider;
 
 import java.security.InvalidParameterException;
 import java.util.List;
@@ -18,8 +17,7 @@ public class SolutionAgent extends MosaicoAgent {
 
     public SolutionAgent(String id, String name, String description, List<String> constraints) {
         super(id, name, description, constraints);
-        this.llm = new LLMOpenAI(); // CHOOSE YOUR LLM HERE
-        //this.llm = new LLMHuggingFace(); // CHOOSE YOUR LLM HERE
+        this.llm = LLMProvider.get("any");
     }
 
     @Override
