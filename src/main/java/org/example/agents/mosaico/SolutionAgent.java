@@ -4,14 +4,12 @@ import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.AgentTaskOutput;
-import org.example.dto.task.output.BooleanValue;
-import org.example.dto.task.output.Channel;
-import org.example.dto.task.output.StringValue;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.output.*;
 import org.example.llm.LLM;
 import org.example.llm.LLMHuggingFace;
 import org.example.llm.LLMOpenAI;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 public class SolutionAgent extends MosaicoAgent {
@@ -42,11 +40,32 @@ public class SolutionAgent extends MosaicoAgent {
         // 4. Wrap and return the output
         Value resultValue;
         try {
-            resultValue = switch (channel.getType().toLowerCase()) {
-                case "string" -> new StringValue(generatedText);
-                case "boolean" -> new BooleanValue(generatedText.toLowerCase().contains("true"));
-                default -> new StringValue("No Channel to output or not supported type.");
-            };
+            String t = channel.getType().toLowerCase();
+            if (!channel.isMultiple()) {
+                resultValue = switch (t) {
+                    case "string" -> new StringValue(generatedText);
+                    case "boolean" -> new BooleanValue(generatedText.toLowerCase().contains("true"));
+                    default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
+                };
+            }
+            else{
+                var tab = generatedText.split(",");
+                var res = new MultipleValue();
+                switch (t) {
+                    case "string" -> {
+                        for (String s : tab)
+                            res.addValue(new StringValue(s));
+                    }
+                    case "boolean" -> {
+                        for (String s :tab){
+                            var b = new BooleanValue(s.toLowerCase().contains("true"));
+                            res.addValue(b);
+                        }
+                    }
+                    default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
+                }
+                resultValue = res ;
+            }
         } catch (Exception e) {
             resultValue = new StringValue("Exception while execution: " + e.getMessage());
         }
