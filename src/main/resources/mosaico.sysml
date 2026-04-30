@@ -41,6 +41,7 @@ package MOSAICO {
 
     action def Step {
         attribute description : String[0..1];
+        attribute separator   : String[0..1];
     }
 
     action def AgentStep specializes Step {

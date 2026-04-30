@@ -10,6 +10,8 @@ import org.example.dto.task.output.StringValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AgentTask {
@@ -20,16 +22,12 @@ public class AgentTask {
     private final List<AgentTask> inputTaskDependencies;
     private MosaicoAgent bestAgent;
 
-
     public final List<String> parents;
-
-    public AgentTask(String taskName, String taskDescription, MosaicoAgent bestAgent) {
-        this(taskName, taskDescription, new ArrayList<>(), bestAgent, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-    }
+    final Map<String,String> otherProperties ;
 
     public AgentTask(String taskName, String taskDescription,
                      List<Channel> taskOutputsNames, MosaicoAgent bestAgent,
-                     List<Channel> inputChannels, List<AgentTask> inputTaskDependencies, List<String> parents) {
+                     List<Channel> inputChannels, List<AgentTask> inputTaskDependencies, List<String> parents, Map<String, String> otherProperties) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.outputChannels = taskOutputsNames;
@@ -37,6 +35,7 @@ public class AgentTask {
         this.inputChannels = inputChannels;
         this.inputTaskDependencies = inputTaskDependencies;
         this.parents = parents;
+        this.otherProperties = otherProperties ;
     }
 
     // TODO: implement repo talk
@@ -138,6 +137,12 @@ public class AgentTask {
         return inputChannels;
     }
 
+    public Optional<String> getOtherProperty(String key){
+        if (this.otherProperties.containsKey(key))
+            return Optional.of(this.otherProperties.get(key));
+        else
+            return Optional.empty();
+    }
 
     public String toString() {
         String dependenciesStr = (inputTaskDependencies != null && !inputTaskDependencies.isEmpty())

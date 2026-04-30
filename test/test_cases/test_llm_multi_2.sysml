@@ -1,4 +1,4 @@
-// Test case : llm agent that generates a list.
+// Test case : llm agent that generates a list (semicolon)
 
 package TestConditionTrue {
     private import ScalarValues::*;
@@ -12,8 +12,8 @@ package TestConditionTrue {
         first start;
 
         then action identifyNouns : AgentStep {
-            :>> description = "Give me a list of 5 keywords in Java, separated by a comma.";
-            :>> separator = ", *";
+            :>> description = "Give me a list of 5 keywords in Java, separated by a semicolon.";
+            :>> separator = "; *";
             :>> agent = listerAgent;
             out nouns : String [0..*];
         }

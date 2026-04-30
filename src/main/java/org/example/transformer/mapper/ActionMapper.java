@@ -27,7 +27,7 @@ public interface ActionMapper {
         Map<String, String> propertyMap = new HashMap<>();
         populateActionProperties(action, propertyMap);
 
-        var finalAgentName = propertyMap.get("agentName");
+        var finalAgentName = propertyMap.get("agent");
         if (finalAgentName == null)
             System.out.println("[WARNING] No agent specification found for task: " + action.getDeclaredName() + ".");
 
@@ -40,7 +40,7 @@ public interface ActionMapper {
         if (agentForTask.isEmpty()) {
             if (finalAgentName != null)
                 System.out.println("[ERROR] Convenient agent not found despite being specified, using a fallback solution agent instead. (" + finalAgentName +")");
-            agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), propertyMap.get("agentName"), null, null));
+            agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), propertyMap.get("agent"), null, null));
         }
 
         var outputs = new ArrayList<Channel>();
@@ -90,7 +90,8 @@ public interface ActionMapper {
                 agentForTask.get(),
                 inputs,
                 outputDependencies,
-                parents
+                parents,
+                propertyMap
         ));
 
         previousStep.ifPresent(step -> step.setNextStep(newStep));
@@ -121,49 +122,46 @@ public interface ActionMapper {
      *                    Modifies the property map.
      */
     private static void populateActionProperties(Element e, Map<String, String> propertyMap) {
-        // stop recursion if all required fields are found
-        if (propertyMap.containsKey("description") && propertyMap.containsKey("agentName")) {
-            return;
-        }
 
         var redefinedDescription = false;
         var redefinedAgentName = false;
+        var redefinedSeparator  = false ;
 
         for (var i = 0; i < e.getOwnedRelationship().size(); i++) {
-            if (e.getOwnedRelationship().get(i) instanceof Redefinition rd) {
+            Relationship currentRelationship = e.getOwnedRelationship().get(i);
+            if (currentRelationship instanceof Redefinition rd) {
                 var targetName = UtilAttributeMapper.getSafeName(rd.getRedefinedFeature());
                 if (targetName.isPresent()) {
-                    if ("description".equals(targetName.get())) {
-                        redefinedDescription = true;
-                    }
-                    if ("agent".equals(targetName.get())) {
-                        redefinedAgentName = true;
+                    switch (targetName.get()) {
+                        case "description":
+                        case "agent" :
+                        case "separator" : {
+                            // Extract values
+                            final var child = i < e.getOwnedRelationship().size() ? e.getOwnedRelationship().get(i + 1) : e.getOwnedRelationship().get(i - 1);
+                            if (child instanceof FeatureValue) {
+                                var propertyValue = e.getOwnedElement().getFirst();
+
+                                if (propertyValue instanceof LiteralString ls) {
+                                    propertyMap.put(targetName.get(), ls.getValue());
+                                    return;
+                                }
+                                if (propertyValue instanceof FeatureReferenceExpression fre) {
+                                    Optional<String> safeName = UtilAttributeMapper.getSafeName(fre.getReferent());
+                                    if (safeName.isPresent())
+                                        propertyMap.put(targetName.get(), safeName.get());
+                                    else
+                                        System.out.println("[WARNING] Name not found.");
+                                    return;
+                                }
+                            }
+                        }
+
                     }
                 }
             }
 
-            // Extract values if a redefinition is detected
-            if (redefinedDescription || redefinedAgentName) {
-                var child = i < e.getOwnedRelationship().size() ? e.getOwnedRelationship().get(i + 1) : e.getOwnedRelationship().get(i - 1);
-                if (child instanceof FeatureValue fv) {
-                    var propertyValue = e.getOwnedElement().getFirst();
-
-                    if (propertyValue instanceof LiteralString ls) {
-                        propertyMap.put("description", ls.getValue());
-                        return;
-                    }
-                    if (propertyValue instanceof FeatureReferenceExpression fre) {
-                        Optional<String> safeName = UtilAttributeMapper.getSafeName(fre.getReferent());
-                        if (safeName.isPresent())
-                            propertyMap.put("agentName", safeName.get());
-                        else
-                            System.out.println("[WARNING] Name not found.");
-                        return;
-                    }
-                }
-            }
             // Recursive call on relationships
-            populateActionProperties(e.getOwnedRelationship().get(i), propertyMap);
+            populateActionProperties(currentRelationship, propertyMap);
         }
 
         // Recursive call on child elements

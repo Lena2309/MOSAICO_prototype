@@ -10,6 +10,7 @@ import org.example.llm.LLMProvider;
 
 import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.Optional;
 
 public class SolutionAgent extends MosaicoAgent {
 
@@ -36,38 +37,49 @@ public class SolutionAgent extends MosaicoAgent {
         String generatedText = llm.chat(systemMessage, userMessage);
 
         // 4. Wrap and return the output
-        Value resultValue = decode(channel, generatedText);
+        Value resultValue;
+        String t = channel.getType();
+        if (!channel.isMultiple()) {
+            resultValue = decodeSingle(generatedText, t);
+        }
+        else{
+            Optional<String> separator = task.getOtherProperty("separator");
+            resultValue = decodeMultiple(generatedText, t, separator.orElse(", *"));
+        }
 
         return new AgentTaskOutput(task, channel, resultValue);
     }
 
     /**
-     * Decode the answer of an LLM into a value according to the type and multiplicity of a given channel.
-     * */
-    Value decode(Channel channel, String generatedText){
-        String t = channel.getType().toLowerCase();
-        if (!channel.isMultiple()) {
-            return switch (t) {
-                case "string" -> new StringValue(generatedText);
-                case "boolean" -> new BooleanValue(generatedText);
-                default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
-            };
-        }
-        else{
-            var tab = generatedText.split(", *");
-            var res = new MultipleValue();
-            switch (t) {
-                case "string" -> {
-                    for (String s : tab) res.addValue(new StringValue(s));
-                }
-                case "boolean" -> {
-                    for (String s : tab) res.addValue(new BooleanValue(s));
-                }
-                default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
-            }
-            return res ;
-        }
+     * Decode the answer of an LLM into a single value.
+     */
+    static Value decodeSingle(String generatedText, String t) {
+        return switch (t) {
+            case "String" -> new StringValue(generatedText);
+            case "Boolean" -> new BooleanValue(generatedText);
+            default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
+        };
     }
+
+    /**
+     * Decode the answer of an LLM into a multiple value.
+     */
+    static MultipleValue decodeMultiple(String generatedText, String t, String separator) {
+        var tab = generatedText.split(separator);
+        var res = new MultipleValue();
+        switch (t) {
+            case "String" -> {
+                for (String s : tab) res.addValue(new StringValue(s));
+            }
+            case "Boolean" -> {
+                for (String s : tab) res.addValue(new BooleanValue(s));
+            }
+            default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
+        }
+        return res;
+    }
+
+
 
     /**
      * Stringifies the outputs of dependent tasks to inject into the LLM's context.
