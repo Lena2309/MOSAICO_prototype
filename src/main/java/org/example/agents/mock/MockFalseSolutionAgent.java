@@ -1,23 +1,20 @@
 package org.example.agents.mock;
 
-import org.example.agents.mosaico.SolutionAgent;
-import org.example.dto.task.AgentTask;
-import org.example.dto.task.AgentTaskOutput;
-import org.example.dto.task.output.BooleanValue;
-import org.example.dto.task.output.Channel;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.output.value.BooleanValue;
+import org.example.dto.task.output.value.Value;
 
 import java.util.List;
 
 public class MockFalseSolutionAgent extends MockSolutionAgent {
-    static final Value OUTPUT = new BooleanValue(false) ;
+    static final Value OUTPUT = new BooleanValue(false);
 
     public MockFalseSolutionAgent(String id, String name, String description, List<String> constraints) {
         super(id, name, description, constraints);
     }
 
-    @Override Value mockOutput(){
-        return OUTPUT ;
+    @Override
+    Value mockOutput() {
+        return OUTPUT;
     }
 
 }

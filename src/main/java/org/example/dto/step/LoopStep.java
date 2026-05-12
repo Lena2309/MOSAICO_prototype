@@ -2,7 +2,7 @@ package org.example.dto.step;
 
 import org.example.dto.conditional.Condition;
 import org.example.dto.conditional.LoopKind;
-import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.TaskOutput;
 
 import java.security.InvalidParameterException;
 import java.util.List;
@@ -32,7 +32,7 @@ public class LoopStep extends Step {
     }
 
     @Override
-    public void execute(List<AgentTaskOutput> agentTaskOutputs) {
+    public void execute(List<TaskOutput> agentTaskOutputs) {
         System.out.println("--- Starting Loop Step Execution ---");
         if (this.headStep == null) {
             return;
@@ -45,8 +45,8 @@ public class LoopStep extends Step {
 
             // First evaluation
             shouldContinue =
-                    switch (this.kind){
-                        case LoopKind.WHILE : {
+                    switch (this.kind) {
+                        case LoopKind.WHILE: {
                             // In a 'while' loop, we first evaluate the condition before the body.
                             yield endCondition.evaluate(agentTaskOutputs);
                         }

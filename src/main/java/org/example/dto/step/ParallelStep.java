@@ -1,6 +1,6 @@
 package org.example.dto.step;
 
-import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.TaskOutput;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +22,7 @@ public class ParallelStep extends Step {
     }
 
     @Override
-    public void execute(List<AgentTaskOutput> agentTaskOutputs) {
+    public void execute(List<TaskOutput> agentTaskOutputs) {
         System.out.println("--- Starting Parallel Step Execution ---");
         if (this.body.isEmpty()) {
             return;
@@ -36,13 +36,13 @@ public class ParallelStep extends Step {
         try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
             List<CompletableFuture<Void>> futures = this.body.stream()
                     .map(step -> CompletableFuture.runAsync(() -> {
-                                System.out.println("  [Parallel] Starting: " + step.getAgentTask().getTaskName());
+                                System.out.println("  [Parallel] Starting: " + step.getTask().getTaskName());
                                 step.execute(threadSafeResults);
-                                System.out.println("  [Parallel] Completed: " + step.getAgentTask().getTaskName());
+                                System.out.println("  [Parallel] Completed: " + step.getTask().getTaskName());
                             }, executor)
                             .exceptionally(ex -> {
                                 // Capture and log exceptions within threads to prevent silent failures
-                                System.err.println("  [Parallel] FAILED: " + step.getAgentTask().getTaskName() + " -> " + ex.getMessage());
+                                System.err.println("  [Parallel] FAILED: " + step.getTask().getTaskName() + " -> " + ex.getMessage());
                                 ex.printStackTrace();
                                 return null;
                             }))

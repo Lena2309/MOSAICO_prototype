@@ -1,4 +1,4 @@
-package org.example.dto.task.output;
+package org.example.dto.task.output.value;
 
 import java.util.ArrayList;
 import java.util.List;

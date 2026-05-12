@@ -1,4 +1,4 @@
-package org.example.dto.task.output;
+package org.example.dto.task.output.value;
 
 import java.util.Objects;
 
@@ -26,7 +26,7 @@ public class BooleanValue extends Value {
 
     @Override
     public String toString() {
-        return "Boolean:" + value ;
+        return "Boolean:" + value;
     }
 
     public boolean value() {

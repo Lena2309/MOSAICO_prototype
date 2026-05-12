@@ -2,8 +2,11 @@ package org.example.transformer.mapper;
 
 import org.example.agents.mosaico.MosaicoAgent;
 import org.example.agents.mosaico.SolutionAgent;
+import org.example.dto.step.AssignmentStep;
 import org.example.dto.step.Step;
 import org.example.dto.task.AgentTask;
+import org.example.dto.task.AssignmentTask;
+import org.example.dto.task.Task;
 import org.example.dto.task.output.Channel;
 import org.omg.sysml.lang.sysml.*;
 
@@ -15,6 +18,37 @@ import java.util.*;
  */
 public interface ActionMapper {
 
+    static Step mapActionToStep(ActionUsage action, List<MosaicoAgent> mosaicoAgents, List<Task> outputDependencies, Optional<Step> previousStep) {
+        for (var supertype : action.allSupertypes()) {
+            if (Objects.equals(supertype.getDeclaredName(), "AgentStep")) {
+                return mapActionToAgentTask(action, mosaicoAgents, outputDependencies, previousStep);
+            }
+        }
+        return mapActionToTask(action, outputDependencies, previousStep);
+    }
+
+    private static Step mapActionToTask(ActionUsage action, List<Task> outputDependencies, Optional<Step> previousStep) {
+        Map<String, String> propertyMap = new HashMap<>();
+        populateActionProperties(action, propertyMap);
+
+        var inputs = new ArrayList<Channel>();
+        var outputs = new ArrayList<Channel>();
+        populateInputAndOutputDependencies(action, inputs, outputs, outputDependencies);
+
+        var newStep = new AssignmentStep(new AssignmentTask(
+                action.getDeclaredName(),
+                propertyMap.get("description"),
+                outputs,
+                inputs,
+                outputDependencies,
+                extractParents(action),
+                null // FIXME : Expression to do
+        ));
+
+        previousStep.ifPresent(step -> step.setNextStep(newStep));
+        return newStep;
+    }
+
     /**
      * Maps a SysML ActionUsage to a domain Task by resolving its properties and associated agent.
      *
@@ -23,7 +57,7 @@ public interface ActionMapper {
      * @param outputDependencies Tasks that must be completed before this task can execute.
      * @return A populated {@link Step} instance.
      */
-    static Step mapActionToAgentTask(ActionUsage action, List<MosaicoAgent> mosaicoAgents, List<AgentTask> outputDependencies, Optional<Step> previousStep) {
+    private static Step mapActionToAgentTask(ActionUsage action, List<MosaicoAgent> mosaicoAgents, List<Task> outputDependencies, Optional<Step> previousStep) {
         Map<String, String> propertyMap = new HashMap<>();
         populateActionProperties(action, propertyMap);
 
@@ -39,32 +73,36 @@ public interface ActionMapper {
         // Fallback: Create a generic SolutionAgent if no specific match is found
         if (agentForTask.isEmpty()) {
             if (finalAgentName != null)
-                System.out.println("[ERROR] Convenient agent not found despite being specified, using a fallback solution agent instead. (" + finalAgentName +")");
+                System.out.println("[ERROR] Convenient agent not found despite being specified, using a fallback solution agent instead. (" + finalAgentName + ")");
             agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), propertyMap.get("agent"), null, null));
         }
 
-        var outputs = new ArrayList<Channel>();
-
-        for (Feature e : action.getOutput()) {
-            var name = e.getDeclaredName();
-            var type = extractChannelType(e, name);
-            var multi = e.getMultiplicity();
-            int maxBound = 0;
-            if (multi != null)
-                maxBound = multi.getOwnedRelationship().getLast() instanceof LiteralInteger li ? li.getValue() : 0;
-
-
-            outputs.add(new Channel(name, type, multi != null, maxBound));
-
-        }
-
         var inputs = new ArrayList<Channel>();
+        var outputs = new ArrayList<Channel>();
+        populateInputAndOutputDependencies(action, inputs, outputs, outputDependencies);
+
+        var newStep = new Step(new AgentTask(
+                action.getDeclaredName(),
+                propertyMap.get("description"),
+                outputs,
+                agentForTask.get(),
+                inputs,
+                outputDependencies,
+                extractParents(action),
+                propertyMap
+        ));
+
+        previousStep.ifPresent(step -> step.setNextStep(newStep));
+        return newStep;
+    }
+
+    private static void populateInputAndOutputDependencies(ActionUsage action, ArrayList<Channel> inputs, ArrayList<Channel> outputs, List<Task> outputDependencies) {
         if (!(outputDependencies.isEmpty())) {
             for (var e : action.getInput()) {
                 var inputFound = false;
                 for (var task : outputDependencies) {
                     for (var channel : task.getOutputChannels()) {
-                        if (Objects.equals(channel.getName(), e.getDeclaredName())) {
+                        if (Objects.equals(channel.name(), e.getDeclaredName())) {
                             inputs.add(channel);
                             inputFound = true;
                             break;
@@ -75,27 +113,27 @@ public interface ActionMapper {
             }
         }
 
-        // Fill the parents for absolute names of channels.
-        final List<String> parents = new ArrayList<>();
+        for (Feature e : action.getOutput()) {
+            var name = e.getDeclaredName();
+            var type = extractChannelType(e, name);
+            var multi = e.getMultiplicity();
+            int maxBound = 0;
+            if (multi != null)
+                maxBound = multi.getOwnedRelationship().getLast() instanceof LiteralInteger li ? li.getValue() : 0;
+
+            outputs.add(new Channel(name, type.get(), multi != null, maxBound));
+        }
+    }
+
+    // Fill the parents for absolute names of channels.
+    private static List<String> extractParents(ActionUsage action) {
+        List<String> parents = new ArrayList<>();
         Element tmp = action;
-        while (tmp.getOwner() != null && tmp.getOwner().getDeclaredName() != null){
+        while (tmp.getOwner() != null && tmp.getOwner().getDeclaredName() != null) {
             parents.add(tmp.getOwner().getDeclaredName());
             tmp = tmp.getOwner();
         }
-
-        var newStep = new Step(new AgentTask(
-                action.getDeclaredName(),
-                propertyMap.get("description"),
-                outputs,
-                agentForTask.get(),
-                inputs,
-                outputDependencies,
-                parents,
-                propertyMap
-        ));
-
-        previousStep.ifPresent(step -> step.setNextStep(newStep));
-        return newStep;
+        return parents;
     }
 
     /**
@@ -122,10 +160,9 @@ public interface ActionMapper {
      *                    Modifies the property map.
      */
     private static void populateActionProperties(Element e, Map<String, String> propertyMap) {
-
         var redefinedDescription = false;
         var redefinedAgentName = false;
-        var redefinedSeparator  = false ;
+        var redefinedSeparator = false;
 
         for (var i = 0; i < e.getOwnedRelationship().size(); i++) {
             Relationship currentRelationship = e.getOwnedRelationship().get(i);
@@ -134,8 +171,8 @@ public interface ActionMapper {
                 if (targetName.isPresent()) {
                     switch (targetName.get()) {
                         case "description":
-                        case "agent" :
-                        case "separator" : {
+                        case "agent":
+                        case "separator": {
                             // Extract values
                             final var child = i < e.getOwnedRelationship().size() ? e.getOwnedRelationship().get(i + 1) : e.getOwnedRelationship().get(i - 1);
                             if (child instanceof FeatureValue) {
@@ -159,7 +196,6 @@ public interface ActionMapper {
                     }
                 }
             }
-
             // Recursive call on relationships
             populateActionProperties(currentRelationship, propertyMap);
         }

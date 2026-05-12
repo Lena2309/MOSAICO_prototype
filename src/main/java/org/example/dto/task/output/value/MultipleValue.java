@@ -1,4 +1,4 @@
-package org.example.dto.task.output;
+package org.example.dto.task.output.value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +23,14 @@ public class MultipleValue extends Value {
 
     @Override
     public String toString() {
-        return "MultipleValues:" +"'" + values + "'";
+        return "MultipleValues:" + "'" + values + "'";
     }
 
     public String print() {
         return values.toString();
     }
 
-    public void addValue(Value v){
+    public void addValue(Value v) {
         this.values.add(v);
     }
 }

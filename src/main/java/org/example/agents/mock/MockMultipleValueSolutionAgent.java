@@ -1,8 +1,8 @@
 package org.example.agents.mock;
 
-import org.example.dto.task.output.MultipleValue;
-import org.example.dto.task.output.StringValue;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.output.value.MultipleValue;
+import org.example.dto.task.output.value.StringValue;
+import org.example.dto.task.output.value.Value;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ public class MockMultipleValueSolutionAgent extends MockSolutionAgent {
     }
 
     @Override
-    Value mockOutput(){
-        return OUTPUT ;
+    Value mockOutput() {
+        return OUTPUT;
     }
 
 }

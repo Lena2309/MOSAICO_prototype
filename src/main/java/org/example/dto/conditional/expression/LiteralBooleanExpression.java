@@ -1,20 +1,18 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.TaskOutput;
 
 import java.util.List;
 
 public class LiteralBooleanExpression extends Expression {
-
     final boolean value;
 
     LiteralBooleanExpression(Boolean b) {
         this.value = b;
     }
 
-
     @Override
-    public boolean checkCondition(List<AgentTaskOutput> trace) {
+    public boolean checkCondition(List<TaskOutput> trace) {
         return this.value;
     }
 

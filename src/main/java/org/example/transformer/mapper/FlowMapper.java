@@ -9,7 +9,7 @@ import org.example.dto.step.IfStep;
 import org.example.dto.step.LoopStep;
 import org.example.dto.step.ParallelStep;
 import org.example.dto.step.Step;
-import org.example.dto.task.AgentTask;
+import org.example.dto.task.Task;
 import org.omg.sysml.lang.sysml.*;
 
 import java.util.*;
@@ -19,7 +19,7 @@ import static org.example.transformer.mapper.UtilAttributeMapper.getSafeName;
 public interface FlowMapper {
 
     static Step parseSteps(List<Element> rootFlows, List<MosaicoAgent> mosaicoAgents) {
-        Map<String, AgentTask> taskOutputParameters = new HashMap<>();
+        Map<String, Task> taskOutputParameters = new HashMap<>();
         Set<Element> processedNodes = new HashSet<>();
         Map<Element, Step> stepMap = new HashMap<>();
 
@@ -54,7 +54,7 @@ public interface FlowMapper {
     private static Step getOrProcessNode(
             Element e,
             List<Element> scopeFlows,
-            Map<String, AgentTask> taskOutputParameters,
+            Map<String, Task> taskOutputParameters,
             List<MosaicoAgent> mosaicoAgents,
             Set<Element> processedNodes,
             Map<Element, Step> stepMap) {
@@ -112,14 +112,14 @@ public interface FlowMapper {
                         .filter(Objects::nonNull)
                         .toList();
 
-                newStep = ActionMapper.mapActionToAgentTask(actionUsage, mosaicoAgents, dependencies, Optional.empty());
+                newStep = ActionMapper.mapActionToStep(actionUsage, mosaicoAgents, dependencies, Optional.empty());
 
                 stepMap.put(e, newStep);
 
                 Step finalNewStep = newStep;
                 actionUsage.getOutput().stream()
                         .map(Element::getDeclaredName)
-                        .forEach(output -> taskOutputParameters.put(output, finalNewStep.getAgentTask()));
+                        .forEach(output -> taskOutputParameters.put(output, finalNewStep.getTask()));
             } else {
                 newStep = buildSubPlan(e, taskOutputParameters, mosaicoAgents, processedNodes);
                 stepMap.put(e, newStep);
@@ -214,7 +214,7 @@ public interface FlowMapper {
 
     private static Step buildSubPlan(
             Element e,
-            Map<String, AgentTask> taskOutputParameters,
+            Map<String, Task> taskOutputParameters,
             List<MosaicoAgent> mosaicoAgents,
             Set<Element> processedNodes) {
 
@@ -262,7 +262,7 @@ public interface FlowMapper {
     private static void processBranch(
             Element current,
             List<Element> scopeFlows,
-            Map<String, AgentTask> taskOutputParameters,
+            Map<String, Task> taskOutputParameters,
             List<MosaicoAgent> mosaicoAgents,
             Set<Element> processedNodes,
             Map<Element, Step> stepMap,

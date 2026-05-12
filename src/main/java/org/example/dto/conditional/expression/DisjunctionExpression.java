@@ -1,6 +1,6 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.TaskOutput;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class DisjunctionExpression extends Expression {
     }
 
     @Override
-    public boolean checkCondition(List<AgentTaskOutput> trace) {
+    public boolean checkCondition(List<TaskOutput> trace) {
         return e1.checkCondition(trace) || e2.checkCondition(trace);
     }
 }

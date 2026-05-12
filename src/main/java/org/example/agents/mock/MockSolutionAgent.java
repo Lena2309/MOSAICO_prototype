@@ -3,9 +3,9 @@ package org.example.agents.mock;
 import org.example.agents.mosaico.MosaicoAgent;
 import org.example.agents.mosaico.SolutionAgent;
 import org.example.dto.task.AgentTask;
-import org.example.dto.task.AgentTaskOutput;
 import org.example.dto.task.output.Channel;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.output.TaskOutput;
+import org.example.dto.task.output.value.Value;
 
 import java.util.List;
 
@@ -19,17 +19,17 @@ public abstract class MockSolutionAgent extends SolutionAgent {
 
     abstract Value mockOutput();
 
-    public void logInputs(AgentTask task, List<AgentTaskOutput> dependencies){
+    public void logInputs(AgentTask task, List<TaskOutput> dependencies) {
         System.out.println(input_prefix + "Task description= '" + task.getTaskDescription() + "'");
         for (Channel c : task.getInputChannels())
-            System.out.println(input_prefix + "Channel " + c.getName() + "= " + MosaicoAgent.readChannel(c, dependencies));
+            System.out.println(input_prefix + "Channel " + c.name() + "= " + MosaicoAgent.readChannel(c, dependencies));
     }
 
     @Override
-    public AgentTaskOutput performTask(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
+    public TaskOutput performTask(AgentTask task, List<TaskOutput> dependencies, Channel channel) {
         logInputs(task, dependencies);
         System.out.println(output_prefix + mockOutput());
-        return new AgentTaskOutput(task, channel, mockOutput());
+        return new TaskOutput(task, channel, mockOutput());
     }
 
 }
