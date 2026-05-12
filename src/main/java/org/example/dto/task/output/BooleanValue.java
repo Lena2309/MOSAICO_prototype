@@ -9,6 +9,10 @@ public class BooleanValue extends Value {
         this.value = value;
     }
 
+    public BooleanValue(String s){
+        this(s.toLowerCase().startsWith("true"));
+    }
+
     @Override
     public int hashCode() {
         return Objects.hashCode(value);

@@ -4,15 +4,13 @@ import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.AgentTaskOutput;
-import org.example.dto.task.output.BooleanValue;
-import org.example.dto.task.output.Channel;
-import org.example.dto.task.output.StringValue;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.output.*;
 import org.example.llm.LLM;
-import org.example.llm.LLMHuggingFace;
-import org.example.llm.LLMOpenAI;
+import org.example.llm.LLMProvider;
 
+import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.Optional;
 
 public class SolutionAgent extends MosaicoAgent {
 
@@ -20,8 +18,7 @@ public class SolutionAgent extends MosaicoAgent {
 
     public SolutionAgent(String id, String name, String description, List<String> constraints) {
         super(id, name, description, constraints);
-        this.llm = new LLMOpenAI(); // CHOOSE YOUR LLM HERE
-        //this.llm = new LLMHuggingFace(); // CHOOSE YOUR LLM HERE
+        this.llm = LLMProvider.get("any");
     }
 
     @Override
@@ -41,18 +38,48 @@ public class SolutionAgent extends MosaicoAgent {
 
         // 4. Wrap and return the output
         Value resultValue;
-        try {
-            resultValue = switch (channel.getType().toLowerCase()) {
-                case "string" -> new StringValue(generatedText);
-                case "boolean" -> new BooleanValue(generatedText.toLowerCase().contains("true"));
-                default -> new StringValue("No Channel to output or not supported type.");
-            };
-        } catch (Exception e) {
-            resultValue = new StringValue("Exception while execution: " + e.getMessage());
+        String t = channel.getType();
+        if (!channel.isMultiple()) {
+            resultValue = decodeSingle(generatedText, t);
+        }
+        else{
+            Optional<String> separator = task.getOtherProperty("separator");
+            resultValue = decodeMultiple(generatedText, t, separator.orElse(", *"));
         }
 
         return new AgentTaskOutput(task, channel, resultValue);
     }
+
+    /**
+     * Decode the answer of an LLM into a single value.
+     */
+    static Value decodeSingle(String generatedText, String t) {
+        return switch (t) {
+            case "String" -> new StringValue(generatedText);
+            case "Boolean" -> new BooleanValue(generatedText);
+            default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
+        };
+    }
+
+    /**
+     * Decode the answer of an LLM into a multiple value.
+     */
+    static MultipleValue decodeMultiple(String generatedText, String t, String separator) {
+        var tab = generatedText.split(separator);
+        var res = new MultipleValue();
+        switch (t) {
+            case "String" -> {
+                for (String s : tab) res.addValue(new StringValue(s));
+            }
+            case "Boolean" -> {
+                for (String s : tab) res.addValue(new BooleanValue(s));
+            }
+            default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
+        }
+        return res;
+    }
+
+
 
     /**
      * Stringifies the outputs of dependent tasks to inject into the LLM's context.
