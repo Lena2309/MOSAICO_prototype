@@ -1,9 +1,8 @@
 package org.example.dto.step;
 
+import org.example.dto.State;
 import org.example.dto.task.Task;
-import org.example.dto.task.output.TaskOutput;
 
-import java.util.List;
 import java.util.Optional;
 
 public class Step {
@@ -35,7 +34,7 @@ public class Step {
         return task;
     }
 
-    public void execute(List<TaskOutput> taskDependencies) {
+    public void execute(State taskDependencies) {
         var optionalTaskOutput = this.executeTask(taskDependencies);
         if (!optionalTaskOutput.isEmpty()) {
             taskDependencies.addAll(optionalTaskOutput);
@@ -44,7 +43,7 @@ public class Step {
         System.out.println("[LOG] Trace: " + taskDependencies);
     }
 
-    private List<TaskOutput> executeTask(List<TaskOutput> taskDependencies) {
+    private State executeTask(State taskDependencies) {
         return this.task.execute(taskDependencies);
     }
 

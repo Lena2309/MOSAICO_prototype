@@ -38,7 +38,7 @@ public class ExpressionBuilder {
 
         if (e instanceof FeatureReferenceExpression r) {
             if (r.getReferent() != null && r.getReferent().getDeclaredName() != null) {
-                return new DotExpression(List.of(r.getReferent().getDeclaredName()));
+                return new IdentifierExpression(r.getReferent().getDeclaredName());
             }
             throw new InvalidParameterException("FeatureReferenceExpression missing referent.");
         }

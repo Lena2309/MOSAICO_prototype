@@ -1,9 +1,10 @@
 package org.example.dto.task;
 
+import org.example.dto.State;
+import org.example.dto.StateImpl;
 import org.example.dto.task.output.Channel;
-import org.example.dto.task.output.TaskOutput;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +28,8 @@ public abstract class Task {
         this.parents = parents;
     }
 
-    public List<TaskOutput> execute(List<TaskOutput> allTaskOutputs) {
-        var latestDependenciesOutputs = new ArrayList<TaskOutput>();
+    public State execute(State allTaskOutputs) {
+        var latestDependenciesOutputs = new StateImpl();
 
         // Iterate backwards to process the most recent outputs first
         for (int i = allTaskOutputs.size() - 1; i >= 0; i--) {
@@ -62,9 +63,9 @@ public abstract class Task {
             for (var channel : this.inputChannels) {
 
             }
-            return List.of();
+            return new StateImpl();
         } else {
-            var outputList = new ArrayList<TaskOutput>();
+            var outputList = new StateImpl();
             for (var channel : this.outputChannels) {
 
                 // System.out.println("Task " + getTaskName() + ", with channel " + channel.getName() + ", executed successfully.");

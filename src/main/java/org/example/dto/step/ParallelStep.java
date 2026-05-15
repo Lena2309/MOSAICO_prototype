@@ -1,6 +1,6 @@
 package org.example.dto.step;
 
-import org.example.dto.task.output.TaskOutput;
+import org.example.dto.State;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,14 +22,14 @@ public class ParallelStep extends Step {
     }
 
     @Override
-    public void execute(List<TaskOutput> agentTaskOutputs) {
+    public void execute(State agentTaskOutputs) {
         System.out.println("--- Starting Parallel Step Execution ---");
         if (this.body.isEmpty()) {
             return;
         }
 
         // Ensure the output list can handle concurrent additions from multiple worker threads
-        var threadSafeResults = Collections.synchronizedList(agentTaskOutputs);
+        State threadSafeResults = (State) Collections.synchronizedList(agentTaskOutputs);
 
         // Try-with-resources on the executor ensures proper shutdown and
         // waits for all virtual threads to terminate before exiting the block.

@@ -1,5 +1,6 @@
 package org.example.dto.conditional.expression;
 
+import org.example.dto.State;
 import org.example.dto.task.output.TaskOutput;
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
@@ -7,7 +8,7 @@ import org.example.dto.task.output.value.Value;
 import java.security.InvalidParameterException;
 import java.util.List;
 
-public class DotExpression extends Expression {
+public class DotExpression implements Expression {
     static final Value trueVal = new BooleanValue(true);
     final String channelName;
     final List<String> otherParents;
@@ -32,8 +33,13 @@ public class DotExpression extends Expression {
     }
 
     @Override
-    public boolean checkCondition(List<TaskOutput> trace) {
+    public boolean checkCondition(State trace) {
         return trace.stream().anyMatch((t) -> nameMatch(t) && t.value().equals(trueVal));
+    }
+
+    @Override
+    public Value eval(State trace) {
+        return new BooleanValue(this.checkCondition(trace)); // FIXME : only works for booleans
     }
 
     boolean nameMatch(TaskOutput t) {

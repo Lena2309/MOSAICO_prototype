@@ -2,14 +2,17 @@ package org.example.transformer.mapper;
 
 import org.example.agents.mosaico.MosaicoAgent;
 import org.example.agents.mosaico.SolutionAgent;
-import org.example.dto.step.AssignmentStep;
+import org.example.dto.Assignment;
+import org.example.dto.Statement;
+import org.example.dto.conditional.expression.ExpressionBuilder;
 import org.example.dto.step.Step;
 import org.example.dto.task.AgentTask;
-import org.example.dto.task.AssignmentTask;
+import org.example.dto.task.AlgorithmicTask;
 import org.example.dto.task.Task;
 import org.example.dto.task.output.Channel;
 import org.omg.sysml.lang.sysml.*;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -24,10 +27,10 @@ public interface ActionMapper {
                 return mapActionToAgentTask(action, mosaicoAgents, outputDependencies, previousStep);
             }
         }
-        return mapActionToTask(action, outputDependencies, previousStep);
+        return mapActionToAlgorithmicTask(action, outputDependencies, previousStep);
     }
 
-    private static Step mapActionToTask(ActionUsage action, List<Task> outputDependencies, Optional<Step> previousStep) {
+    private static Step mapActionToAlgorithmicTask(ActionUsage action, List<Task> outputDependencies, Optional<Step> previousStep) {
         Map<String, String> propertyMap = new HashMap<>();
         populateActionProperties(action, propertyMap);
 
@@ -35,14 +38,14 @@ public interface ActionMapper {
         var outputs = new ArrayList<Channel>();
         populateInputAndOutputDependencies(action, inputs, outputs, outputDependencies);
 
-        var newStep = new AssignmentStep(new AssignmentTask(
+        Step newStep = new Step(new AlgorithmicTask(
                 action.getDeclaredName(),
                 propertyMap.get("description"),
                 outputs,
                 inputs,
                 outputDependencies,
                 extractParents(action),
-                null // FIXME : Expression to do
+                extractStatement(action)
         ));
 
         previousStep.ifPresent(step -> step.setNextStep(newStep));
@@ -134,6 +137,26 @@ public interface ActionMapper {
             tmp = tmp.getOwner();
         }
         return parents;
+    }
+
+
+    static Statement extractStatement(ActionUsage action){
+        if (action instanceof AssignmentActionUsage a)
+            return extractAssignment(a);
+        else {
+            Element el = action.getOwnedRelationship().getFirst().getOwnedRelatedElement().getFirst(); // FIXME
+            if (el instanceof ActionUsage a)
+                return extractStatement(a);
+            else throw new InvalidParameterException();
+        }
+    }
+
+    static Statement extractAssignment(AssignmentActionUsage a){
+        var lhs = UtilAttributeMapper.getSafeName(a.getReferent());
+        if (lhs.isEmpty())
+            throw new InvalidParameterException("Assignment cannot be resolved.");
+        var rhs = ExpressionBuilder.transpile(a.getValueExpression());
+        return new Assignment(lhs.get(),rhs); // FIXME
     }
 
     /**

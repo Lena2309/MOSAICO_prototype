@@ -1,5 +1,7 @@
 package org.example.agents.mosaico;
 
+import org.example.dto.State;
+import org.example.dto.StateImpl;
 import org.example.dto.step.Step;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.output.TaskOutput;
@@ -54,7 +56,7 @@ public class CollaborationAgent extends MosaicoAgent {
     public String run(Step firstStep) {
         System.out.println("--- Starting Collaboration Agent Orchestration ---");
 
-        List<TaskOutput> allTaskOutputs = new ArrayList<>();
+        State allTaskOutputs = new StateImpl();
         Step currentStep = firstStep;
 
         // Traverse the linked graph sequentially
@@ -68,7 +70,7 @@ public class CollaborationAgent extends MosaicoAgent {
     }
 
     @Override
-    public TaskOutput performTask(AgentTask task, List<TaskOutput> dependencies, Channel channel) {
+    public TaskOutput performTask(AgentTask task, State dependencies, Channel channel) {
         return null;
     }
 }

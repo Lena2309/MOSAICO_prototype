@@ -1,9 +1,8 @@
 package org.example.dto.step;
 
+import org.example.dto.State;
 import org.example.dto.conditional.Condition;
-import org.example.dto.task.output.TaskOutput;
 
-import java.util.List;
 import java.util.Optional;
 
 public class IfStep extends Step {
@@ -23,7 +22,7 @@ public class IfStep extends Step {
     }
 
     @Override
-    public void execute(List<TaskOutput> agentTaskOutputs) {
+    public void execute(State agentTaskOutputs) {
         if (ifCondition.evaluate(agentTaskOutputs)) {
             thenStep.execute(agentTaskOutputs);
         } else {

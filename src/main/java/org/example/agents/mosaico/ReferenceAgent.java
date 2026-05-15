@@ -1,5 +1,6 @@
 package org.example.agents.mosaico;
 
+import org.example.dto.State;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.output.Channel;
 import org.example.dto.task.output.TaskOutput;
@@ -21,7 +22,7 @@ public class ReferenceAgent extends MosaicoAgent {
     }
 
     @Override
-    public TaskOutput performTask(AgentTask task, List<TaskOutput> dependencies, Channel channel) {
+    public TaskOutput performTask(AgentTask task, State dependencies, Channel channel) {
         return null;
     }
 

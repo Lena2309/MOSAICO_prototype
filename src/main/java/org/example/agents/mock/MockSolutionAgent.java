@@ -2,6 +2,7 @@ package org.example.agents.mock;
 
 import org.example.agents.mosaico.MosaicoAgent;
 import org.example.agents.mosaico.SolutionAgent;
+import org.example.dto.State;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.output.Channel;
 import org.example.dto.task.output.TaskOutput;
@@ -26,7 +27,7 @@ public abstract class MockSolutionAgent extends SolutionAgent {
     }
 
     @Override
-    public TaskOutput performTask(AgentTask task, List<TaskOutput> dependencies, Channel channel) {
+    public TaskOutput performTask(AgentTask task, State dependencies, Channel channel) {
         logInputs(task, dependencies);
         System.out.println(output_prefix + mockOutput());
         return new TaskOutput(task, channel, mockOutput());

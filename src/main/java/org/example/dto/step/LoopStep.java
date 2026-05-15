@@ -1,11 +1,10 @@
 package org.example.dto.step;
 
+import org.example.dto.State;
 import org.example.dto.conditional.Condition;
 import org.example.dto.conditional.LoopKind;
-import org.example.dto.task.output.TaskOutput;
 
 import java.security.InvalidParameterException;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,7 +31,7 @@ public class LoopStep extends Step {
     }
 
     @Override
-    public void execute(List<TaskOutput> agentTaskOutputs) {
+    public void execute(State agentTaskOutputs) {
         System.out.println("--- Starting Loop Step Execution ---");
         if (this.headStep == null) {
             return;

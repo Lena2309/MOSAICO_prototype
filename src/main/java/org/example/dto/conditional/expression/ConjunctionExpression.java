@@ -1,10 +1,11 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.task.output.TaskOutput;
+import org.example.dto.State;
+import org.example.dto.task.output.value.BooleanValue;
+import org.example.dto.task.output.value.Value;
 
-import java.util.List;
 
-public class ConjunctionExpression extends Expression {
+public class ConjunctionExpression implements Expression {
     final Expression e1, e2;
 
     public ConjunctionExpression(Expression e1, Expression e2) {
@@ -18,7 +19,12 @@ public class ConjunctionExpression extends Expression {
     }
 
     @Override
-    public boolean checkCondition(List<TaskOutput> trace) {
+    public boolean checkCondition(State trace) {
         return e1.checkCondition(trace) && e2.checkCondition(trace);
+    }
+
+    @Override
+    public Value eval(State trace) {
+        return new BooleanValue(this.checkCondition(trace));
     }
 }

@@ -1,35 +1,36 @@
 package org.example.dto.task;
 
-import org.example.dto.conditional.expression.Expression;
+import org.example.dto.State;
+import org.example.dto.StateImpl;
+import org.example.dto.Statement;
 import org.example.dto.task.output.Channel;
-import org.example.dto.task.output.TaskOutput;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AssignmentTask extends Task {
-    private Expression assignmentExpression; // FIXME
+/** Algorithmic tasks are performed without using an agent. */
+public class AlgorithmicTask extends Task {
+    Statement statement;
 
-    public AssignmentTask(String taskName, String taskDescription) {
-        this(taskName, taskDescription, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null);
-    }
-
-    public AssignmentTask(String taskName, String taskDescription,
-                          List<Channel> taskOutputsNames,
-                          List<Channel> inputChannels, List<Task> inputTaskDependencies,
-                          List<String> parents, Expression assignmentExpression) {
+    public AlgorithmicTask(String taskName, String taskDescription,
+                           List<Channel> taskOutputsNames,
+                           List<Channel> inputChannels, List<Task> inputTaskDependencies,
+                           List<String> parents, Statement statement) {
         super(taskName, taskDescription, taskOutputsNames, inputChannels, inputTaskDependencies, parents);
-        this.assignmentExpression = assignmentExpression;
+        this.statement = statement;
     }
 
-    public List<TaskOutput> execute(List<TaskOutput> allTaskOutputs) {
-        // FIXME
-        var latestDependenciesOutputs = new ArrayList<TaskOutput>();
+    @Override
+    public State execute(State state) {
+
+        this.statement.execute(state);
+
+        //FIXME : the statement.execute above should be sufficient ?
+        var latestDependenciesOutputs = new StateImpl();
 
         // Iterate backwards to process the most recent outputs first
-        for (int i = allTaskOutputs.size() - 1; i >= 0; i--) {
-            var output = allTaskOutputs.get(i);
+        for (int i = state.size() - 1; i >= 0; i--) {
+            var output = state.get(i);
 
             // 1. Ignore if current task is not dependent to output task
             if (!this.inputTaskDependencies.contains(output.task())) {
@@ -58,9 +59,10 @@ public class AssignmentTask extends Task {
                 System.out.println("    [WARNING] No input for this task.");
             for (var channel : this.inputChannels) {
             }
-            return List.of();
-        } else {
-            var outputList = new ArrayList<TaskOutput>();
+            return new StateImpl();
+        }
+        else {
+            var outputList = new StateImpl();
             for (var channel : this.outputChannels) {
                 // System.out.println("Task " + getTaskName() + ", with channel " + channel.getName() + ", executed successfully.");
             }
@@ -74,7 +76,7 @@ public class AssignmentTask extends Task {
                 ? ", dependencies=[" + inputTaskDependencies.stream().map(Task::getTaskName).collect(Collectors.joining(", ")) + "]"
                 : "";
 
-        return String.format("AssignmentTask{name='%s'%s}",
+        return String.format("AlgorithmicTask{name='%s'%s}",
                 taskName,
                 dependenciesStr);
     }

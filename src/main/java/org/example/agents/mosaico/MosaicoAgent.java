@@ -1,6 +1,7 @@
 package org.example.agents.mosaico;
 
 import org.example.agents.MosaicoAgentType;
+import org.example.dto.State;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.output.TaskOutput;
 import org.example.dto.task.output.Channel;
@@ -71,5 +72,5 @@ public abstract class MosaicoAgent {
         this.skills = skills;
     }
 
-    abstract public TaskOutput performTask(AgentTask task, List<TaskOutput> dependencies, Channel channel);
+    abstract public TaskOutput performTask(AgentTask task, State dependencies, Channel channel);
 }

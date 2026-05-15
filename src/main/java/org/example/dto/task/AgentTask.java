@@ -5,6 +5,8 @@ import org.example.agents.mosaico.ConsensusAgent;
 import org.example.agents.mosaico.MosaicoAgent;
 import org.example.agents.mosaico.ReferenceAgent;
 import org.example.agents.mosaico.SupervisionAgent;
+import org.example.dto.State;
+import org.example.dto.StateImpl;
 import org.example.dto.task.output.Channel;
 import org.example.dto.task.output.TaskOutput;
 
@@ -43,8 +45,9 @@ public class AgentTask extends Task {
             return Optional.empty();
     }
 
-    public List<TaskOutput> execute(List<TaskOutput> allTaskOutputs) {
-        var latestDependenciesOutputs = new ArrayList<TaskOutput>();
+    @Override
+    public State execute(State allTaskOutputs) {
+        var latestDependenciesOutputs = new StateImpl();
 
         // Iterate backwards to process the most recent outputs first
         for (int i = allTaskOutputs.size() - 1; i >= 0; i--) {
@@ -90,9 +93,9 @@ public class AgentTask extends Task {
                     }
                 }
             }
-            return List.of();
+            return new StateImpl();
         } else {
-            var outputList = new ArrayList<TaskOutput>();
+            var outputList = new StateImpl();
             for (var channel : this.outputChannels) {
                 switch (bestAgent) {
                     case null -> {

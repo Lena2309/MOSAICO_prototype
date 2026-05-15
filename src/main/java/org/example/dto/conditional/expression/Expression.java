@@ -1,9 +1,10 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.task.output.TaskOutput;
+import org.example.dto.State;
+import org.example.dto.task.output.value.Value;
 
-import java.util.List;
 
-public abstract class Expression {
-    public abstract boolean checkCondition(List<TaskOutput> trace);
+public interface Expression {
+    Value eval(State trace);
+    boolean checkCondition(State trace);
 }

@@ -1,14 +1,14 @@
 package org.example.dto.conditional.expression;
 
+import org.example.dto.State;
 import org.example.dto.task.output.TaskOutput;
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
 
 import java.security.InvalidParameterException;
-import java.util.List;
 import java.util.Optional;
 
-public class IdentifierExpression extends Expression {
+public class IdentifierExpression implements Expression {
     final String identifier;
 
     IdentifierExpression(String identifier) {
@@ -16,17 +16,21 @@ public class IdentifierExpression extends Expression {
     }
 
     @Override
-    public boolean checkCondition(List<TaskOutput> trace) {
+    public boolean checkCondition(State trace) {
+        Value v = this.eval(trace);
+        if (v instanceof BooleanValue b)
+            return b.value();
+        else
+            throw new InvalidParameterException("Value with bad type: " + v.getClass() + " instead of BooleanValue.");
+    }
+
+    @Override
+    public Value eval(State trace) {
         Optional<TaskOutput> t = trace.stream().filter((to) -> to.channel().name().equals(this.identifier)).findFirst();
         if (t.isEmpty())
             throw new InvalidParameterException("Field " + this.identifier + " not found in trace.");
-        else {
-            Value v = t.get().value();
-            if (v instanceof BooleanValue b)
-                return b.value();
-            else
-                throw new InvalidParameterException("Value with bad type: " + v.getClass() + " instead of BooleanValue.");
-        }
+        else
+            return t.get().value();
     }
 
     @Override
