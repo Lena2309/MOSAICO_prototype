@@ -10,4 +10,4 @@ Specifically: https://docs.github.com/en/packages/working-with-a-github-packages
 
  * Also check the path of the library stored in the variable `libPrefix` of `SysMLDecoder.java` .
 
- * The LLM can be chosen in the `LLMProvider` class.
+ * The LLM provider can be chosen in the `LLMProvider` class (change the DEFAULT value).
