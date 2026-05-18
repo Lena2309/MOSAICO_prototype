@@ -47,6 +47,11 @@ public class ExpressionBuilder {
             return new LiteralBooleanExpression(b.isValue());
         }
 
+        if (e instanceof LiteralInteger b) {
+            return new LiteralIntegerExpression(b.getValue());
+        }
+
+
         if (e instanceof LiteralString s) {
             //throw new InvalidParameterException("String Literals cannot be used as loop conditions. (" + s.getValue() + ")");
         }
@@ -72,6 +77,14 @@ public class ExpressionBuilder {
                     else
                         return new DisjunctionExpression(transpile(operands.get(0)), transpile(operands.get(1)));
                 }
+
+                case ">": {
+                    if (nbOperands != 2)
+                        throw new InvalidParameterException("Operator" + operator + "  requires 2 operands, found: " + nbOperands);
+                    else
+                        return new GreaterThanExpression(transpile(operands.get(0)), transpile(operands.get(1)));
+                }
+
 
                 default:
                     throw new InvalidParameterException("Operator not implemented: " + operator);

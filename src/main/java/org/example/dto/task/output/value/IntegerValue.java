@@ -3,7 +3,7 @@ package org.example.dto.task.output.value;
 import java.util.Objects;
 
 public class IntegerValue extends Value {
-    final int value;
+    public final int value;
 
     public IntegerValue(int value) {
         this.value = value;
@@ -28,4 +28,5 @@ public class IntegerValue extends Value {
     public String print() {
         return String.valueOf(value);
     }
+
 }
