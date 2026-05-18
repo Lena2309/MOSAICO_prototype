@@ -124,7 +124,7 @@ public interface ActionMapper {
             if (multi != null)
                 maxBound = multi.getOwnedRelationship().getLast() instanceof LiteralInteger li ? li.getValue() : 0;
 
-            outputs.add(new Channel(name, type.get(), multi != null, maxBound));
+            outputs.add(new Channel(name, type, multi != null, maxBound));
         }
     }
 
@@ -168,9 +168,9 @@ public interface ActionMapper {
         if (t != null && !t.isEmpty()) {
             FeatureTyping t0 = t.getFirst();
             s = t0.getType().getName();
-            if (s == null)
-                System.out.println("[WARNING] Type not found for channel: " + name);
         }
+        if (s == null)
+            System.out.println("[WARNING] Type not found for channel: " + name);
         return Optional.ofNullable(s);
     }
 

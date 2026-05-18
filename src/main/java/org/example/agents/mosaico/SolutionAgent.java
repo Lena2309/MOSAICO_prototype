@@ -72,7 +72,7 @@ public class SolutionAgent extends MosaicoAgent {
 
         // 4. Wrap and return the output
         Value resultValue;
-        String t = channel.type();
+        String t = channel.type().orElse("String"); // If the type is unspecified, keep the String.
         if (!channel.multiple()) {
             resultValue = decodeSingle(generatedText, t);
         } else {

@@ -10,10 +10,11 @@ package SimpleAssignment {
         then loop action printNumbers {
             assign loopIteration := loopIteration + 1;
 
-            action printToUser : ReferenceStep {
-                in loopIteration : Integer;
-            }
-        } until loopIteration > 50;
+            //action printToUser : ReferenceStep {
+            //    in loopIteration : Integer;
+            //}
+        //} until loopIteration > 50;
+        } until false ;
 
         then done;
     }

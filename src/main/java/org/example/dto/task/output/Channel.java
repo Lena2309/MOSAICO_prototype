@@ -1,6 +1,8 @@
 package org.example.dto.task.output;
 
-public record Channel(String name, String type, boolean multiple, int maxBound) {
+import java.util.Optional;
+
+public record Channel(String name, Optional<String> type, boolean multiple, int maxBound) {
     public boolean isInfinite() {
         return maxBound == 0;
     }
