@@ -26,11 +26,14 @@ public class IdentifierExpression implements Expression {
 
     @Override
     public Value eval(State trace) {
-        Optional<TaskOutput> t = trace.stream().filter((to) -> to.channel().name().equals(this.identifier)).findFirst();
-        if (t.isEmpty())
-            throw new InvalidParameterException("Field " + this.identifier + " not found in trace.");
-        else
-            return t.get().value();
+        Optional<Value> t = trace.getFromChannel(this.identifier);
+        if (t.isEmpty()) {
+            t = trace.getFromMemory(this.identifier);
+            if (t.isEmpty()) {
+                throw new InvalidParameterException("Field " + this.identifier + " not found in state.");
+            }
+        }
+        return t.get();
     }
 
     @Override

@@ -9,12 +9,10 @@ package SimpleAssignment {
 
         first start;
 
-        assign loopIteration := 1;
-
-
+        assign loopIteration := 0;
 
         then action setTrue {
-            assign loopIteration := 2;
+            assign loopIteration := loopIteration + 1;
             }
 
         then done;
