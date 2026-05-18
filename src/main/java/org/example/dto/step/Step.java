@@ -36,9 +36,7 @@ public class Step {
 
     public void execute(State taskDependencies) {
         var optionalTaskOutput = this.executeTask(taskDependencies);
-        if (!optionalTaskOutput.isEmpty()) {
-            taskDependencies.addAll(optionalTaskOutput);
-        }
+        taskDependencies.addAll(optionalTaskOutput);
         System.out.println("[LOG] Task " + this.task.getTaskName() + " has been executed successfully.");
         System.out.println("[LOG] Trace: " + taskDependencies);
     }

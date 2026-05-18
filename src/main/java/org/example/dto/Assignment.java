@@ -13,6 +13,6 @@ public class Assignment implements Statement{
 
     public void execute(State s){
         var result = rvalue.eval(s);
-        System.out.println("[FIXME] Assign " + result + " to " + lvalue);
+        s.write(lvalue, result);
     };
 }
