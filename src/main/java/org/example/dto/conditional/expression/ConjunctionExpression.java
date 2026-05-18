@@ -1,6 +1,7 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.State;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
 
@@ -19,12 +20,12 @@ public class ConjunctionExpression implements Expression {
     }
 
     @Override
-    public boolean checkCondition(State trace) {
-        return e1.checkCondition(trace) && e2.checkCondition(trace);
+    public boolean checkCondition(ChannelState trace, AttributeState memory) {
+        return e1.checkCondition(trace, memory) && e2.checkCondition(trace, memory);
     }
 
     @Override
-    public Value eval(State trace) {
-        return new BooleanValue(this.checkCondition(trace));
+    public Value eval(ChannelState trace, AttributeState memory) {
+        return new BooleanValue(this.checkCondition(trace, memory));
     }
 }

@@ -1,6 +1,7 @@
 package org.example.dto.step;
 
-import org.example.dto.State;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 import org.example.dto.task.Task;
 
 import java.util.Optional;
@@ -34,15 +35,16 @@ public class Step {
         return task;
     }
 
-    public void execute(State taskDependencies) {
-        var optionalTaskOutput = this.executeTask(taskDependencies);
+    public void execute(ChannelState taskDependencies, AttributeState memory) {
+        var optionalTaskOutput = this.executeTask(taskDependencies, memory);
         taskDependencies.addAll(optionalTaskOutput);
         System.out.println("[LOG] Task " + this.task.getTaskName() + " has been executed successfully.");
-        System.out.println("[LOG] Trace: " + taskDependencies);
+        System.out.println("[LOG] Channel Trace: " + taskDependencies);
+        System.out.println("[LOG] Memory: " + memory);
     }
 
-    private State executeTask(State taskDependencies) {
-        return this.task.execute(taskDependencies);
+    private ChannelState executeTask(ChannelState taskDependencies, AttributeState memory) {
+        return this.task.execute(taskDependencies, memory);
     }
 
     // Helper so steps can identify themselves to the next step

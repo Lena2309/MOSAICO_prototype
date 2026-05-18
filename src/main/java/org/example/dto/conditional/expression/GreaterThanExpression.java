@@ -1,6 +1,7 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.State;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.IntegerValue;
 import org.example.dto.task.output.value.Value;
@@ -22,14 +23,14 @@ public class GreaterThanExpression implements Expression {
     }
 
     @Override
-    public Value eval(State trace){
-        return new BooleanValue(this.checkCondition(trace));
+    public Value eval(ChannelState trace, AttributeState memory){
+        return new BooleanValue(this.checkCondition(trace, memory));
     }
 
     @Override
-    public boolean checkCondition(State trace) {
-        Value v1 = e1.eval(trace);
-        Value v2 = e2.eval(trace);
+    public boolean checkCondition(ChannelState trace, AttributeState memory) {
+        Value v1 = e1.eval(trace, memory);
+        Value v2 = e2.eval(trace, memory);
         if ( (v1 instanceof IntegerValue i1) && (v2 instanceof IntegerValue i2) )
             return (i1.value > i2.value);
         else throw new InvalidParameterException("Type Error : only integer values can be compared with > .");

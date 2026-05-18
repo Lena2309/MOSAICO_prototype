@@ -1,6 +1,7 @@
 package org.example.dto.step;
 
-import org.example.dto.State;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,14 +23,14 @@ public class ParallelStep extends Step {
     }
 
     @Override
-    public void execute(State agentTaskOutputs) {
+    public void execute(ChannelState agentTaskOutputs, AttributeState memory) {
         System.out.println("--- Starting Parallel Step Execution ---");
         if (this.body.isEmpty()) {
             return;
         }
 
         // Ensure the output list can handle concurrent additions from multiple worker threads
-        State threadSafeResults = (State) Collections.synchronizedList(agentTaskOutputs);
+        ChannelState threadSafeResults = (ChannelState) Collections.synchronizedList(agentTaskOutputs);
 
         // Try-with-resources on the executor ensures proper shutdown and
         // waits for all virtual threads to terminate before exiting the block.
@@ -37,7 +38,7 @@ public class ParallelStep extends Step {
             List<CompletableFuture<Void>> futures = this.body.stream()
                     .map(step -> CompletableFuture.runAsync(() -> {
                                 System.out.println("  [Parallel] Starting: " + step.getTask().getTaskName());
-                                step.execute(threadSafeResults);
+                                step.execute(threadSafeResults, memory);
                                 System.out.println("  [Parallel] Completed: " + step.getTask().getTaskName());
                             }, executor)
                             .exceptionally(ex -> {

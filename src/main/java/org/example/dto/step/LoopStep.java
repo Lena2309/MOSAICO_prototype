@@ -1,6 +1,7 @@
 package org.example.dto.step;
 
-import org.example.dto.State;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 import org.example.dto.conditional.Condition;
 import org.example.dto.conditional.LoopKind;
 
@@ -31,7 +32,7 @@ public class LoopStep extends Step {
     }
 
     @Override
-    public void execute(State agentTaskOutputs) {
+    public void execute(ChannelState agentTaskOutputs, AttributeState memory) {
         System.out.println("--- Starting Loop Step Execution ---");
         if (this.headStep == null) {
             return;
@@ -47,7 +48,7 @@ public class LoopStep extends Step {
                     switch (this.kind) {
                         case LoopKind.WHILE: {
                             // In a 'while' loop, we first evaluate the condition before the body.
-                            yield endCondition.evaluate(agentTaskOutputs);
+                            yield endCondition.evaluate(agentTaskOutputs, memory);
                         }
                         case LoopKind.UNTIL: {
                             // In a 'until' loop, we first evaluate the body, then the condition.
@@ -59,10 +60,10 @@ public class LoopStep extends Step {
             while (shouldContinue && agentTaskOutputs.size() < MAX_TRACE_SIZE) {
                 var currentStep = this.headStep;
                 while (currentStep != null) {
-                    currentStep.execute(agentTaskOutputs);
+                    currentStep.execute(agentTaskOutputs, memory);
                     currentStep = currentStep.getNextStep().orElse(null);
                 }
-                var rawResult = endCondition.evaluate(agentTaskOutputs);
+                var rawResult = endCondition.evaluate(agentTaskOutputs, memory);
                 shouldContinue = switch (this.kind) {
                     case UNTIL -> !rawResult;
                     case WHILE -> rawResult;

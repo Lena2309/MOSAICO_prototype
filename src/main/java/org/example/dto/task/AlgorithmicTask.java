@@ -1,7 +1,8 @@
 package org.example.dto.task;
 
-import org.example.dto.State;
-import org.example.dto.StateImpl;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
+import org.example.dto.ChannelStateImpl;
 import org.example.dto.Statement;
 import org.example.dto.task.output.Channel;
 
@@ -21,12 +22,12 @@ public class AlgorithmicTask extends Task {
     }
 
     @Override
-    public State execute(State state) {
+    public ChannelState execute(ChannelState state, AttributeState memory) {
 
-        this.statement.execute(state);
+        this.statement.execute(state, memory);
 
         //FIXME : the statement.execute above should be sufficient ?
-        var latestDependenciesOutputs = new StateImpl();
+        var latestDependenciesOutputs = new ChannelStateImpl();
 
         // Iterate backwards to process the most recent outputs first
         for (int i = state.size() - 1; i >= 0; i--) {
@@ -59,10 +60,10 @@ public class AlgorithmicTask extends Task {
                 System.out.println("    [WARNING] No input for this task.");
             for (var channel : this.inputChannels) {
             }
-            return new StateImpl();
+            return new ChannelStateImpl();
         }
         else {
-            var outputList = new StateImpl();
+            var outputList = new ChannelStateImpl();
             for (var channel : this.outputChannels) {
                 // System.out.println("Task " + getTaskName() + ", with channel " + channel.getName() + ", executed successfully.");
             }

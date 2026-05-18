@@ -1,7 +1,7 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.State;
-import org.example.dto.task.output.value.BooleanValue;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 import org.example.dto.task.output.value.IntegerValue;
 import org.example.dto.task.output.value.Value;
 
@@ -16,12 +16,12 @@ public class LiteralIntegerExpression implements Expression {
     }
 
     @Override
-    public Value eval(State trace) {
+    public Value eval(ChannelState trace, AttributeState memory) {
         return new IntegerValue(this.value);
     }
 
     @Override
-    public boolean checkCondition(State trace) {
+    public boolean checkCondition(ChannelState trace, AttributeState memory) {
         throw new InvalidParameterException("Type Error : Integer values cannot be used as booleans.");
     }
 

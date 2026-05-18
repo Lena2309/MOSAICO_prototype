@@ -1,7 +1,8 @@
 package org.example.dto.task;
 
-import org.example.dto.State;
-import org.example.dto.StateImpl;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
+import org.example.dto.ChannelStateImpl;
 import org.example.dto.task.output.Channel;
 
 
@@ -28,8 +29,8 @@ public abstract class Task {
         this.parents = parents;
     }
 
-    public State execute(State allTaskOutputs) {
-        var latestDependenciesOutputs = new StateImpl();
+    public ChannelState execute(ChannelState allTaskOutputs, AttributeState memory) {
+        var latestDependenciesOutputs = new ChannelStateImpl();
 
         // Iterate backwards to process the most recent outputs first
         for (int i = allTaskOutputs.size() - 1; i >= 0; i--) {
@@ -63,9 +64,9 @@ public abstract class Task {
             for (var channel : this.inputChannels) {
 
             }
-            return new StateImpl();
+            return new ChannelStateImpl();
         } else {
-            var outputList = new StateImpl();
+            var outputList = new ChannelStateImpl();
             for (var channel : this.outputChannels) {
 
                 // System.out.println("Task " + getTaskName() + ", with channel " + channel.getName() + ", executed successfully.");

@@ -1,7 +1,7 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.State;
-import org.example.dto.task.output.TaskOutput;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
 
@@ -16,8 +16,8 @@ public class IdentifierExpression implements Expression {
     }
 
     @Override
-    public boolean checkCondition(State trace) {
-        Value v = this.eval(trace);
+    public boolean checkCondition(ChannelState trace, AttributeState memory) {
+        Value v = this.eval(trace, memory);
         if (v instanceof BooleanValue b)
             return b.value();
         else
@@ -25,15 +25,16 @@ public class IdentifierExpression implements Expression {
     }
 
     @Override
-    public Value eval(State trace) {
+    public Value eval(ChannelState trace, AttributeState memory) {
         Optional<Value> t = trace.getFromChannel(this.identifier);
         if (t.isEmpty()) {
-            t = trace.getFromMemory(this.identifier);
-            if (t.isEmpty()) {
+            var res = memory.get(this.identifier);
+            if (res == null) {
                 throw new InvalidParameterException("Field " + this.identifier + " not found in state.");
             }
+            else return res ;
         }
-        return t.get();
+        else return t.get();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.State;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 import org.example.dto.task.output.TaskOutput;
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
@@ -33,16 +34,17 @@ public class DotExpression implements Expression {
     }
 
     @Override
-    public boolean checkCondition(State trace) {
+    public boolean checkCondition(ChannelState trace, AttributeState memory) {
         return trace.stream().anyMatch((t) -> nameMatch(t) && t.value().equals(trueVal));
     }
 
     @Override
-    public Value eval(State trace) {
-        return new BooleanValue(this.checkCondition(trace)); // FIXME : only works for booleans
+    public Value eval(ChannelState trace, AttributeState memory) {
+        return new BooleanValue(this.checkCondition(trace, memory)); // FIXME : only works for booleans
     }
 
     boolean nameMatch(TaskOutput t) {
+        // FIXME : check also into attribute memory ?
         var b1 = t.channel().name().equals(this.channelName);
         var b2 = t.task().getTaskName().equals(this.taskName);
         var b3 = isSuffixOf(otherParents, t.task().getParents());

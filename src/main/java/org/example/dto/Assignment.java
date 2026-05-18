@@ -11,8 +11,8 @@ public class Assignment implements Statement{
         this.rvalue = rvalue ;
     }
 
-    public void execute(State s){
-        var result = rvalue.eval(s);
-        s.write(lvalue, result);
+    public void execute(ChannelState s, AttributeState memory){
+        var result = rvalue.eval(s, memory);
+        memory.put(lvalue, result);
     };
 }

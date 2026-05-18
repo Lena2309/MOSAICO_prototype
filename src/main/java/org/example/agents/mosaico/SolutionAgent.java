@@ -2,7 +2,7 @@ package org.example.agents.mosaico;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
-import org.example.dto.State;
+import org.example.dto.ChannelState;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.output.Channel;
 import org.example.dto.task.output.TaskOutput;
@@ -56,7 +56,7 @@ public class SolutionAgent extends MosaicoAgent {
     }
 
     @Override
-    public TaskOutput performTask(AgentTask task, State dependencies, Channel channel) {
+    public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel) {
         // 1. Build the context and prompt
         String promptContext = buildContext(dependencies);
         String finalPrompt = "Task Description:\n" + task.getTaskDescription() + "\n\n" + promptContext

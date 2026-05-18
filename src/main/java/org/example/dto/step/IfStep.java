@@ -1,6 +1,7 @@
 package org.example.dto.step;
 
-import org.example.dto.State;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
 import org.example.dto.conditional.Condition;
 
 import java.util.Optional;
@@ -22,11 +23,11 @@ public class IfStep extends Step {
     }
 
     @Override
-    public void execute(State agentTaskOutputs) {
-        if (ifCondition.evaluate(agentTaskOutputs)) {
-            thenStep.execute(agentTaskOutputs);
+    public void execute(ChannelState agentTaskOutputs, AttributeState memory) {
+        if (ifCondition.evaluate(agentTaskOutputs, memory)) {
+            thenStep.execute(agentTaskOutputs, memory);
         } else {
-            elseStep.ifPresent(elseStep -> elseStep.execute(agentTaskOutputs));
+            elseStep.ifPresent(elseStep -> elseStep.execute(agentTaskOutputs, memory));
         }
     }
 
