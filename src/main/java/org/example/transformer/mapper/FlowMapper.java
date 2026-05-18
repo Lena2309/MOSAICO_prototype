@@ -12,6 +12,7 @@ import org.example.dto.step.Step;
 import org.example.dto.task.Task;
 import org.omg.sysml.lang.sysml.*;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 
 import static org.example.transformer.mapper.UtilAttributeMapper.getSafeName;
@@ -412,7 +413,8 @@ public interface FlowMapper {
 
     private static List<Element> getInternalFlows(Element e) {
         List<Element> internalFlows = new ArrayList<>();
-        if (e == null) return internalFlows;
+        if (e == null)
+            throw new InvalidParameterException("Empty element.");
 
         for (var rel : e.getOwnedRelationship()) {
             if (rel instanceof FeatureMembership fm) {
@@ -430,6 +432,7 @@ public interface FlowMapper {
                     }
                 }
             }
+            else System.out.println("[WARNING] Owned Relationship not handled: " + rel);
         }
         return internalFlows;
     }
