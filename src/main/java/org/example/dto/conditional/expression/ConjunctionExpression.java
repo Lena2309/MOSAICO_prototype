@@ -1,17 +1,16 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.AttributeState;
-import org.example.dto.ChannelState;
+
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
 
+import java.security.InvalidParameterException;
 
-public class ConjunctionExpression implements Expression {
-    final Expression e1, e2;
+
+public class ConjunctionExpression extends BinopExpression {
 
     public ConjunctionExpression(Expression e1, Expression e2) {
-        this.e1 = e1;
-        this.e2 = e2;
+        super(e1,e2);
     }
 
     @Override
@@ -20,12 +19,10 @@ public class ConjunctionExpression implements Expression {
     }
 
     @Override
-    public boolean checkCondition(ChannelState trace, AttributeState memory) {
-        return e1.checkCondition(trace, memory) && e2.checkCondition(trace, memory);
+    Value op(Value v1, Value v2){
+        if ( (v1 instanceof BooleanValue b1) && (v2 instanceof BooleanValue b2) )
+            return new BooleanValue(b1.value() && b2.value());
+        else throw new InvalidParameterException("Type Error: not booleans (&&).");
     }
 
-    @Override
-    public Value eval(ChannelState trace, AttributeState memory) {
-        return new BooleanValue(this.checkCondition(trace, memory));
-    }
 }

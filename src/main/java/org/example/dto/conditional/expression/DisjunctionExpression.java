@@ -1,17 +1,15 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.AttributeState;
-import org.example.dto.ChannelState;
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
 
+import java.security.InvalidParameterException;
 
-public class DisjunctionExpression implements Expression {
-    final Expression e1, e2;
+
+public class DisjunctionExpression extends BinopExpression {
 
     public DisjunctionExpression(Expression e1, Expression e2) {
-        this.e1 = e1;
-        this.e2 = e2;
+        super(e1,e2);
     }
 
     @Override
@@ -19,13 +17,12 @@ public class DisjunctionExpression implements Expression {
         return "DISJ: " + e1.toString() + " | " + e2.toString();
     }
 
-    @Override
-    public Value eval(ChannelState trace, AttributeState memory){
-        return new BooleanValue(this.checkCondition(trace, memory));
-    }
 
     @Override
-    public boolean checkCondition(ChannelState trace, AttributeState memory) {
-        return e1.checkCondition(trace, memory) || e2.checkCondition(trace, memory);
+    Value op(Value v1, Value v2){
+        if ( (v1 instanceof BooleanValue b1) && (v2 instanceof BooleanValue b2) )
+            return new BooleanValue(b1.value() || b2.value());
+        else throw new InvalidParameterException("Type Error: not booleans (||).");
     }
+
 }

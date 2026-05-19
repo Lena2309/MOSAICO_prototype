@@ -9,17 +9,22 @@ import org.example.dto.task.output.value.Value;
 import java.security.InvalidParameterException;
 
 
-public class GreaterThanExpression implements Expression {
-    final Expression e1, e2;
+public class GreaterThanExpression extends BinopExpression {
 
     public GreaterThanExpression(Expression e1, Expression e2) {
-        this.e1 = e1;
-        this.e2 = e2;
+        super(e1,e2);
     }
 
     @Override
     public String toString() {
-        return "> : " + e1.toString() + " | " + e2.toString();
+        return "GT : " + e1.toString() + " > " + e2.toString();
+    }
+
+    @Override
+    Value op(Value v1, Value v2){
+        if ( (v1 instanceof IntegerValue i1) && (v2 instanceof IntegerValue i2) )
+            return new BooleanValue(i1.value > i2.value);
+        else throw new InvalidParameterException("Type Error : only integer values can be compared with > .");
     }
 
     @Override
