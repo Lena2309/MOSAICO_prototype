@@ -1,4 +1,4 @@
-package org.example.dto.task.output;
+package org.example.dto.task.output.value;
 
 public class StringValue extends Value {
     final String value;
@@ -20,7 +20,7 @@ public class StringValue extends Value {
 
     @Override
     public String toString() {
-        return "String:" +"'" + value + "'";
+        return "String:" + "'" + value + "'";
     }
 
     public String print() {

@@ -5,37 +5,30 @@ import org.example.agents.mosaico.ConsensusAgent;
 import org.example.agents.mosaico.MosaicoAgent;
 import org.example.agents.mosaico.ReferenceAgent;
 import org.example.agents.mosaico.SupervisionAgent;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
+import org.example.dto.ChannelStateImpl;
 import org.example.dto.task.output.Channel;
-import org.example.dto.task.output.StringValue;
+import org.example.dto.task.output.TaskOutput;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class AgentTask {
-    private final String taskName;
-    private final String taskDescription;
-    private final List<Channel> outputChannels;
-    private final List<Channel> inputChannels;
-    private final List<AgentTask> inputTaskDependencies;
+public class AgentTask extends Task {
+    private final Map<String, String> otherProperties;
     private MosaicoAgent bestAgent;
 
-    public final List<String> parents;
-    final Map<String,String> otherProperties ;
+    public AgentTask(String taskName, String taskDescription, MosaicoAgent bestAgent) {
+        this(taskName, taskDescription, new ArrayList<>(), bestAgent, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashMap<>());
+    }
 
     public AgentTask(String taskName, String taskDescription,
                      List<Channel> taskOutputsNames, MosaicoAgent bestAgent,
-                     List<Channel> inputChannels, List<AgentTask> inputTaskDependencies, List<String> parents, Map<String, String> otherProperties) {
-        this.taskName = taskName;
-        this.taskDescription = taskDescription;
-        this.outputChannels = taskOutputsNames;
+                     List<Channel> inputChannels, List<Task> inputTaskDependencies,
+                     List<String> parents, Map<String, String> otherProperties) {
+        super(taskName, taskDescription, taskOutputsNames, inputChannels, inputTaskDependencies, parents);
         this.bestAgent = bestAgent;
-        this.inputChannels = inputChannels;
-        this.inputTaskDependencies = inputTaskDependencies;
-        this.parents = parents;
-        this.otherProperties = otherProperties ;
+        this.otherProperties = otherProperties;
     }
 
     // TODO: implement repo talk
@@ -46,8 +39,16 @@ public class AgentTask {
         return null;
     }
 
-    public List<AgentTaskOutput> execute(List<AgentTaskOutput> allTaskOutputs) {
-        var latestDependenciesOutputs = new ArrayList<AgentTaskOutput>();
+    public Optional<String> getOtherProperty(String key) {
+        if (this.otherProperties.containsKey(key))
+            return Optional.of(this.otherProperties.get(key));
+        else
+            return Optional.empty();
+    }
+
+    @Override
+    public ChannelState execute(ChannelState allTaskOutputs, AttributeState memory) {
+        var latestDependenciesOutputs = new ChannelStateImpl();
 
         // Iterate backwards to process the most recent outputs first
         for (int i = allTaskOutputs.size() - 1; i >= 0; i--) {
@@ -78,8 +79,8 @@ public class AgentTask {
             System.out.println("    [WARNING] No output for this task.");
             if (this.inputChannels.isEmpty())
                 System.out.println("    [WARNING] No input for this task.");
-            for (var channel: this.inputChannels){
-                switch (bestAgent){
+            for (var channel : this.inputChannels) {
+                switch (bestAgent) {
                     case ReferenceAgent referenceAgent -> {
                         // Note: We use reference agent in-channel only if it has no out-channel
                         referenceAgent.showToUser(this.taskDescription);
@@ -87,14 +88,15 @@ public class AgentTask {
                         if (res != null)
                             referenceAgent.showToUser(res + "(" + channel.toString() + ")");
                         else
-                            System.out.println("[ERROR] No value for this channel: " + channel.getName());
+                            System.out.println("[ERROR] No value for this channel: " + channel.name());
                     }
-                    default -> {}
+                    default -> {
+                    }
                 }
             }
-            return List.of();
+            return new ChannelStateImpl();
         } else {
-            var outputList = new ArrayList<AgentTaskOutput>();
+            var outputList = new ChannelStateImpl();
             for (var channel : this.outputChannels) {
                 switch (bestAgent) {
                     case null -> {
@@ -103,7 +105,7 @@ public class AgentTask {
                     }
                     case ReferenceAgent referenceAgent -> {
                         var res = referenceAgent.askToUser(this.taskDescription, channel);
-                        AgentTaskOutput out = new AgentTaskOutput(this, channel, res);
+                        TaskOutput out = new TaskOutput(this, channel, res);
                         outputList.add(out);
                     }
                     case SupervisionAgent supervisionAgent -> {
@@ -120,33 +122,10 @@ public class AgentTask {
         }
     }
 
-    // Getters
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public String getTaskDescription() {
-        return taskDescription;
-    }
-
-    public List<Channel> getOutputChannels() {
-        return outputChannels;
-    }
-
-    public List<Channel> getInputChannels() {
-        return inputChannels;
-    }
-
-    public Optional<String> getOtherProperty(String key){
-        if (this.otherProperties.containsKey(key))
-            return Optional.of(this.otherProperties.get(key));
-        else
-            return Optional.empty();
-    }
-
+    @Override
     public String toString() {
         String dependenciesStr = (inputTaskDependencies != null && !inputTaskDependencies.isEmpty())
-                ? ", dependencies=[" + inputTaskDependencies.stream().map(AgentTask::getTaskName).collect(Collectors.joining(", ")) + "]"
+                ? ", dependencies=[" + inputTaskDependencies.stream().map(Task::getTaskName).collect(Collectors.joining(", ")) + "]"
                 : "";
 
         return String.format("AgentTask{name='%s', description='%s', agent='%s'%s}",

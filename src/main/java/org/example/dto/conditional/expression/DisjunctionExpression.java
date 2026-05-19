@@ -1,15 +1,13 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.value.BooleanValue;
+import org.example.dto.task.output.value.Value;
 
-import java.util.List;
 
-public class DisjunctionExpression extends Expression {
-    final Expression e1, e2;
+public class DisjunctionExpression extends BinopExpression {
 
     public DisjunctionExpression(Expression e1, Expression e2) {
-        this.e1 = e1;
-        this.e2 = e2;
+        super(e1,e2);
     }
 
     @Override
@@ -17,8 +15,12 @@ public class DisjunctionExpression extends Expression {
         return "DISJ: " + e1.toString() + " | " + e2.toString();
     }
 
+
     @Override
-    public boolean checkCondition(List<AgentTaskOutput> trace) {
-        return e1.checkCondition(trace) || e2.checkCondition(trace);
+    Value op(Value v1, Value v2){
+        if ( (v1 instanceof BooleanValue b1) && (v2 instanceof BooleanValue b2) )
+            return new BooleanValue(b1.value() || b2.value());
+        else throw new TypeError("Not booleans (||).");
     }
+
 }

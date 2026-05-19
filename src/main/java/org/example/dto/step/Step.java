@@ -1,25 +1,25 @@
 package org.example.dto.step;
 
-import org.example.dto.task.AgentTask;
-import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.AttributeState;
+import org.example.dto.ChannelState;
+import org.example.dto.task.Task;
 
-import java.util.List;
 import java.util.Optional;
 
 public class Step {
-    private final AgentTask agentTask;
+    private final Task task;
     private Optional<Step> nextStep;
 
-    public Step(AgentTask agentTask) {
-        this(agentTask, Optional.empty());
+    public Step(Task task) {
+        this(task, Optional.empty());
     }
 
     public Step(Optional<Step> nextStep) {
         this(null, nextStep);
     }
 
-    public Step(AgentTask agentTask, Optional<Step> nextStep) {
-        this.agentTask = agentTask;
+    public Step(Task task, Optional<Step> nextStep) {
+        this.task = task;
         this.nextStep = nextStep;
     }
 
@@ -31,26 +31,25 @@ public class Step {
         this.nextStep = Optional.of(nextStep);
     }
 
-    public AgentTask getAgentTask() {
-        return agentTask;
+    public Task getTask() {
+        return task;
     }
 
-    public void execute(List<AgentTaskOutput> taskDependencies) {
-        var optionalTaskOutput = this.executeTask(taskDependencies);
-        if (!optionalTaskOutput.isEmpty()) {
-            taskDependencies.addAll(optionalTaskOutput);
-        }
-        System.out.println("[LOG] Task " + this.agentTask.getTaskName() + " has been executed successfully.");
-        System.out.println("[LOG] Trace: " + taskDependencies);
+    public void execute(ChannelState taskDependencies, AttributeState memory) {
+        var optionalTaskOutput = this.executeTask(taskDependencies, memory);
+        taskDependencies.addAll(optionalTaskOutput);
+        System.out.println("[LOG] Task " + this.task.getTaskName() + " has been executed successfully.");
+        System.out.println("[LOG] Channel Trace: " + taskDependencies);
+        System.out.println("[LOG] Memory: " + memory);
     }
 
-    private List<AgentTaskOutput> executeTask(List<AgentTaskOutput> taskDependencies) {
-        return this.agentTask.execute(taskDependencies);
+    private ChannelState executeTask(ChannelState taskDependencies, AttributeState memory) {
+        return this.task.execute(taskDependencies, memory);
     }
 
     // Helper so steps can identify themselves to the next step
     protected String getStepName() {
-        return this.agentTask != null ? this.agentTask.getTaskName() : "Unknown Task";
+        return this.task != null ? this.task.getTaskName() : "Unknown Task";
     }
 
     @Override
@@ -67,8 +66,8 @@ public class Step {
         StringBuilder sb = new StringBuilder();
         sb.append(indent).append(counter.getAndIncrement()).append(". |- [Step] ");
 
-        if (this.agentTask != null) {
-            sb.append(this.agentTask.toString());
+        if (this.task != null) {
+            sb.append(this.task.toString());
         } else {
             sb.append("Empty Task");
         }

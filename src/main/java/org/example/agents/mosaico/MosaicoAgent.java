@@ -1,10 +1,11 @@
 package org.example.agents.mosaico;
 
 import org.example.agents.MosaicoAgentType;
+import org.example.dto.ChannelState;
 import org.example.dto.task.AgentTask;
-import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.TaskOutput;
 import org.example.dto.task.output.Channel;
-import org.example.dto.task.output.Value;
+import org.example.dto.task.output.value.Value;
 
 import java.util.List;
 
@@ -30,6 +31,17 @@ public abstract class MosaicoAgent {
         this.name = name;
         this.licence = licence;
         this.constraints = constraints;
+    }
+
+    /**
+     * Utility to read the value of a channel in a trace.
+     */
+    public static Value readChannel(Channel c, List<TaskOutput> trace) {
+        var res = trace.stream().filter((TaskOutput out) -> out.channel().equals(c)).findAny();
+        if (res.isPresent())
+            return res.get().value();
+        else
+            return null;
     }
 
     public String getId() {
@@ -60,15 +72,5 @@ public abstract class MosaicoAgent {
         this.skills = skills;
     }
 
-
-    abstract public AgentTaskOutput performTask(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel);
-
-    /** Utility to read the value of a channel in a trace. */
-    public static Value readChannel(Channel c, List<AgentTaskOutput> trace){
-        var res = trace.stream().filter((AgentTaskOutput out)->out.channel().equals(c)).findAny();
-        if (res.isPresent())
-            return res.get().value();
-        else
-            return null ;
-    }
+    abstract public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel);
 }

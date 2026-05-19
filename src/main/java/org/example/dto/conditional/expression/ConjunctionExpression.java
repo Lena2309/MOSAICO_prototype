@@ -1,15 +1,14 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.task.AgentTaskOutput;
 
-import java.util.List;
+import org.example.dto.task.output.value.BooleanValue;
+import org.example.dto.task.output.value.Value;
 
-public class ConjunctionExpression extends Expression {
-    final Expression e1, e2;
+
+public class ConjunctionExpression extends BinopExpression {
 
     public ConjunctionExpression(Expression e1, Expression e2) {
-        this.e1 = e1;
-        this.e2 = e2;
+        super(e1,e2);
     }
 
     @Override
@@ -18,7 +17,10 @@ public class ConjunctionExpression extends Expression {
     }
 
     @Override
-    public boolean checkCondition(List<AgentTaskOutput> trace) {
-        return e1.checkCondition(trace) && e2.checkCondition(trace);
+    Value op(Value v1, Value v2){
+        if ( (v1 instanceof BooleanValue b1) && (v2 instanceof BooleanValue b2) )
+            return new BooleanValue(b1.value() && b2.value());
+        else throw new TypeError("Not booleans (&&).");
     }
+
 }

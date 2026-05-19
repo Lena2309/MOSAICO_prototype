@@ -38,7 +38,7 @@ public class ExpressionBuilder {
 
         if (e instanceof FeatureReferenceExpression r) {
             if (r.getReferent() != null && r.getReferent().getDeclaredName() != null) {
-                return new DotExpression(List.of(r.getReferent().getDeclaredName()));
+                return new IdentifierExpression(r.getReferent().getDeclaredName());
             }
             throw new InvalidParameterException("FeatureReferenceExpression missing referent.");
         }
@@ -47,8 +47,13 @@ public class ExpressionBuilder {
             return new LiteralBooleanExpression(b.isValue());
         }
 
+        if (e instanceof LiteralInteger b) {
+            return new LiteralIntegerExpression(b.getValue());
+        }
+
+
         if (e instanceof LiteralString s) {
-            //throw new InvalidParameterException("String Literals cannot be used as loop conditions. (" + s.getValue() + ")");
+            throw new InvalidParameterException("String Literals not implemented.");
         }
 
         if (e instanceof OperatorExpression op) {
@@ -72,6 +77,21 @@ public class ExpressionBuilder {
                     else
                         return new DisjunctionExpression(transpile(operands.get(0)), transpile(operands.get(1)));
                 }
+
+                case ">": {
+                    if (nbOperands != 2)
+                        throw new InvalidParameterException("Operator" + operator + "  requires 2 operands, found: " + nbOperands);
+                    else
+                        return new GreaterThanExpression(transpile(operands.get(0)), transpile(operands.get(1)));
+                }
+
+                case "+": {
+                    if (nbOperands != 2)
+                        throw new InvalidParameterException("Operator" + operator + "  requires 2 operands, found: " + nbOperands);
+                    else
+                        return new AddExpression(transpile(operands.get(0)), transpile(operands.get(1)));
+                }
+
 
                 default:
                     throw new InvalidParameterException("Operator not implemented: " + operator);

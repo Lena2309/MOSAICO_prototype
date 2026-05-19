@@ -1,7 +1,8 @@
 package org.example.agents.mosaico;
 
+import org.example.dto.ChannelState;
 import org.example.dto.task.AgentTask;
-import org.example.dto.task.AgentTaskOutput;
+import org.example.dto.task.output.TaskOutput;
 import org.example.dto.task.output.Channel;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public class SupervisionAgent extends MosaicoAgent {
     }
 
     @Override
-    public AgentTaskOutput performTask(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
+    public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel) {
         return null;
     }
 }

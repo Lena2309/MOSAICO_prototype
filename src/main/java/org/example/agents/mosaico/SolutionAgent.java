@@ -2,9 +2,14 @@ package org.example.agents.mosaico;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
+import org.example.dto.ChannelState;
 import org.example.dto.task.AgentTask;
-import org.example.dto.task.AgentTaskOutput;
-import org.example.dto.task.output.*;
+import org.example.dto.task.output.Channel;
+import org.example.dto.task.output.TaskOutput;
+import org.example.dto.task.output.value.BooleanValue;
+import org.example.dto.task.output.value.MultipleValue;
+import org.example.dto.task.output.value.StringValue;
+import org.example.dto.task.output.value.Value;
 import org.example.llm.LLM;
 import org.example.llm.LLMProvider;
 
@@ -14,40 +19,11 @@ import java.util.Optional;
 
 public class SolutionAgent extends MosaicoAgent {
 
-    final LLM llm ;
+    final LLM llm;
 
     public SolutionAgent(String id, String name, String description, List<String> constraints) {
         super(id, name, description, constraints);
-        this.llm = LLMProvider.get("any");
-    }
-
-    @Override
-    public AgentTaskOutput performTask(AgentTask task, List<AgentTaskOutput> dependencies, Channel channel) {
-        // 1. Build the context and prompt
-        String promptContext = buildContext(dependencies);
-        String finalPrompt = "Task Description:\n" + task.getTaskDescription() + "\n\n" + promptContext
-                + "You are working on the channel " + channel.getName() + ", of type " + channel.getType() + ".";
-
-        // 2. Create the messages
-        var systemMessage = SystemMessage.from("You are a helpful AI agent executing a workflow task. Reply only with your answer, with no explanation and in no particular format.");
-        var userMessage = UserMessage.from(finalPrompt);
-
-        // 3. Execute the LLM call using LangChain4j
-        System.out.println("[LOG] " + this.getName() + ": LLM call now.");
-        String generatedText = llm.chat(systemMessage, userMessage);
-
-        // 4. Wrap and return the output
-        Value resultValue;
-        String t = channel.getType();
-        if (!channel.isMultiple()) {
-            resultValue = decodeSingle(generatedText, t);
-        }
-        else{
-            Optional<String> separator = task.getOtherProperty("separator");
-            resultValue = decodeMultiple(generatedText, t, separator.orElse(", *"));
-        }
-
-        return new AgentTaskOutput(task, channel, resultValue);
+        this.llm = LLMProvider.get(LLMProvider.DEFAULT);
     }
 
     /**
@@ -79,12 +55,38 @@ public class SolutionAgent extends MosaicoAgent {
         return res;
     }
 
+    @Override
+    public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel) {
+        // 1. Build the context and prompt
+        String promptContext = buildContext(dependencies);
+        String finalPrompt = "Task Description:\n" + task.getTaskDescription() + "\n\n" + promptContext
+                + "You are working on the channel " + channel.name() + ", of type " + channel.type() + ".";
 
+        // 2. Create the messages
+        var systemMessage = SystemMessage.from("You are a helpful AI agent executing a workflow task. Reply only with your answer, with no explanation and in no particular format.");
+        var userMessage = UserMessage.from(finalPrompt);
+
+        // 3. Execute the LLM call using LangChain4j
+        System.out.println("[LOG] " + this.getName() + ": LLM call now.");
+        String generatedText = llm.chat(systemMessage, userMessage);
+
+        // 4. Wrap and return the output
+        Value resultValue;
+        String t = channel.type().orElse("String"); // If the type is unspecified, keep the String.
+        if (!channel.multiple()) {
+            resultValue = decodeSingle(generatedText, t);
+        } else {
+            Optional<String> separator = task.getOtherProperty("separator");
+            resultValue = decodeMultiple(generatedText, t, separator.orElse(", *"));
+        }
+
+        return new TaskOutput(task, channel, resultValue);
+    }
 
     /**
      * Stringifies the outputs of dependent tasks to inject into the LLM's context.
      */
-    private String buildContext(List<AgentTaskOutput> dependencies) {
+    private String buildContext(List<TaskOutput> dependencies) {
         if (dependencies == null || dependencies.isEmpty()) {
             return "";
         }
@@ -92,9 +94,9 @@ public class SolutionAgent extends MosaicoAgent {
         StringBuilder contextBuilder = new StringBuilder();
         contextBuilder.append("Context from previous dependencies:\n");
 
-        for (AgentTaskOutput dep : dependencies) {
+        for (TaskOutput dep : dependencies) {
             contextBuilder.append("--- Output from Channel: ")
-                    .append(dep.channel().getName())
+                    .append(dep.channel().name())
                     .append(" ---\n")
                     .append(dep.value().print())
                     .append("\n\n");
