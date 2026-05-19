@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class SolutionAgent extends MosaicoAgent {
-
     final LLM llm;
 
     public SolutionAgent(String id, String name, String description, List<String> constraints) {
@@ -41,8 +40,9 @@ public class SolutionAgent extends MosaicoAgent {
      * Decode the answer of an LLM into a multiple value.
      */
     static MultipleValue decodeMultiple(String generatedText, String t, String separator) {
-        var tab = generatedText.split(separator);
         var res = new MultipleValue();
+        if (generatedText == null) return res;
+        var tab = generatedText.split(separator);
         switch (t) {
             case "String" -> {
                 for (String s : tab) res.addValue(new StringValue(s));
