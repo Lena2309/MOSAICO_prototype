@@ -2,6 +2,7 @@ package org.example.dto.conditional.expression;
 
 import org.eclipse.emf.ecore.EObject;
 import org.omg.sysml.lang.sysml.*;
+import org.omg.sysml.lang.sysml.impl.NullExpressionImpl;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -51,9 +52,12 @@ public class ExpressionBuilder {
             return new LiteralIntegerExpression(b.getValue());
         }
 
-
         if (e instanceof LiteralString s) {
             throw new InvalidParameterException("String Literals not implemented.");
+        }
+
+        if (e instanceof NullExpressionImpl n) {
+            return new org.example.dto.conditional.expression.NullExpression();
         }
 
         if (e instanceof OperatorExpression op) {
@@ -92,6 +96,12 @@ public class ExpressionBuilder {
                         return new AddExpression(transpile(operands.get(0)), transpile(operands.get(1)));
                 }
 
+                case "==": {
+                    if (nbOperands != 2)
+                        throw new InvalidParameterException("Operator" + operator + "  requires 2 operands, found: " + nbOperands);
+                    else
+                        return new EqualExpression(transpile(operands.get(0)), transpile(operands.get(1)));
+                }
 
                 default:
                     throw new InvalidParameterException("Operator not implemented: " + operator);
