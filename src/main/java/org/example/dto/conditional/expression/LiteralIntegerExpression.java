@@ -22,7 +22,7 @@ public class LiteralIntegerExpression implements Expression {
 
     @Override
     public boolean checkCondition(ChannelState trace, AttributeState memory) {
-        throw new InvalidParameterException("Type Error : Integer values cannot be used as booleans.");
+        throw new TypeError("Integer values cannot be used as booleans.");
     }
 
     @Override

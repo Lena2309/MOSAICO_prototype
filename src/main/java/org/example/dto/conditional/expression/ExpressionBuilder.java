@@ -53,7 +53,7 @@ public class ExpressionBuilder {
 
 
         if (e instanceof LiteralString s) {
-            //throw new InvalidParameterException("String Literals cannot be used as loop conditions. (" + s.getValue() + ")");
+            throw new InvalidParameterException("String Literals not implemented.");
         }
 
         if (e instanceof OperatorExpression op) {

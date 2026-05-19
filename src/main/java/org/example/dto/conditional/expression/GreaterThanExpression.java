@@ -1,12 +1,9 @@
 package org.example.dto.conditional.expression;
 
-import org.example.dto.AttributeState;
-import org.example.dto.ChannelState;
+
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.IntegerValue;
 import org.example.dto.task.output.value.Value;
-
-import java.security.InvalidParameterException;
 
 
 public class GreaterThanExpression extends BinopExpression {
@@ -24,21 +21,7 @@ public class GreaterThanExpression extends BinopExpression {
     Value op(Value v1, Value v2){
         if ( (v1 instanceof IntegerValue i1) && (v2 instanceof IntegerValue i2) )
             return new BooleanValue(i1.value > i2.value);
-        else throw new InvalidParameterException("Type Error : only integer values can be compared with > .");
+        else throw new TypeError("Only integer values can be compared with > .");
     }
 
-    @Override
-    public Value eval(ChannelState trace, AttributeState memory){
-        return new BooleanValue(this.checkCondition(trace, memory));
-    }
-
-    @Override
-    public boolean checkCondition(ChannelState trace, AttributeState memory) {
-        Value v1 = e1.eval(trace, memory);
-        Value v2 = e2.eval(trace, memory);
-        if ( (v1 instanceof IntegerValue i1) && (v2 instanceof IntegerValue i2) )
-            return (i1.value > i2.value);
-        else throw new InvalidParameterException("Type Error : only integer values can be compared with > .");
-
-    }
 }

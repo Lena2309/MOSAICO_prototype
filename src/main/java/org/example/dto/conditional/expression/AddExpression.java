@@ -3,8 +3,6 @@ package org.example.dto.conditional.expression;
 import org.example.dto.task.output.value.IntegerValue;
 import org.example.dto.task.output.value.Value;
 
-import java.security.InvalidParameterException;
-
 
 public class AddExpression extends  BinopExpression {
 
@@ -21,7 +19,7 @@ public class AddExpression extends  BinopExpression {
     Value op(Value v1, Value v2){
         if ( (v1 instanceof IntegerValue i1) && (v2 instanceof IntegerValue i2) )
             return new IntegerValue(i1.value + i2.value);
-        else throw new InvalidParameterException("Type Error : only integer values can be added with + .");
+        else throw new TypeError("Only integer values can be added with + .");
     }
 
 }

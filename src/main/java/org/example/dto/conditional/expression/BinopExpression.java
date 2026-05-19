@@ -29,6 +29,6 @@ public abstract class BinopExpression implements Expression {
         if (v instanceof BooleanValue b)
             return b.value();
         else
-            throw new InvalidParameterException("Type Error: this is not a boolean.");
+            throw new TypeError("This is not a boolean.");
     }
 }

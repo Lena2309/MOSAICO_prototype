@@ -3,8 +3,6 @@ package org.example.dto.conditional.expression;
 import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
 
-import java.security.InvalidParameterException;
-
 
 public class DisjunctionExpression extends BinopExpression {
 
@@ -22,7 +20,7 @@ public class DisjunctionExpression extends BinopExpression {
     Value op(Value v1, Value v2){
         if ( (v1 instanceof BooleanValue b1) && (v2 instanceof BooleanValue b2) )
             return new BooleanValue(b1.value() || b2.value());
-        else throw new InvalidParameterException("Type Error: not booleans (||).");
+        else throw new TypeError("Not booleans (||).");
     }
 
 }

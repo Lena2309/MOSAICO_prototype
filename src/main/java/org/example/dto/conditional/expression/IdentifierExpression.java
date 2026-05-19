@@ -21,7 +21,7 @@ public class IdentifierExpression implements Expression {
         if (v instanceof BooleanValue b)
             return b.value();
         else
-            throw new InvalidParameterException("Value with bad type: " + v.getClass() + " instead of BooleanValue.");
+            throw new TypeError("Value with bad type: " + v.getClass() + " instead of BooleanValue.");
     }
 
     @Override
