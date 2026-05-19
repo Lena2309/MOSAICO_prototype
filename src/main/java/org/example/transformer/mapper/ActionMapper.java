@@ -1,6 +1,7 @@
 package org.example.transformer.mapper;
 
 import org.example.agents.mosaico.MosaicoAgent;
+import org.example.agents.mosaico.ReferenceAgent;
 import org.example.agents.mosaico.SolutionAgent;
 import org.example.dto.Assignment;
 import org.example.dto.Statement;
@@ -77,7 +78,22 @@ public interface ActionMapper {
         if (agentForTask.isEmpty()) {
             if (finalAgentName != null)
                 System.out.println("[ERROR] Convenient agent not found despite being specified, using a fallback solution agent instead. (" + finalAgentName + ")");
-            agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), propertyMap.get("agent"), null, null));
+
+            for (var supertype : action.allSupertypes()) {
+                if (Objects.equals(supertype.getDeclaredName(), "ReferenceStep")) {
+                    agentForTask = Optional.of(new ReferenceAgent(UUID.randomUUID().toString(), "default-reference-agent", "Default Reference agent.", null));
+                    break;
+                } else if (Objects.equals(supertype.getDeclaredName(), "ConsensusStep")) {
+                    agentForTask = Optional.of(new ReferenceAgent(UUID.randomUUID().toString(), "default-consensus-agent", "Default Consensus agent.", null));
+                    break;
+                } else if (Objects.equals(supertype.getDeclaredName(), "SupervisionAgent")) {
+                    agentForTask = Optional.of(new ReferenceAgent(UUID.randomUUID().toString(), "default-supervision-agent", "Default Supervision agent.", null));
+                    break;
+                }
+            }
+
+            if (agentForTask.isEmpty())
+                agentForTask = Optional.of(new SolutionAgent(UUID.randomUUID().toString(), "default-solution-agent", "Default Solution agent.", null));
         }
 
         var inputs = new ArrayList<Channel>();
@@ -140,7 +156,7 @@ public interface ActionMapper {
     }
 
 
-    static Statement extractStatement(ActionUsage action){
+    static Statement extractStatement(ActionUsage action) {
         if (action instanceof AssignmentActionUsage a)
             return extractAssignment(a);
         else {
@@ -151,12 +167,12 @@ public interface ActionMapper {
         }
     }
 
-    static Statement extractAssignment(AssignmentActionUsage a){
+    static Statement extractAssignment(AssignmentActionUsage a) {
         var lhs = UtilAttributeMapper.getSafeName(a.getReferent());
         if (lhs.isEmpty())
             throw new InvalidParameterException("Assignment cannot be resolved.");
         var rhs = ExpressionBuilder.transpile(a.getValueExpression());
-        return new Assignment(lhs.get(),rhs); // FIXME
+        return new Assignment(lhs.get(), rhs); // FIXME
     }
 
     /**
