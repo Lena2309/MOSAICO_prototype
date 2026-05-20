@@ -6,7 +6,7 @@ CPT=0
 
 cd ..
 
-FILES=("test/test_cases/test0.sysml" "test/test_cases/test1.sysml" "test/test_cases/test2.sysml"  "test/test_cases/test3.2.sysml" "test/test_cases/test4.sysml" "test/test_cases/test5.sysml" "test/test_cases/test5_2.sysml" "test/test_cases/test6.sysml" "test/test_cases/test7.sysml")
+FILES=("test/test_cases/test0.sysml" "test/test_cases/test1.sysml" "test/test_cases/test2.sysml"  "test/test_cases/test3.2.sysml" "test/test_cases/test4.sysml" "test/test_cases/test5.sysml" "test/test_cases/test5_2.sysml" "test/test_cases/test6.sysml" "test/test_cases/test7.sysml" "test/test_cases/test8.sysml" "test/test_cases/test9.sysml")
 NON_TERMINATION_FILES=( "test/test_cases/test0_2.sysml" "test/test_cases/test0_3.sysml" "test/test_cases/test3.3.sysml" "test/test_cases/test3.sysml")
 
 # Tests that produce OK or KO
