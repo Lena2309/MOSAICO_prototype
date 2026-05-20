@@ -53,7 +53,7 @@ public class ExpressionBuilder {
         }
 
         if (e instanceof LiteralString s) {
-            throw new InvalidParameterException("String Literals not implemented.");
+            return new LiteralStringExpression(s.getValue());
         }
 
         if (e instanceof NullExpressionImpl n) {
@@ -87,6 +87,13 @@ public class ExpressionBuilder {
                         throw new InvalidParameterException("Operator" + operator + "  requires 2 operands, found: " + nbOperands);
                     else
                         return new GreaterThanExpression(transpile(operands.get(0)), transpile(operands.get(1)));
+                }
+
+                case "<": {
+                    if (nbOperands != 2)
+                        throw new InvalidParameterException("Operator" + operator + "  requires 2 operands, found: " + nbOperands);
+                    else
+                        return new LowerThanExpression(transpile(operands.get(0)), transpile(operands.get(1)));
                 }
 
                 case "+": {

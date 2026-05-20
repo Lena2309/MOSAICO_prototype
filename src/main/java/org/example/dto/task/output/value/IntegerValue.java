@@ -9,6 +9,10 @@ public class IntegerValue extends Value {
         this.value = value;
     }
 
+    public IntegerValue(String value) {
+        this.value = Integer.parseInt(value);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hashCode(value);
