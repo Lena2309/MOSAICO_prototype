@@ -6,10 +6,7 @@ import org.example.dto.ChannelState;
 import org.example.dto.task.AgentTask;
 import org.example.dto.task.output.Channel;
 import org.example.dto.task.output.TaskOutput;
-import org.example.dto.task.output.value.BooleanValue;
-import org.example.dto.task.output.value.MultipleValue;
-import org.example.dto.task.output.value.StringValue;
-import org.example.dto.task.output.value.Value;
+import org.example.dto.task.output.value.*;
 import org.example.llm.LLM;
 import org.example.llm.LLMProvider;
 
@@ -32,6 +29,7 @@ public class SolutionAgent extends MosaicoAgent {
         return switch (t) {
             case "String" -> new StringValue(generatedText);
             case "Boolean" -> new BooleanValue(generatedText);
+            case "Integer" -> new IntegerValue(generatedText);
             default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
         };
     }
@@ -68,7 +66,17 @@ public class SolutionAgent extends MosaicoAgent {
 
         // 3. Execute the LLM call using LangChain4j
         System.out.println("[LOG] " + this.getName() + ": LLM call now.");
+
+        // --- START TIMER ---
+        long startTime = System.nanoTime();
+
         String generatedText = llm.chat(systemMessage, userMessage);
+
+        // --- END TIMER ---
+        long endTime = System.nanoTime();
+        long durationMs = (endTime - startTime) / 1_000_000; // Convert nanoseconds to milliseconds
+
+        System.out.println("[METRIC] " + this.getName() + ": LLM call finished in " + durationMs + " ms.");
 
         // 4. Wrap and return the output
         Value resultValue;
