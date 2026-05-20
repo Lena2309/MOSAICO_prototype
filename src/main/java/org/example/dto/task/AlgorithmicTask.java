@@ -9,7 +9,9 @@ import org.example.dto.task.output.Channel;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** Algorithmic tasks are performed without using an agent. */
+/**
+ * Algorithmic tasks are performed without using an agent.
+ */
 public class AlgorithmicTask extends Task {
     Statement statement;
 
@@ -23,7 +25,9 @@ public class AlgorithmicTask extends Task {
 
     @Override
     public ChannelState execute(ChannelState state, AttributeState memory) {
-
+        if (this.statement == null) {
+            return new ChannelStateImpl();
+        }
         this.statement.execute(state, memory);
 
         //FIXME : the statement.execute above should be sufficient ?
@@ -61,8 +65,7 @@ public class AlgorithmicTask extends Task {
             for (var channel : this.inputChannels) {
             }
             return new ChannelStateImpl();
-        }
-        else {
+        } else {
             var outputList = new ChannelStateImpl();
             for (var channel : this.outputChannels) {
                 // System.out.println("Task " + getTaskName() + ", with channel " + channel.getName() + ", executed successfully.");
