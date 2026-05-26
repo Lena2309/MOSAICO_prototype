@@ -16,4 +16,8 @@ public class LLMProvider {
                 return new LLMHuggingFace();
         }
     }
+
+    public static LLM getMock(String reply){
+        return new MockLLM(reply);
+    }
 }
