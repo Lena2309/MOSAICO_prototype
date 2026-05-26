@@ -6,6 +6,7 @@ import org.example.transformer.mapper.FlowMapper;
 import org.example.transformer.mapper.PartMapper;
 import org.omg.sysml.lang.sysml.*;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -29,6 +30,11 @@ public interface SysMLDecoder {
 
         sysml.readResource("src/main/resources/mosaico.sysml");
         var sysmlResource = sysml.readResource(collaborationPatternPath);
+
+        if (!sysmlResource.getErrors().isEmpty()) {
+            for (var e : sysmlResource.getErrors()) System.out.println("[ERROR] " + e);
+            throw new InvalidParameterException("Error while reading resource " + collaborationPatternPath);
+        }
 
         var packages = (Namespace) sysmlResource.getContents().getFirst();
         var agentTypes = new HashMap<String, MosaicoAgent>();

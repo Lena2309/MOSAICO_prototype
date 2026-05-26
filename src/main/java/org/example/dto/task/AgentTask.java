@@ -84,7 +84,7 @@ public class AgentTask extends Task {
                     case ReferenceAgent referenceAgent -> {
                         // Note: We use reference agent in-channel only if it has no out-channel
                         referenceAgent.showToUser(this.taskDescription);
-                        var res = MosaicoAgent.readChannel(channel, allTaskOutputs).toString();
+                        var res = MosaicoAgent.readChannel(channel, allTaskOutputs);
                         if (res != null)
                             referenceAgent.showToUser(res + "(" + channel.toString() + ")");
                         else
