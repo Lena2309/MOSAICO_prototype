@@ -1,4 +1,4 @@
-// Requirement Manager with reference agent
+// Requirement Manager with reference agent (with mock solution agents and capped number of iterations).
 
 package Example {
     private import ScalarValues::*;
@@ -10,7 +10,7 @@ package Example {
         constraint { licence == "MIT" }
     }
 
-    part def EvaluatorAgent specializes MockTrueAgent {
+    part def EvaluatorAgent specializes MockFalseAgent {
          :>> id = "eval1" ;
     }
 
@@ -20,7 +20,11 @@ package Example {
 
     action def Process {
 
+        attribute loopIteration : Integer ;
+
         first start;
+
+        assign loopIteration := 0;
 
         then action userInput : AgentStep {
             :>> description = "Please give a specification.";
@@ -33,7 +37,7 @@ package Example {
                 :>> description = "Generate a new requirement." ;
                 :>> agent = generatorAgent;
                 in userSpec : String ;
-                out req ;
+                out req :String ;
             }
 
             then action evaluation : AgentStep {
@@ -43,7 +47,12 @@ package Example {
                 in userSpec : String ;
                 out result : Boolean;
             }
-        } until repeatGeneration.evaluation.result ;
+
+             then action incr {
+                        assign loopIteration := loopIteration + 1;
+                        }
+
+        } until repeatGeneration.evaluation.result | loopIteration > 3 ;
 
         then action report : AgentStep {
             :>> description = "Requirement successfully generated.";
