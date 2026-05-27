@@ -15,7 +15,7 @@ public class LLMHuggingFace implements LLM {
         this.chatModel = OpenAiChatModel.builder()
                 .apiKey(System.getenv("HUGGING_FACE_KEY"))
                 .baseUrl("https://router.huggingface.co/v1")
-                .modelName("zai-org/GLM-5")
+                .modelName("zai-org/GLM-5.1")
                 .timeout(Duration.ofSeconds(60))
                 .logRequests(true)
                 .logResponses(true)
