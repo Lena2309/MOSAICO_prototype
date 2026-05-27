@@ -12,7 +12,27 @@ public class LLMHuggingFace implements LLM {
     final OpenAiChatModel chatModel;
 
     public LLMHuggingFace(){
-        this.chatModel = OpenAiChatModel.builder()
+        //this.chatModel = buildMistral() ;
+        this.chatModel = buildZAI() ;
+    }
+
+    /** Get a model based on Mistral from a HuggingFace provider. */
+    static OpenAiChatModel buildMistral(){
+        return OpenAiChatModel.builder()
+                .apiKey(System.getenv("HUGGING_FACE_KEY"))
+                .baseUrl("https://router.huggingface.co/featherless-ai/v1")
+                .modelName("mistralai/Mistral-7B-Instruct-v0.1")
+                .maxCompletionTokens(200)
+                .maxTokens(200)
+                .timeout(Duration.ofSeconds(60))
+                .logRequests(true)
+                .logResponses(true)
+                .build();
+    }
+
+    /** Get a model based on ZAI from a HuggingFace provider. */
+    static OpenAiChatModel buildZAI(){
+        return OpenAiChatModel.builder()
                 .apiKey(System.getenv("HUGGING_FACE_KEY"))
                 .baseUrl("https://router.huggingface.co/v1")
                 .modelName("zai-org/GLM-5.1")
@@ -21,6 +41,8 @@ public class LLMHuggingFace implements LLM {
                 .logResponses(true)
                 .build();
     }
+
+
 
     public String chat(SystemMessage sm, UserMessage um){
         //System.out.println("[DEBUG][REQUEST TO LLM]");

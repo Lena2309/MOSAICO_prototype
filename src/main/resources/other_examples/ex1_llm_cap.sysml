@@ -27,7 +27,7 @@ package Example {
         then loop action repeatGeneration {
 
             action generate : AgentStep {
-                :>> description = "Given the specification in the channel userSpec, generate an atomic requirement for a software  validating that specification." ;
+                :>> description = "Given the specification in the channel userSpec, generate an atomic requirement for a software validating that specification." ;
                 :>> agent = generatorAgent;
                 in userSpec : String ;
                 out req :String ;
