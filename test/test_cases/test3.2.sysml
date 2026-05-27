@@ -49,7 +49,7 @@ package Test3_2 {
         then action outputToUser : AgentStep {
             :>> description = "Test OK (if not entered into the loop body).";
             :>> agent = referenceAgent;
-             in req : Boolean ;
+             in req : Boolean ; // Should be empty because the loop body should not be executed.
         }
 
         then done;
