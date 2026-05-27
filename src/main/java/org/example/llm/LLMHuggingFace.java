@@ -20,8 +20,8 @@ public class LLMHuggingFace implements LLM {
     static OpenAiChatModel buildMistral(){
         return OpenAiChatModel.builder()
                 .apiKey(System.getenv("HUGGING_FACE_KEY"))
-                .baseUrl("https://router.huggingface.co/featherless-ai/v1")
-                .modelName("mistralai/Mistral-7B-Instruct-v0.1")
+                .baseUrl("https://router.huggingface.co/featherless-ai/v1") // select the inference provider here
+                .modelName("mistralai/Mistral-7B-Instruct-v0.2")
                 .maxCompletionTokens(200)
                 .maxTokens(200)
                 .timeout(Duration.ofSeconds(60))
