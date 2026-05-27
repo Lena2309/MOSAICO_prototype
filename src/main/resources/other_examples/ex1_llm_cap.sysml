@@ -6,13 +6,10 @@ package Example {
     private import MOSAICO::*;
 
 
-    part def EvaluatorAgent specializes MockFalseAgent {
-         :>> id = "eval1" ;
-    }
 
     referenceAgent : ReferenceAgent;
     generatorAgent : SolutionAgent;
-    evaluatorAgent : EvaluatorAgent;
+    evaluatorAgent : SolutionAgent;
 
     action def Process {
 
@@ -37,7 +34,7 @@ package Example {
             }
 
             then action evaluation : AgentStep {
-                :>> description = "Check that the generated requirement is correct." ;
+                :>> description = "Given the specification in the channel userSpec, and some requirements in the channel req, tell if the requirement covers completely the specification. Answer with TRUE or FALSE only." ;
                 :>> agent = evaluatorAgent ;
                 in req ;
                 in userSpec : String ;
