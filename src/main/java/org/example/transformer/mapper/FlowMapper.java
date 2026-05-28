@@ -255,9 +255,12 @@ public interface FlowMapper {
                 kind = LoopKind.WHILE;
                 condition = new Condition(ExpressionBuilder.transpile(loopActionUsage.getWhileArgument()));
             }
+            return new LoopStep(headStep, condition, kind, Optional.empty());
         }
-
-        return new LoopStep(headStep, condition, kind, Optional.empty());
+        else if (e instanceof ActionUsage){
+            return headStep;
+        }
+        else throw new InvalidParameterException("Not handled by the flow mapper: " + e.getClass());
     }
 
     private static void processBranch(
