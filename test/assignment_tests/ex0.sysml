@@ -5,14 +5,14 @@ package SimpleAssignment {
 
     action def TestAssignment {
 
-        attribute loopIteration : Integer ;
+        attribute counter : Integer ;
 
         first start;
 
-        assign loopIteration := 0;
+        assign counter := 0;
 
         then action setTrue {
-            assign loopIteration := loopIteration + 1;
+            assign counter := counter + 1;
             }
 
         then done;
