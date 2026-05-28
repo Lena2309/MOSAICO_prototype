@@ -95,6 +95,12 @@ public class ExpressionBuilder {
                     else
                         return new AddExpression(transpile(operands.get(0)), transpile(operands.get(1)));
                 }
+                case "-": {
+                    if (nbOperands != 2)
+                        throw new InvalidParameterException("Operator" + operator + "  requires 2 operands, found: " + nbOperands);
+                    else
+                        return new MinusExpression(transpile(operands.get(0)), transpile(operands.get(1)));
+                }
 
                 case "==": {
                     if (nbOperands != 2)
