@@ -40,7 +40,7 @@ public interface ActionMapper {
         populateInputAndOutputDependencies(action, inputs, outputs, outputDependencies);
 
         Step newStep = new Step(new AlgorithmicTask(
-                action.getDeclaredName(),
+                buildName(action),
                 propertyMap.get("description"),
                 outputs,
                 inputs,
@@ -101,7 +101,7 @@ public interface ActionMapper {
         populateInputAndOutputDependencies(action, inputs, outputs, outputDependencies);
 
         var newStep = new Step(new AgentTask(
-                action.getDeclaredName(),
+                buildName(action),
                 propertyMap.get("description"),
                 outputs,
                 agentForTask.get(),
@@ -243,5 +243,10 @@ public interface ActionMapper {
         for (var child : e.getOwnedElement()) {
             populateActionProperties(child, propertyMap);
         }
+    }
+
+    static String buildName(ActionUsage a){
+        final var name = a.getDeclaredName();
+        return (name!= null ? name : a.path());
     }
 }

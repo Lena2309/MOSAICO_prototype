@@ -18,6 +18,7 @@ public class AgentTask extends Task {
     private final Map<String, String> otherProperties;
     private MosaicoAgent bestAgent;
 
+    @Deprecated
     public AgentTask(String taskName, String taskDescription, MosaicoAgent bestAgent) {
         this(taskName, taskDescription, new ArrayList<>(), bestAgent, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashMap<>());
     }
