@@ -3,14 +3,12 @@ package org.example.dto.conditional.expression;
 import org.example.dto.AttributeState;
 import org.example.dto.ChannelState;
 import org.example.dto.task.output.TaskOutput;
-import org.example.dto.task.output.value.BooleanValue;
 import org.example.dto.task.output.value.Value;
 
 import java.security.InvalidParameterException;
 import java.util.List;
 
 public class DotExpression implements Expression {
-    static final Value trueVal = new BooleanValue(true);
     final String channelName;
     final List<String> otherParents;
     final String taskName;
@@ -33,14 +31,15 @@ public class DotExpression implements Expression {
         return "DotExpression[" + otherParents + "," + taskName + "," + channelName + ']';
     }
 
-    @Override
-    public boolean checkCondition(ChannelState trace, AttributeState memory) {
-        return trace.stream().anyMatch((t) -> nameMatch(t) && t.value().equals(trueVal));
-    }
 
     @Override
     public Value eval(ChannelState trace, AttributeState memory) {
-        return new BooleanValue(this.checkCondition(trace, memory)); // FIXME : only works for booleans
+        var result = trace.stream().filter(this::nameMatch).findAny();
+        if (result.isPresent())
+            return result.get().value() ;
+        else
+            // FIXME : search also in memory
+            throw new InvalidParameterException("Not found: " + this.channelName);
     }
 
     boolean nameMatch(TaskOutput t) {

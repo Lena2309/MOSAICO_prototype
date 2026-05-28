@@ -33,7 +33,7 @@ public interface SysMLDecoder {
 
         if (!sysmlResource.getErrors().isEmpty()) {
             for (var e : sysmlResource.getErrors()) System.out.println("[ERROR] " + e);
-            throw new InvalidParameterException("Error while reading resource " + collaborationPatternPath);
+            throw new InvalidParameterException("Error reported while reading resource " + collaborationPatternPath);
         }
 
         var packages = (Namespace) sysmlResource.getContents().getFirst();

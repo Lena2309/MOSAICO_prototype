@@ -1,3 +1,5 @@
+//test the "including" function.
+
 package IntermediateAssignment {
     private import ScalarValues::*;
     private import MOSAICO::*;

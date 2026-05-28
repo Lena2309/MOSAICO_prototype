@@ -1,16 +1,31 @@
-// Requirement Manager with reference agent (with LLM solution agents and capped number of iterations).
+// Requirement Manager with reference agent (with mock agents and capped number of iterations).
 
 package Example {
     private import ScalarValues::*;
     private import MOSAICO::*;
     private import SequenceFunctions::including;
 
+    // remove-me
+    part def GeneratorAgent specializes MockStringAgent {
+        :>> id = "gen1" ;
+        constraint { licence == "MIT" }
+    }
+
+    // remove-me
+    part def EvaluatorAgent specializes MockTrueAgent {
+         :>> id = "eval1" ;
+    }
+
+    // remove-me
+    part def NegEvaluatorAgent specializes MockFalseAgent {
+         :>> id = "eval2" ;
+    }
 
 
     referenceAgent : ReferenceAgent;
-    generatorAgent : SolutionAgent;
-    evaluatorAgent : SolutionAgent;
-    otherEvaluatorAgent : SolutionAgent;
+    generatorAgent : GeneratorAgent;
+    evaluatorAgent : EvaluatorAgent;
+    otherEvaluatorAgent : NegEvaluatorAgent;
 
     action def Process {
 

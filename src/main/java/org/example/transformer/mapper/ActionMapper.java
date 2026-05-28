@@ -163,7 +163,7 @@ public interface ActionMapper {
             Element el = action.getOwnedRelationship().getFirst().getOwnedRelatedElement().getFirst(); // FIXME
             if (el instanceof ActionUsage a)
                 return extractStatement(a);
-            else throw new InvalidParameterException();
+            else throw new InvalidParameterException("Cannot handle statement " + el.getClass().getSimpleName());
         }
     }
 
