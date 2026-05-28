@@ -10,6 +10,12 @@ public class MultipleValue extends Value {
         this.values = new ArrayList<>();
     }
 
+    /** Copy constructor (shallow copy) */
+    public MultipleValue(MultipleValue collection){
+        this();
+        for (Value v : collection.values) this.addValue(v);
+    }
+
     @Override
     public int hashCode() {
         return values.hashCode();
@@ -32,5 +38,11 @@ public class MultipleValue extends Value {
 
     public void addValue(Value v) {
         this.values.add(v);
+    }
+
+    public MultipleValue functionalAdd(Value v){
+        MultipleValue copy = new MultipleValue(this);
+        copy.addValue(v) ;
+        return copy;
     }
 }

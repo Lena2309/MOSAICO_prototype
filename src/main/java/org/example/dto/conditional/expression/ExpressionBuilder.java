@@ -2,7 +2,8 @@ package org.example.dto.conditional.expression;
 
 import org.eclipse.emf.ecore.EObject;
 import org.omg.sysml.lang.sysml.*;
-import org.omg.sysml.lang.sysml.impl.NullExpressionImpl;
+import org.omg.sysml.lang.sysml.InvocationExpression;
+import org.omg.sysml.lang.sysml.NullExpression;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -53,10 +54,10 @@ public class ExpressionBuilder {
         }
 
         if (e instanceof LiteralString s) {
-            throw new InvalidParameterException("String Literals not implemented.");
+            return new LiteralStringExpression(s.getValue());
         }
 
-        if (e instanceof NullExpressionImpl n) {
+        if (e instanceof NullExpression n) {
             return new org.example.dto.conditional.expression.NullExpression();
         }
 
@@ -65,7 +66,7 @@ public class ExpressionBuilder {
             List<org.omg.sysml.lang.sysml.Expression> operands = findOperands(op);
             final int nbOperands = operands.size();
 
-            // TODO : add operators ( |, ||, ==, !=, not)
+            // TODO : add operators (!=, not)
             switch (operator) {
 
                 case "&": {
@@ -112,6 +113,19 @@ public class ExpressionBuilder {
                 default:
                     throw new InvalidParameterException("Operator not implemented: " + operator);
             }
+        }
+
+        if (e instanceof  InvocationExpression i){
+
+            String functionName = i.getFunction().getQualifiedName();;
+
+            // map
+            List<Expression> list = new ArrayList<>();
+            for (org.omg.sysml.lang.sysml.Expression p : i.getArgument()){
+                list.add(transpile(p));
+            }
+
+            return new FunctionInvocation(functionName, list);
         }
         throw new InvalidParameterException("Expression not supported: " + e.getClass().getSimpleName());
     }
