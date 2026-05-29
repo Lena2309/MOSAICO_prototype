@@ -7,9 +7,12 @@ import org.example.dto.task.output.value.Value;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FunctionInvocation implements Expression {
+
+    static String[] supported = { "SequenceFunctions::including" };
 
     final String name;
     final List<Expression> parameters;
@@ -32,6 +35,8 @@ public class FunctionInvocation implements Expression {
     }
 
     public FunctionInvocation(String name, List<Expression> parameters) {
+        if (!Arrays.asList(supported).contains(name))
+            throw new InvalidParameterException("Unrecognized function: " + name);
         this.name = name ;
         this.parameters = parameters ;
     }
