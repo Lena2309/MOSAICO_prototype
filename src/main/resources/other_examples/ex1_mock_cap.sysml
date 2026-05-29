@@ -31,6 +31,7 @@ package Example {
             :>> agent = referenceAgent;
             out userSpec : String ;
         }
+
         then loop action repeatGeneration {
 
             action generate : AgentStep {
@@ -48,9 +49,9 @@ package Example {
                 out result : Boolean;
             }
 
-             then action incr {
-                        assign loopIteration := loopIteration + 1;
-                        }
+            then action incr {
+                assign loopIteration := loopIteration + 1;
+            }
 
         } until repeatGeneration.evaluation.result | loopIteration > 3 ;
 

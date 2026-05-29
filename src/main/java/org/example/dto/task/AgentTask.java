@@ -77,9 +77,9 @@ public class AgentTask extends Task {
         }
 
         if (this.outputChannels.isEmpty()) {
-            System.out.println("    [WARNING] No output for this task.");
+            System.out.println("    [WARNING] No output for this task: " + this.taskName);
             if (this.inputChannels.isEmpty())
-                System.out.println("    [WARNING] No input for this task.");
+                System.out.println("    [WARNING] No input for this task: " + this.taskName);
             for (var channel : this.inputChannels) {
                 switch (bestAgent) {
                     case ReferenceAgent referenceAgent -> {
@@ -89,7 +89,7 @@ public class AgentTask extends Task {
                         if (res != null)
                             referenceAgent.showToUser(res + "(" + channel.toString() + ")");
                         else
-                            System.out.println("[ERROR] No value for this channel: " + channel.name());
+                            System.out.println("[ERROR][REFERENCE AGENT] No value for this channel: " + channel.name());
                     }
                     default -> {
                     }

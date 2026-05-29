@@ -92,9 +92,9 @@ package Example {
         } until repeatGeneration.evaluation.completeness | loopIteration > 3 ;
 
         then action report : AgentStep {
-            :>> description = "Requirement successfully generated.";
+            :>> description = "Requirements successfully generated.";
             :>> agent = referenceAgent;
-            in req : String ;
+            in completeness : Boolean; // fixme
         }
 
         then done;

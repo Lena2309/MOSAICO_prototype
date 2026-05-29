@@ -116,8 +116,12 @@ public interface ActionMapper {
     }
 
     private static void populateInputAndOutputDependencies(ActionUsage action, ArrayList<Channel> inputs, ArrayList<Channel> outputs, List<Task> outputDependencies) {
+
+        // First populate inputs, only if this task comes after another task.
         if (!(outputDependencies.isEmpty())) {
             for (var e : action.getInput()) {
+
+                // Look for existing output channels in previous tasks.
                 var inputFound = false;
                 for (var task : outputDependencies) {
                     for (var channel : task.getOutputChannels()) {
@@ -132,16 +136,23 @@ public interface ActionMapper {
             }
         }
 
+        // Build new channels for outputs.
         for (Feature e : action.getOutput()) {
-            var name = e.getDeclaredName();
-            var type = extractChannelType(e, name);
-            var multi = e.getMultiplicity();
-            int maxBound = 0;
-            if (multi != null)
-                maxBound = multi.getOwnedRelationship().getLast() instanceof LiteralInteger li ? li.getValue() : 0;
-
-            outputs.add(new Channel(name, type, multi != null, maxBound));
+            Channel c = buildChannel(e);
+            outputs.add(c);
         }
+
+    }
+
+    static Channel buildChannel(Feature e) {
+        var name = e.getDeclaredName();
+        var type = extractChannelType(e, name);
+        var multi = e.getMultiplicity();
+        int maxBound = 0;
+        if (multi != null)
+            maxBound = multi.getOwnedRelationship().getLast() instanceof LiteralInteger li ? li.getValue() : 0;
+
+        return new Channel(name, type, multi != null, maxBound);
     }
 
     // Fill the parents for absolute names of channels.

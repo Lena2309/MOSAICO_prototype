@@ -36,12 +36,13 @@ package Example {
             :>> agent = referenceAgent;
             out userSpec : String ;
         }
+
         then loop action repeatGeneration {
 
             // fixme: don't move-me at the end of the loop body !
             action incr {
-                        assign loopIteration := loopIteration + 1;
-                        }
+                assign loopIteration := loopIteration + 1;
+            }
 
             then action generate : AgentStep {
                 :>> description = "Given the specification in the channel userSpec, generate an atomic requirement for a software validating that specification." ;
@@ -56,9 +57,7 @@ package Example {
                 in generatedReq ;
                 in userSpec : String ;
                 out correctness : Boolean;
-                }
-
-
+            }
 
             // Everything after the if/then/else is discarded.
             then action evaluation : AgentStep {
@@ -71,7 +70,7 @@ package Example {
 
             // fixme: Everything after that will be ignored
             if correctnessEvaluation.correctness then record ;
-                        //else nop;
+            //else nop;
 
 
         } until repeatGeneration.evaluation.completeness | loopIteration > 3 ;
@@ -79,7 +78,7 @@ package Example {
         then action report : AgentStep {
             :>> description = "Requirement successfully generated.";
             :>> agent = referenceAgent;
-            in req : String ;
+            in req : String ; // fixme
         }
 
         then done;
