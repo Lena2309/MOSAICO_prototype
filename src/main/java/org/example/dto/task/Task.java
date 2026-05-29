@@ -29,51 +29,7 @@ public abstract class Task {
         this.parents = parents;
     }
 
-    public ChannelState execute(ChannelState allTaskOutputs, AttributeState memory) {
-        var latestDependenciesOutputs = new ChannelStateImpl();
-
-        // Iterate backwards to process the most recent outputs first
-        for (int i = allTaskOutputs.size() - 1; i >= 0; i--) {
-            var output = allTaskOutputs.get(i);
-
-            // 1. Ignore if current task is not dependent to output task
-            if (!this.inputTaskDependencies.contains(output.task())) {
-                continue;
-            }
-
-            // 2. Ignore if it's not a used input channel
-            if (!this.inputChannels.contains(output.channel())) {
-                continue;
-            }
-
-            // 3. Check if we already collected a newer output for this exact Task + Channel
-            boolean alreadyCollected = latestDependenciesOutputs.stream()
-                    .anyMatch(existing -> existing.task().equals(output.task())
-                            && existing.channel().equals(output.channel()));
-
-            // 4. If we haven't seen it yet, add it
-            if (!alreadyCollected) {
-                latestDependenciesOutputs.add(output);
-            }
-        }
-
-        if (this.outputChannels.isEmpty()) {
-            System.out.println("    [WARNING] No output for this task.");
-            if (this.inputChannels.isEmpty())
-                System.out.println("    [WARNING] No input for this task.");
-            for (var channel : this.inputChannels) {
-
-            }
-            return new ChannelStateImpl();
-        } else {
-            var outputList = new ChannelStateImpl();
-            for (var channel : this.outputChannels) {
-
-                // System.out.println("Task " + getTaskName() + ", with channel " + channel.getName() + ", executed successfully.");
-            }
-            return outputList;
-        }
-    }
+    public abstract ChannelState execute(ChannelState allTaskOutputs, AttributeState memory) ;
 
     // Getters
     public String getTaskName() {

@@ -122,10 +122,11 @@ public interface ActionMapper {
             for (var e : action.getInput()) {
 
                 // Look for existing output channels in previous tasks.
+                String requiredName = e.getDeclaredName();
                 var inputFound = false;
                 for (var task : outputDependencies) {
                     for (var channel : task.getOutputChannels()) {
-                        if (Objects.equals(channel.name(), e.getDeclaredName())) {
+                        if (Objects.equals(channel.name(), requiredName)) {
                             inputs.add(channel);
                             inputFound = true;
                             break;

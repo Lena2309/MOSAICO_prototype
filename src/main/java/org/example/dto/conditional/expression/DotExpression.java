@@ -34,9 +34,9 @@ public class DotExpression implements Expression {
 
     @Override
     public Value eval(ChannelState trace, AttributeState memory) {
-        var result = trace.stream().filter(this::nameMatch).findAny();
-        if (result.isPresent())
-            return result.get().value() ;
+        var results = trace.stream().filter(this::nameMatch).toList();
+        if (!results.isEmpty())
+            return results.getLast().value() ;
         else
             // FIXME : search also in memory
             throw new InvalidParameterException("Not found: " + this.channelName);
