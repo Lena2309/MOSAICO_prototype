@@ -29,8 +29,9 @@ public abstract class MockSolutionAgent extends SolutionAgent {
     @Override
     public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel) {
         logInputs(task, dependencies);
-        System.out.println(output_prefix + mockOutput());
-        return new TaskOutput(task, channel, mockOutput());
+        Value output = mockOutput();
+        System.out.println(output_prefix + output);
+        return new TaskOutput(task, channel, output);
     }
 
 }
