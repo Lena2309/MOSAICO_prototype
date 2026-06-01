@@ -67,7 +67,9 @@ public class SolutionAgent extends MosaicoAgent {
         var userMessage = UserMessage.from(finalPrompt);
 
         // 3. Execute the LLM call using LangChain4j
-        System.out.println("[LOG] " + this.getName() + ": LLM call now.");
+
+        System.out.println("[SOLUTION AGENT][PROMPT] (" + this.getName() + ")" + finalPrompt);
+        System.out.println("[SOLUTION AGENT] (" + this.getName() + ") Waiting for LLM response.");
         String generatedText = llm.chat(systemMessage, userMessage);
 
         // 4. Wrap and return the output

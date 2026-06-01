@@ -39,8 +39,9 @@ public class Step {
         var optionalTaskOutput = this.executeTask(taskDependencies, memory);
         taskDependencies.addAll(optionalTaskOutput);
         System.out.println("[LOG] Task " + this.task.getTaskName() + " has been executed successfully.");
-        System.out.println("[LOG] Channel Trace: " + taskDependencies);
-        System.out.println("[LOG] Memory: " + memory);
+        System.out.println("[LOG][STATE] Channel Trace: " + taskDependencies);
+        System.out.println("[LOG][STATE] Memory: " + memory);
+        System.out.println();
     }
 
     private ChannelState executeTask(ChannelState taskDependencies, AttributeState memory) {

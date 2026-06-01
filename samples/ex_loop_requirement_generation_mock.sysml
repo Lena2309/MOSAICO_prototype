@@ -66,7 +66,7 @@ package Example {
             }
 
             // Everything after the if/then/else is discarded.
-            then action evaluation : AgentStep {
+            then action completenessEvaluation : AgentStep {
                 :>> description = "Given the specification in the channel userSpec, and some requirements in the channel currentRequirements, tell if the requirements cover completely the specification. Answer with TRUE or FALSE only." ;
                 :>> agent = completenessAgent ;
                 in currentRequirements ;
@@ -77,7 +77,7 @@ package Example {
             // fixme: Everything after that will be ignored
             if correctnessEvaluation.correctness then record ;
 
-        } until repeatGeneration.evaluation.completeness | loopIteration > 3 ;
+        } until repeatGeneration.completenessEvaluation.completeness | loopIteration > 3 ;
 
         then action report : AgentStep {
             :>> description = "Requirements successfully generated.";
