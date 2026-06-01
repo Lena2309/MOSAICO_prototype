@@ -15,7 +15,7 @@ for f in "${FILES[@]}"
 do
   echo $CPT: TESTING $f
   OUTPUTFILE=out.$CPT.txt
-  mvn compile exec:java -Dexec.mainClass="org.example.Main" -Dexec.args=$f &> $OUTPUTFILE
+  mvn compile exec:java -Dexec.mainClass="eu.mosaico_project.Main" -Dexec.args=$f &> $OUTPUTFILE
   if  grep OUTPUT $OUTPUTFILE | grep "Test KO" ; then
       echo FAILED
       FAILED=$(( FAILED + 1 ))
@@ -31,7 +31,7 @@ for f in "${NON_TERMINATION_FILES[@]}"
 do
   echo $CPT: TESTING $f
   OUTPUTFILE=out.$CPT.txt
-  mvn compile exec:java -Dexec.mainClass="org.example.Main" -Dexec.args=$f &> $OUTPUTFILE
+  mvn compile exec:java -Dexec.mainClass="eu.mosaico_project.Main" -Dexec.args=$f &> $OUTPUTFILE
   if grep OUTPUT $OUTPUTFILE | grep "Test KO" ; then
     echo FAILED
     FAILED=$(( FAILED + 1 ))

@@ -16,6 +16,6 @@ Specifically: https://docs.github.com/en/packages/working-with-a-github-packages
 
 To run a test:
 
-`mvn compile exec:java -Dexec.mainClass="org.example.Main" -Dexex.args="test/test_cases/test0.sysml"`
+`mvn compile exec:java -Dexec.mainClass="eu.mosaico_project.Main" -Dexex.args="test/test_cases/test0.sysml"`
 
 Just replace the last parameter by the SysMLv2 file you want to interpret.
