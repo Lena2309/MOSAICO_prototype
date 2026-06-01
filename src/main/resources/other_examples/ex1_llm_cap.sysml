@@ -54,7 +54,7 @@ package Example {
             then action correctnessEvaluation : AgentStep {
                 :>> description = "Given the specification in the channel userSpec, and a requirement in the channel generatedReq, tell if the requirement is correct with respect to the specification. Answer with TRUE or FALSE only." ;
                 :>> agent = evaluatorAgent ;
-                in generatedReq ;
+                in generatedReq  : String;
                 in userSpec : String ;
                 out correctness : Boolean;
             }
@@ -76,9 +76,10 @@ package Example {
         } until repeatGeneration.evaluation.completeness | loopIteration > 3 ;
 
         then action report : AgentStep {
-            :>> description = "Requirement successfully generated.";
+            :>> description = "Requirements successfully generated.";
             :>> agent = referenceAgent;
-            in req : String ; // fixme
+            in completeness : Boolean; // fixme : replace with currentRequirements
+            in correctness : Boolean ; // fixme : replace with currentRequirements
         }
 
         then done;

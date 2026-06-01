@@ -55,16 +55,18 @@ public class AlgorithmicTask extends Task {
         }
 
         if (this.outputChannels.isEmpty()) {
-            System.out.println("    [WARNING] No output for this task.");
+            System.out.println("    [WARNING] No output for this task (" + this.taskName + ")");
             if (this.inputChannels.isEmpty())
-                System.out.println("    [WARNING] No input for this task.");
+                System.out.println("    [WARNING] No input for this task (" + this.taskName + ")");
             for (var channel : this.inputChannels) {
+                // ?
             }
             return new ChannelStateImpl();
         }
         else {
             var outputList = new ChannelStateImpl();
             for (var channel : this.outputChannels) {
+                // ?
                 // System.out.println("Task " + getTaskName() + ", with channel " + channel.getName() + ", executed successfully.");
             }
             return outputList;
