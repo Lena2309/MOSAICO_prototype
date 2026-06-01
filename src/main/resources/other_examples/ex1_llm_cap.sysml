@@ -5,25 +5,18 @@ package Example {
     private import MOSAICO::*;
     private import SequenceFunctions::including;
 
-
-
     referenceAgent : ReferenceAgent;
     generatorAgent : SolutionAgent;
     evaluatorAgent : SolutionAgent;
-    otherEvaluatorAgent : SolutionAgent;
+    completenessAgent : SolutionAgent;
 
     action def Process {
 
         attribute loopIteration : Integer ;
         attribute currentRequirements : String[0..*] ;
 
-
         action record {
             assign currentRequirements := currentRequirements->including(generate.generatedReq) ;
-        }
-
-        action nop {
-            assign currentRequirements := currentRequirements ;
         }
 
         first start;
@@ -62,7 +55,7 @@ package Example {
             // Everything after the if/then/else is discarded.
             then action evaluation : AgentStep {
                 :>> description = "Given the specification in the channel userSpec, and some requirements in the channel currentRequirements, tell if the requirements cover completely the specification. Answer with TRUE or FALSE only." ;
-                :>> agent = otherEvaluatorAgent ;
+                :>> agent = completenessAgent ;
                 in currentRequirements ;
                 in userSpec : String ;
                 out completeness : Boolean;
@@ -70,8 +63,6 @@ package Example {
 
             // fixme: Everything after that will be ignored
             if correctnessEvaluation.correctness then record ;
-            //else nop;
-
 
         } until repeatGeneration.evaluation.completeness | loopIteration > 3 ;
 

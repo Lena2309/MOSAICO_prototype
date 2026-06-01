@@ -54,7 +54,7 @@ public class Step {
 
     @Override
     public String toString() {
-        return "\n" + buildString("", new java.util.HashSet<>(), new java.util.concurrent.atomic.AtomicInteger(1), "None");
+        return buildString("", new java.util.HashSet<>(), new java.util.concurrent.atomic.AtomicInteger(1), "None");
     }
 
     protected String buildString(String indent, java.util.Set<Step> visited, java.util.concurrent.atomic.AtomicInteger counter, String prevName) {
