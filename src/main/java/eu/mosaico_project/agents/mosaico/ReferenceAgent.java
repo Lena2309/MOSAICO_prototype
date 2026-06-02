@@ -8,6 +8,7 @@ import eu.mosaico_project.dto.task.output.value.MultipleValue;
 import eu.mosaico_project.dto.task.output.value.StringValue;
 import eu.mosaico_project.dto.task.output.value.Value;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class ReferenceAgent extends MosaicoAgent {
 
     @Override
     public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel) {
-        return null;
+        throw new InvalidParameterException("Reference Agents do not perform tasks.");
     }
 
     public void showToUser(String s) {

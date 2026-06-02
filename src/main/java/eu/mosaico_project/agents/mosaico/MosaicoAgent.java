@@ -7,6 +7,7 @@ import eu.mosaico_project.dto.task.output.TaskOutput;
 import eu.mosaico_project.dto.task.output.Channel;
 import eu.mosaico_project.dto.task.output.value.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MosaicoAgent {
@@ -17,6 +18,7 @@ public abstract class MosaicoAgent {
     private String name;
     private List<String> skills;
 
+    @Deprecated
     public MosaicoAgent(String id, String licence, List<String> constraints) {
         this(null, id, null, licence, constraints);
     }
@@ -25,12 +27,14 @@ public abstract class MosaicoAgent {
         this(null, id, name, licence, constraints);
     }
 
+    // FIXME : always called with first parameter = null
     public MosaicoAgent(MosaicoAgentType agentType, String id, String name, String licence, List<String> constraints) {
         this.agentType = agentType;
         this.id = id;
         this.name = name;
         this.licence = licence;
         this.constraints = constraints;
+        this.skills = new ArrayList<>();
     }
 
     /**

@@ -5,6 +5,7 @@ import eu.mosaico_project.agents.mosaico.SolutionAgent;
 import java.util.List;
 import java.util.UUID;
 
+@Deprecated
 public class FallbackAgent extends SolutionAgent {
     public FallbackAgent() {
         this(UUID.randomUUID().toString(), "FallbackAgent", "", List.of());
@@ -12,5 +13,6 @@ public class FallbackAgent extends SolutionAgent {
 
     public FallbackAgent(String id, String name, String description, List<String> constraints) {
         super(id, name, description, constraints);
+        System.out.println("[WARNING] Fallback agent instantiated.");
     }
 }

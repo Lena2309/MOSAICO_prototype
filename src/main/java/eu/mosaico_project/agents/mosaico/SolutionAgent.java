@@ -88,7 +88,7 @@ public class SolutionAgent extends MosaicoAgent {
     /**
      * Stringifies the outputs of dependent tasks to inject into the LLM's context.
      */
-    private String buildContext(List<TaskOutput> dependencies) {
+    static String buildContext(List<TaskOutput> dependencies) {
         if (dependencies == null || dependencies.isEmpty()) {
             return "";
         }
