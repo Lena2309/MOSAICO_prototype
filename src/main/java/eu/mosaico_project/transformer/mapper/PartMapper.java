@@ -29,6 +29,7 @@ public interface PartMapper {
         var typeName = findSuperclassName(partDefinition);
         var agentId = extractPropertyValue(partDefinition, "id");
         var description = extractPropertyValue(partDefinition, "description");
+        String url = extractPropertyValue(partDefinition, "url");
         var partName = partDefinition.getDeclaredName();
 
         var constraints = new ArrayList<String>();
@@ -48,7 +49,7 @@ public interface PartMapper {
             description = "";
         }
 
-        var agent = createAgent(typeName.get(), agentId, "", description, constraints);
+        var agent = createAgent(typeName.get(), agentId, "", description, constraints, (url==null ? null : new A2AAgent.URL(url)));
         agents.put(partName, agent);
     }
 
@@ -181,12 +182,13 @@ public interface PartMapper {
     /**
      * Factory method to instantiate the concrete agent subclass based on the SysML type name.
      */
-    static MosaicoAgent createAgent(String typeName, String id, String agentName, String description, List<String> constraints) {
+    static MosaicoAgent createAgent(String typeName, String id, String agentName, String description, List<String> constraints, A2AAgent.URL url) {
         return switch (typeName) {
             case "ReferenceAgent" -> new ReferenceAgent(id, agentName, description, constraints);
             case "ConsensusAgent" -> new ConsensusAgent(id, agentName, description, constraints);
             case "SupervisionAgent" -> new SupervisionAgent(id, agentName, description, constraints);
             case "SolutionAgent" -> new SolutionAgent(id, agentName, description, constraints);
+            case "RemoteAgent" -> new A2AAgent(url,  agentName, description, null, constraints);
             case "MockTrueAgent" -> new MockTrueSolutionAgent(id, agentName, description, constraints);
             case "MockFalseAgent" -> new MockFalseSolutionAgent(id, agentName, description, constraints);
             case "MockStringAgent" -> new MockStringSolutionAgent(id, agentName, description, constraints);

@@ -100,7 +100,7 @@ public interface SysMLDecoder {
                     mosaicoAgents.add(newAgent);
                 } else {
                     // Fallback: Create a generic agent if the type definition is missing
-                    mosaicoAgents.add(PartMapper.createAgent(agentType, UUID.randomUUID().toString(), rf.getDeclaredName(), null, null));
+                    mosaicoAgents.add(PartMapper.createAgent(agentType, UUID.randomUUID().toString(), rf.getDeclaredName(), null, null, null));
                 }
                 break;
             }
