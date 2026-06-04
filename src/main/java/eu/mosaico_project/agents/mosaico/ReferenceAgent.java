@@ -15,11 +15,11 @@ import java.util.UUID;
 
 public class ReferenceAgent extends MosaicoAgent {
     public ReferenceAgent() {
-        super(String.valueOf(UUID.randomUUID()), "Reference Agent", "An agent that directly interacts with the end-user.", null);
+        super(String.valueOf(UUID.randomUUID()), "Reference Agent", null, null);
     }
 
     public ReferenceAgent(String id, String name, String description, List<String> constraints) {
-        super(id, name, description, constraints);
+        super(id, name, null, constraints);
     }
 
     @Override

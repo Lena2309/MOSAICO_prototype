@@ -21,7 +21,7 @@ public class SolutionAgent extends MosaicoAgent {
     final LLM llm;
 
     public SolutionAgent(String id, String name, String description, List<String> constraints) {
-        super(id, name, description, constraints);
+        super(id, name, null, constraints);
         this.llm = LLMProvider.get(LLMProvider.DEFAULT);
     }
 

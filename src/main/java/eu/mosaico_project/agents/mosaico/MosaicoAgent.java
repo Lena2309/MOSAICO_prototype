@@ -11,24 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MosaicoAgent {
+
+    public record Licence (String info){} ;
+
     private final MosaicoAgentType agentType;
     private final String id;
-    private final String licence;
+    private final Licence licence;
     private final List<String> constraints;
     private String name;
     private List<String> skills;
 
     @Deprecated
-    public MosaicoAgent(String id, String licence, List<String> constraints) {
+    public MosaicoAgent(String id, Licence licence, List<String> constraints) {
         this(null, id, null, licence, constraints);
     }
 
-    public MosaicoAgent(String id, String name, String licence, List<String> constraints) {
+    public MosaicoAgent(String id, String name, Licence licence, List<String> constraints) {
         this(null, id, name, licence, constraints);
     }
 
     // FIXME : always called with first parameter = null
-    public MosaicoAgent(MosaicoAgentType agentType, String id, String name, String licence, List<String> constraints) {
+    public MosaicoAgent(MosaicoAgentType agentType, String id, String name, Licence licence, List<String> constraints) {
         this.agentType = agentType;
         this.id = id;
         this.name = name;
@@ -60,7 +63,7 @@ public abstract class MosaicoAgent {
         this.name = name;
     }
 
-    public String getLicence() {
+    public Licence getLicence() {
         return licence;
     }
 

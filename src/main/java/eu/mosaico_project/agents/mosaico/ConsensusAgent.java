@@ -11,7 +11,7 @@ import java.util.List;
 @Deprecated
 public class ConsensusAgent extends MosaicoAgent {
     public ConsensusAgent(String id, String name, String description, List<String> constraints) {
-        super(id, name, description, constraints);
+        super(id, name, null, constraints);
     }
 
     @Override
