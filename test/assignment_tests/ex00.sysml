@@ -5,14 +5,13 @@ package SimpleAssignment {
 
     action def TestAssignment {
 
-        attribute loopIteration : Boolean := false;
+        attribute counter : Boolean ;
 
         first start;
 
-        //then action setTrue {
-            // assign loopIteration := true;
-            then assign loopIteration := true;
-        //}
+        assign counter := false;
+
+        then assign counter := true;
 
         then done;
     }

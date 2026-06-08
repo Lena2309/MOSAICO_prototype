@@ -1,3 +1,4 @@
+#!/bin/bash
 # export JAVA_HOME=...
 
 PASSED=0
@@ -13,11 +14,12 @@ NON_TERMINATION_FILES=( "test/test_cases/test0_2.sysml" "test/test_cases/test0_3
 for f in "${FILES[@]}"
 do
   echo $CPT: TESTING $f
-  mvn compile exec:java -Dexec.mainClass="org.example.Main" -Dexec.args=$f &> out.$CPT
-  if  grep OUTPUT out.$CPT | grep "Test KO" ; then
+  OUTPUTFILE=out.$CPT.txt
+  mvn compile exec:java -Dexec.mainClass="eu.mosaico_project.Main" -Dexec.args=$f &> $OUTPUTFILE
+  if  grep OUTPUT $OUTPUTFILE | grep "Test KO" ; then
       echo FAILED
       FAILED=$(( FAILED + 1 ))
-  elif  grep OUTPUT out.$CPT | grep "Test OK" ; then
+  elif  grep OUTPUT $OUTPUTFILE | grep "Test OK" ; then
     echo PASSED
     PASSED=$(( PASSED + 1 ))
   fi
@@ -28,8 +30,9 @@ done
 for f in "${NON_TERMINATION_FILES[@]}"
 do
   echo $CPT: TESTING $f
-  mvn compile exec:java -Dexec.mainClass="org.example.Main" -Dexec.args=$f &> out.$CPT
-  if grep OUTPUT out.$CPT | grep "Test KO" ; then
+  OUTPUTFILE=out.$CPT.txt
+  mvn compile exec:java -Dexec.mainClass="eu.mosaico_project.Main" -Dexec.args=$f &> $OUTPUTFILE
+  if grep OUTPUT $OUTPUTFILE | grep "Test KO" ; then
     echo FAILED
     FAILED=$(( FAILED + 1 ))
   else

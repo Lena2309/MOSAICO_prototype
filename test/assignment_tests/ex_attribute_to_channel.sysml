@@ -5,16 +5,10 @@ package SimpleAssignment {
 
     action def TestAssignment {
 
-        attribute counter : Integer ;
-
+        attribute counter : Boolean ;
         first start;
-
-        assign counter := 0;
-
-        then action setTrue {
-            assign counter := counter + 1;
-            }
-
-        then done;
+        assign counter := false;
+        then assign counter := true;
+        out chan = counter ;
     }
 }

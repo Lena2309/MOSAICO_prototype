@@ -6,7 +6,7 @@ private import Collections::*;
 private import CollectionFunctions::*;
 public import MOSAICO::*;
 
-package Test3.2 {
+package Test3_3 {
 
     part def GeneratorAgent specializes MockStringAgent {
         :>> id = "gen1" ;

@@ -6,7 +6,7 @@ private import Collections::*;
 private import CollectionFunctions::*;
 public import MOSAICO::*;
 
-package Test3.2 {
+package Test3_2 {
 
     part def GeneratorAgent specializes MockStringAgent {
         :>> id = "gen1" ;
@@ -49,7 +49,7 @@ package Test3.2 {
         then action outputToUser : AgentStep {
             :>> description = "Test OK (if not entered into the loop body).";
             :>> agent = referenceAgent;
-             in req : Boolean ;
+             in req : Boolean ; // Should be empty because the loop body should not be executed.
         }
 
         then done;

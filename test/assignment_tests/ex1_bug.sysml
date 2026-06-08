@@ -1,19 +1,19 @@
+// BUG TO FIX
+
 package SimpleAssignment {
     private import ScalarValues::*;
     private import MOSAICO::*;
     private import SequenceFunctions::*;
 
     action def TestAssignment {
-
-        attribute counter : Integer ;
-
+        attribute loopIteration : Integer ;
         first start;
 
-        assign counter := 0;
+        assign loopIteration := 0 ;
 
-        then action setTrue {
-            assign counter := counter + 1;
-            }
+        then loop action printNumbers {
+            assign loopIteration := loopIteration + 1;
+        } until false ;
 
         then done;
     }
