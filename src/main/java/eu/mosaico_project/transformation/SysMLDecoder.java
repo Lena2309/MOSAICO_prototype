@@ -1,9 +1,9 @@
-package eu.mosaico_project.transformer;
+package eu.mosaico_project.transformation;
 
 import eu.mosaico_project.agents.mosaico.MosaicoAgent;
 import eu.mosaico_project.dto.step.Step;
-import eu.mosaico_project.transformer.mapper.FlowMapper;
-import eu.mosaico_project.transformer.mapper.PartMapper;
+import eu.mosaico_project.transformation.mapper.FlowMapper;
+import eu.mosaico_project.transformation.mapper.PartMapper;
 import org.omg.sysml.lang.sysml.*;
 
 import java.security.InvalidParameterException;

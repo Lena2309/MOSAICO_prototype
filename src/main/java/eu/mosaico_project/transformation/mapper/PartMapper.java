@@ -1,11 +1,10 @@
-package eu.mosaico_project.transformer.mapper;
+package eu.mosaico_project.transformation.mapper;
 
 import eu.mosaico_project.agents.FallbackAgent;
 import eu.mosaico_project.agents.mock.MockFalseSolutionAgent;
 import eu.mosaico_project.agents.mock.MockMultipleValueSolutionAgent;
 import eu.mosaico_project.agents.mock.MockStringSolutionAgent;
 import eu.mosaico_project.agents.mock.MockTrueSolutionAgent;
-import eu.mosaico_project.agents.mosaico.*;
 import eu.mosaico_project.agents.mosaico.*;
 import org.omg.sysml.lang.sysml.*;
 
@@ -190,9 +189,10 @@ public interface PartMapper {
             case "MockTrueAgent" -> new MockTrueSolutionAgent(id, agentName, description, constraints);
             case "MockFalseAgent" -> new MockFalseSolutionAgent(id, agentName, description, constraints);
             case "MockStringAgent" -> new MockStringSolutionAgent(id, agentName, description, constraints);
-            case "MockMultipleValueAgent" -> new MockMultipleValueSolutionAgent(id, agentName, description, constraints);
+            case "MockMultipleValueAgent" ->
+                    new MockMultipleValueSolutionAgent(id, agentName, description, constraints);
             default -> {
-                System.out.println("[WARNING] Fallback agent for " + typeName) ;
+                System.out.println("[WARNING] Fallback agent for " + typeName);
                 yield new FallbackAgent(id, agentName, description, constraints);
             }
         };

@@ -1,4 +1,4 @@
-package eu.mosaico_project.transformer;
+package eu.mosaico_project.transformation;
 
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.omg.kerml.xtext.KerMLStandaloneSetup;

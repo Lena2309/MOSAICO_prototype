@@ -1,4 +1,4 @@
-package eu.mosaico_project.transformer.mapper;
+package eu.mosaico_project.transformation.mapper;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.nodemodel.util.NodeModelUtils;
