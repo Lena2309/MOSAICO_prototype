@@ -1,4 +1,4 @@
-package eu.mosaico_project.transformer.mapper;
+package eu.mosaico_project.transformation.mapper;
 
 import eu.mosaico_project.agents.mosaico.MosaicoAgent;
 import eu.mosaico_project.dto.conditional.Condition;
@@ -15,7 +15,7 @@ import org.omg.sysml.lang.sysml.*;
 import java.security.InvalidParameterException;
 import java.util.*;
 
-import static eu.mosaico_project.transformer.mapper.UtilAttributeMapper.getSafeName;
+import static eu.mosaico_project.transformation.mapper.UtilAttributeMapper.getSafeName;
 
 public interface FlowMapper {
 
@@ -256,11 +256,9 @@ public interface FlowMapper {
                 condition = new Condition(ExpressionBuilder.transpile(loopActionUsage.getWhileArgument()));
             }
             return new LoopStep(headStep, condition, kind, Optional.empty());
-        }
-        else if (e instanceof ActionUsage){
+        } else if (e instanceof ActionUsage) {
             return headStep;
-        }
-        else throw new InvalidParameterException("Not handled by the flow mapper: " + e.getClass());
+        } else throw new InvalidParameterException("Not handled by the flow mapper: " + e.getClass());
     }
 
     private static void processBranch(
@@ -434,8 +432,7 @@ public interface FlowMapper {
                         }
                     }
                 }
-            }
-            else System.out.println("[WARNING] Owned Relationship not handled: " + rel);
+            } else System.out.println("[WARNING] Owned Relationship not handled: " + rel);
         }
         return internalFlows;
     }

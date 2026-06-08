@@ -6,10 +6,7 @@ import eu.mosaico_project.dto.ChannelState;
 import eu.mosaico_project.dto.task.AgentTask;
 import eu.mosaico_project.dto.task.output.Channel;
 import eu.mosaico_project.dto.task.output.TaskOutput;
-import eu.mosaico_project.dto.task.output.value.BooleanValue;
-import eu.mosaico_project.dto.task.output.value.MultipleValue;
-import eu.mosaico_project.dto.task.output.value.StringValue;
-import eu.mosaico_project.dto.task.output.value.Value;
+import eu.mosaico_project.dto.task.output.value.*;
 import eu.mosaico_project.llm.LLM;
 import eu.mosaico_project.llm.LLMProvider;
 
@@ -32,6 +29,7 @@ public class SolutionAgent extends MosaicoAgent {
         return switch (t) {
             case "String" -> new StringValue(generatedText);
             case "Boolean" -> new BooleanValue(generatedText);
+            case "Integer" -> new IntegerValue(generatedText);
             default -> throw new InvalidParameterException("No Channel to output or not supported type:" + t);
         };
     }

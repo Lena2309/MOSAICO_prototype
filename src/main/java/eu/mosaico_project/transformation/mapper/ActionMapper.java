@@ -1,4 +1,4 @@
-package eu.mosaico_project.transformer.mapper;
+package eu.mosaico_project.transformation.mapper;
 
 import eu.mosaico_project.agents.mosaico.MosaicoAgent;
 import eu.mosaico_project.agents.mosaico.ReferenceAgent;
@@ -257,8 +257,8 @@ public interface ActionMapper {
         }
     }
 
-    static String buildName(ActionUsage a){
+    static String buildName(ActionUsage a) {
         final var name = a.getDeclaredName();
-        return (name!= null ? name : a.path());
+        return (name != null ? name : a.path());
     }
 }

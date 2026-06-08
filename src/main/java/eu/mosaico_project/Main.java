@@ -2,19 +2,18 @@ package eu.mosaico_project;
 
 import eu.mosaico_project.agents.mosaico.CollaborationAgent;
 import eu.mosaico_project.dto.step.Step;
-import eu.mosaico_project.transformer.SysMLDecoder;
+import eu.mosaico_project.transformation.SysMLDecoder;
 
 public class Main {
     static void main(String[] args) {
 
         IO.println(String.format("Hello and welcome!"));
 
-        final String inputFile ;
+        final String inputFile;
         if (args.length == 0) {
             System.out.println("No parameter found, using the default input file.");
             inputFile = "src/main/resources/req1.sysml";
-        }
-        else
+        } else
             inputFile = args[0];
 
         Step parsed = SysMLDecoder.decode(inputFile);

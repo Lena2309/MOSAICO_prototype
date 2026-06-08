@@ -9,8 +9,8 @@ import eu.mosaico_project.dto.task.output.value.Value;
 public class LiteralStringExpression implements Expression {
     final String value;
 
-    LiteralStringExpression(String b) {
-        this.value = b;
+    LiteralStringExpression(String str) {
+        this.value = str;
     }
 
     @Override
