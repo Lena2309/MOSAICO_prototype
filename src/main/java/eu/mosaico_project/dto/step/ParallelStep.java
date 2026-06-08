@@ -2,8 +2,8 @@ package eu.mosaico_project.dto.step;
 
 import eu.mosaico_project.dto.AttributeState;
 import eu.mosaico_project.dto.ChannelState;
+import eu.mosaico_project.dto.ThreadSafeChannelState;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
