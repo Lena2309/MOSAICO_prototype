@@ -2,8 +2,11 @@ package eu.mosaico_project.transformation;
 
 import eu.mosaico_project.agents.mosaico.MosaicoAgent;
 import eu.mosaico_project.miol.step.Step;
+import eu.mosaico_project.shadow_sysml.Simplifier;
 import eu.mosaico_project.transformation.mapper.FlowMapper;
 import eu.mosaico_project.transformation.mapper.PartMapper;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.omg.sysml.lang.sysml.*;
 
 import java.security.InvalidParameterException;
@@ -36,7 +39,13 @@ public interface SysMLDecoder {
             throw new InvalidParameterException("Error reported while reading resource " + collaborationPatternPath);
         }
 
-        var packages = (Namespace) sysmlResource.getContents().getFirst();
+        List<EObject> l = sysmlResource.getContents();
+        EObject root = l.getFirst(); // FIXME : other elements are discarded.
+        Object res = Simplifier.simplify(root);
+        System.out.println("[SIMPLIFIED AST] " + res);
+
+
+        var packages = (Namespace) l.getFirst();
         var agentTypes = new HashMap<String, MosaicoAgent>();
         var mosaicoAgents = new ArrayList<MosaicoAgent>();
         var rootFlows = new ArrayList<Element>();

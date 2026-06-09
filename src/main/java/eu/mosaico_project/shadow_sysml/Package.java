@@ -1,0 +1,4 @@
+package eu.mosaico_project.shadow_sysml;
+
+public interface Package extends Namespace {
+}
