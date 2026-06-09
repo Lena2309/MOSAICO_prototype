@@ -28,8 +28,11 @@ package RequirementManagementAgents {
     consensusAgent : SolutionAgent;
 
     action def GenerateRequirementsProcess {
-            attribute requirements : String[0..*] := ();
+            attribute requirements : String[0..*];
+
             first start;
+
+            assign requirements := ();
 
             then action userInput : ReferenceStep {
                 :>> description = "Act as a user providing an initial system description. Output a description for a system that verifies whether a given word is a palindrome to the systemDescription channel. For the requirements channel, respond only with a blank string.";

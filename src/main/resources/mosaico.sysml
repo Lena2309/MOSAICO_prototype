@@ -21,6 +21,9 @@ package MOSAICO {
     }
 
     part def SolutionAgent specializes Agent;
+    part def RemoteAgent specializes Agent {
+        attribute url : String ;
+    };
 
     part def SupervisionAgent specializes Agent;
 

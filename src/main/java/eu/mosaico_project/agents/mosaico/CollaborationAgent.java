@@ -9,12 +9,12 @@ import eu.mosaico_project.dto.task.AgentTask;
 import eu.mosaico_project.dto.task.output.TaskOutput;
 import eu.mosaico_project.dto.task.output.Channel;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CollaborationAgent extends MosaicoAgent {
-    private CollaborationAgent managerAgent;
-    private List<CollaborationAgent> collaborationAgentPool;
+    private final CollaborationAgent managerAgent;
     private List<MosaicoAgent> agentPool = new ArrayList<>();
 
     public CollaborationAgent() {
@@ -22,10 +22,8 @@ public class CollaborationAgent extends MosaicoAgent {
         this.agentPool.add(new ReferenceAgent());
     }
 
-    public CollaborationAgent(CollaborationAgent managerAgent) {
-        this(managerAgent, null);
-    }
 
+    // FIXME : the two parameters are always null
     public CollaborationAgent(CollaborationAgent managerAgent, List<MosaicoAgent> agentPool) {
         super(null, null, null, null);
         this.managerAgent = managerAgent;
@@ -75,6 +73,6 @@ public class CollaborationAgent extends MosaicoAgent {
 
     @Override
     public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel) {
-        return null;
+        throw new InvalidParameterException("Collaboration Agents do not perform tasks.");
     }
 }

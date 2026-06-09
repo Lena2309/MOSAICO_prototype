@@ -18,7 +18,7 @@ public class SolutionAgent extends MosaicoAgent {
     final LLM llm;
 
     public SolutionAgent(String id, String name, String description, List<String> constraints) {
-        super(id, name, description, constraints);
+        super(id, name, null, constraints);
         this.llm = LLMProvider.get(LLMProvider.DEFAULT);
     }
 
@@ -86,7 +86,7 @@ public class SolutionAgent extends MosaicoAgent {
     /**
      * Stringifies the outputs of dependent tasks to inject into the LLM's context.
      */
-    private String buildContext(List<TaskOutput> dependencies) {
+    static String buildContext(List<TaskOutput> dependencies) {
         if (dependencies == null || dependencies.isEmpty()) {
             return "";
         }
