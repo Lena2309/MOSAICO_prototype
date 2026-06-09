@@ -2,11 +2,11 @@ package eu.mosaico_project.agents.mosaico;
 
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
-import eu.mosaico_project.dto.ChannelState;
-import eu.mosaico_project.dto.task.AgentTask;
-import eu.mosaico_project.dto.task.output.Channel;
-import eu.mosaico_project.dto.task.output.TaskOutput;
-import eu.mosaico_project.dto.task.output.value.*;
+import eu.mosaico_project.miol.ChannelState;
+import eu.mosaico_project.miol.task.AgentTask;
+import eu.mosaico_project.miol.task.output.Channel;
+import eu.mosaico_project.miol.task.output.TaskOutput;
+import eu.mosaico_project.miol.task.output.value.*;
 import eu.mosaico_project.llm.LLM;
 import eu.mosaico_project.llm.LLMProvider;
 
@@ -53,6 +53,28 @@ public class SolutionAgent extends MosaicoAgent {
         return res;
     }
 
+    /**
+     * Stringifies the outputs of dependent tasks to inject into the LLM's context.
+     */
+    static String buildContext(List<TaskOutput> dependencies) {
+        if (dependencies == null || dependencies.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder contextBuilder = new StringBuilder();
+        contextBuilder.append("Context from previous dependencies:\n");
+
+        for (TaskOutput dep : dependencies) {
+            contextBuilder.append("--- Output from Channel: ")
+                    .append(dep.channel().name())
+                    .append(" ---\n")
+                    .append(dep.value().print())
+                    .append("\n\n");
+        }
+
+        return contextBuilder.toString();
+    }
+
     @Override
     public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel) {
         // 1. Build the context and prompt
@@ -81,27 +103,5 @@ public class SolutionAgent extends MosaicoAgent {
         }
 
         return new TaskOutput(task, channel, resultValue);
-    }
-
-    /**
-     * Stringifies the outputs of dependent tasks to inject into the LLM's context.
-     */
-    static String buildContext(List<TaskOutput> dependencies) {
-        if (dependencies == null || dependencies.isEmpty()) {
-            return "";
-        }
-
-        StringBuilder contextBuilder = new StringBuilder();
-        contextBuilder.append("Context from previous dependencies:\n");
-
-        for (TaskOutput dep : dependencies) {
-            contextBuilder.append("--- Output from Channel: ")
-                    .append(dep.channel().name())
-                    .append(" ---\n")
-                    .append(dep.value().print())
-                    .append("\n\n");
-        }
-
-        return contextBuilder.toString();
     }
 }

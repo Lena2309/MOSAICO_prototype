@@ -1,9 +1,9 @@
 package eu.mosaico_project.agents.mosaico;
 
-import eu.mosaico_project.dto.ChannelState;
-import eu.mosaico_project.dto.task.AgentTask;
-import eu.mosaico_project.dto.task.output.TaskOutput;
-import eu.mosaico_project.dto.task.output.Channel;
+import eu.mosaico_project.miol.ChannelState;
+import eu.mosaico_project.miol.task.AgentTask;
+import eu.mosaico_project.miol.task.output.TaskOutput;
+import eu.mosaico_project.miol.task.output.Channel;
 
 import java.security.InvalidParameterException;
 import java.util.List;

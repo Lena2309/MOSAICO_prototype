@@ -1,15 +1,15 @@
 package eu.mosaico_project.transformation.mapper;
 
 import eu.mosaico_project.agents.mosaico.MosaicoAgent;
-import eu.mosaico_project.dto.conditional.Condition;
-import eu.mosaico_project.dto.conditional.LoopKind;
-import eu.mosaico_project.dto.conditional.expression.Expression;
-import eu.mosaico_project.dto.conditional.expression.ExpressionBuilder;
-import eu.mosaico_project.dto.step.IfStep;
-import eu.mosaico_project.dto.step.LoopStep;
-import eu.mosaico_project.dto.step.ParallelStep;
-import eu.mosaico_project.dto.step.Step;
-import eu.mosaico_project.dto.task.Task;
+import eu.mosaico_project.miol.conditional.Condition;
+import eu.mosaico_project.miol.conditional.LoopKind;
+import eu.mosaico_project.miol.conditional.expression.Expression;
+import eu.mosaico_project.miol.conditional.expression.ExpressionBuilder;
+import eu.mosaico_project.miol.step.IfStep;
+import eu.mosaico_project.miol.step.LoopStep;
+import eu.mosaico_project.miol.step.ParallelStep;
+import eu.mosaico_project.miol.step.Step;
+import eu.mosaico_project.miol.task.Task;
 import org.omg.sysml.lang.sysml.*;
 
 import java.security.InvalidParameterException;

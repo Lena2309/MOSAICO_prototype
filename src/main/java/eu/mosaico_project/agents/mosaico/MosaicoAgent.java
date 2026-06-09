@@ -1,26 +1,25 @@
 package eu.mosaico_project.agents.mosaico;
 
 import eu.mosaico_project.agents.MosaicoAgentType;
-import eu.mosaico_project.dto.ChannelState;
-import eu.mosaico_project.dto.task.AgentTask;
-import eu.mosaico_project.dto.task.output.TaskOutput;
-import eu.mosaico_project.dto.task.output.Channel;
-import eu.mosaico_project.dto.task.output.value.Value;
+import eu.mosaico_project.miol.ChannelState;
+import eu.mosaico_project.miol.task.AgentTask;
+import eu.mosaico_project.miol.task.output.TaskOutput;
+import eu.mosaico_project.miol.task.output.Channel;
+import eu.mosaico_project.miol.task.output.value.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MosaicoAgent {
 
-    public record Licence (String info){} ;
-
     private final MosaicoAgentType agentType;
+
+    ;
     private final String id;
     private final Licence licence;
     private final List<String> constraints;
     private String name;
     private List<String> skills;
-
     @Deprecated
     public MosaicoAgent(String id, Licence licence, List<String> constraints) {
         this(null, id, null, licence, constraints);
@@ -80,4 +79,7 @@ public abstract class MosaicoAgent {
     }
 
     abstract public TaskOutput performTask(AgentTask task, ChannelState dependencies, Channel channel);
+
+    public record Licence(String info) {
+    }
 }

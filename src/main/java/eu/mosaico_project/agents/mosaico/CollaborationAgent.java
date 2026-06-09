@@ -1,13 +1,13 @@
 package eu.mosaico_project.agents.mosaico;
 
-import eu.mosaico_project.dto.AttributeState;
-import eu.mosaico_project.dto.AttributeStateImpl;
-import eu.mosaico_project.dto.ChannelState;
-import eu.mosaico_project.dto.ChannelStateImpl;
-import eu.mosaico_project.dto.step.Step;
-import eu.mosaico_project.dto.task.AgentTask;
-import eu.mosaico_project.dto.task.output.TaskOutput;
-import eu.mosaico_project.dto.task.output.Channel;
+import eu.mosaico_project.miol.AttributeState;
+import eu.mosaico_project.miol.AttributeStateImpl;
+import eu.mosaico_project.miol.ChannelState;
+import eu.mosaico_project.miol.ChannelStateImpl;
+import eu.mosaico_project.miol.step.Step;
+import eu.mosaico_project.miol.task.AgentTask;
+import eu.mosaico_project.miol.task.output.TaskOutput;
+import eu.mosaico_project.miol.task.output.Channel;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class CollaborationAgent extends MosaicoAgent {
         System.out.println("--- Starting Collaboration Agent Orchestration ---");
 
         ChannelState allTaskOutputs = new ChannelStateImpl();
-        AttributeState mem = new AttributeStateImpl() ;
+        AttributeState mem = new AttributeStateImpl();
 
         Step currentStep = firstStep;
 

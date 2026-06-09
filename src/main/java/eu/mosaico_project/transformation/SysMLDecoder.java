@@ -1,7 +1,7 @@
 package eu.mosaico_project.transformation;
 
 import eu.mosaico_project.agents.mosaico.MosaicoAgent;
-import eu.mosaico_project.dto.step.Step;
+import eu.mosaico_project.miol.step.Step;
 import eu.mosaico_project.transformation.mapper.FlowMapper;
 import eu.mosaico_project.transformation.mapper.PartMapper;
 import org.omg.sysml.lang.sysml.*;

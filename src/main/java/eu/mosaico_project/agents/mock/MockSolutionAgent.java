@@ -2,11 +2,11 @@ package eu.mosaico_project.agents.mock;
 
 import eu.mosaico_project.agents.mosaico.MosaicoAgent;
 import eu.mosaico_project.agents.mosaico.SolutionAgent;
-import eu.mosaico_project.dto.ChannelState;
-import eu.mosaico_project.dto.task.AgentTask;
-import eu.mosaico_project.dto.task.output.Channel;
-import eu.mosaico_project.dto.task.output.TaskOutput;
-import eu.mosaico_project.dto.task.output.value.Value;
+import eu.mosaico_project.miol.ChannelState;
+import eu.mosaico_project.miol.task.AgentTask;
+import eu.mosaico_project.miol.task.output.Channel;
+import eu.mosaico_project.miol.task.output.TaskOutput;
+import eu.mosaico_project.miol.task.output.value.Value;
 
 import java.util.List;
 

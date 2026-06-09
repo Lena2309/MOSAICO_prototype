@@ -1,12 +1,12 @@
 package eu.mosaico_project.agents.mosaico;
 
 
-import eu.mosaico_project.dto.ChannelState;
-import eu.mosaico_project.dto.task.AgentTask;
-import eu.mosaico_project.dto.task.output.Channel;
-import eu.mosaico_project.dto.task.output.TaskOutput;
-import eu.mosaico_project.dto.task.output.value.MultipleValue;
-import eu.mosaico_project.dto.task.output.value.StringValue;
+import eu.mosaico_project.miol.ChannelState;
+import eu.mosaico_project.miol.task.AgentTask;
+import eu.mosaico_project.miol.task.output.Channel;
+import eu.mosaico_project.miol.task.output.TaskOutput;
+import eu.mosaico_project.miol.task.output.value.MultipleValue;
+import eu.mosaico_project.miol.task.output.value.StringValue;
 import io.a2a.client.*;
 import io.a2a.client.config.ClientConfig;
 import io.a2a.client.http.A2ACardResolver;
@@ -22,7 +22,6 @@ import io.a2a.spec.*;
 import io.grpc.ManagedChannelBuilder;
 
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,19 +31,83 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/** A proxy to talk with a remote A2A agent. */
+/**
+ * A proxy to talk with a remote A2A agent.
+ */
 public class A2AAgent extends MosaicoAgent {
 
-    public record URL(String url){}
-
     final URL url;
-    final int timeout = 2 ;
-
+    final int timeout = 2;
     final List<String> outputs = new ArrayList<>();
 
     public A2AAgent(URL url, String id, String name, Licence licence, List<String> constraints) {
         super(id, name, licence, constraints);
-        this.url = url ;
+        this.url = url;
+    }
+
+    static List<BiConsumer<ClientEvent, AgentCard>> getConsumers(
+            final CompletableFuture<String> messageResponse, List<String> outputs
+    ) {
+        List<BiConsumer<ClientEvent, AgentCard>> consumers = new ArrayList<>();
+        consumers.add(
+                (event, agentCard) -> {
+                    if (event instanceof MessageEvent messageEvent) {
+                        Message responseMessage = messageEvent.getMessage();
+                        String text = extractTextFromParts(responseMessage.getParts());
+                        System.out.println("[LOG] Consume message: " + text);
+                        messageResponse.complete(text);
+                    } else if (event instanceof TaskUpdateEvent taskUpdateEvent) {
+                        UpdateEvent updateEvent = taskUpdateEvent.getUpdateEvent();
+                        if (updateEvent
+                                instanceof TaskStatusUpdateEvent taskStatusUpdateEvent) {
+                            System.out.println(
+                                    "[LOG] Consume status-update: "
+                                            + taskStatusUpdateEvent.getStatus().state().asString());
+                            if (taskStatusUpdateEvent.isFinal()) {
+                                StringBuilder textBuilder = new StringBuilder();
+                                List<Artifact> artifacts
+                                        = taskUpdateEvent.getTask().getArtifacts();
+                                for (Artifact artifact : artifacts) {
+                                    textBuilder.append(extractTextFromParts(artifact.parts()));
+                                }
+                                String text = textBuilder.toString();
+                                messageResponse.complete(text);
+                            }
+                        } else if (updateEvent instanceof TaskArtifactUpdateEvent
+                                taskArtifactUpdateEvent) {
+                            List<Part<?>> parts = taskArtifactUpdateEvent
+                                    .getArtifact()
+                                    .parts();
+                            String text = extractTextFromParts(parts);
+                            System.out.println("[LOG] Consume artifact-update: " + text);
+                        }
+                    } else if (event instanceof TaskEvent taskEvent) {
+                        System.out.println("[LOG]  Received a task event: "
+                                + taskEvent.getTask().getId() + " " + taskEvent.getTask().getStatus().state().toString());
+                        var artifacts = taskEvent.getTask().getArtifacts();
+                        for (Artifact a : artifacts)
+                            for (Part p : a.parts()) {
+                                if (p instanceof TextPart tp) {
+                                    String res = tp.getText();
+                                    System.out.println("[LOG] Artifact part received: " + res);
+                                    outputs.add(res);
+                                }
+                            }
+                    }
+                });
+        return consumers;
+    }
+
+    static String extractTextFromParts(final List<Part<?>> parts) {
+        final StringBuilder textBuilder = new StringBuilder();
+        if (parts != null) {
+            for (final Part<?> part : parts) {
+                if (part instanceof TextPart textPart) {
+                    textBuilder.append(textPart.getText());
+                }
+            }
+        }
+        return textBuilder.toString();
     }
 
     @Override
@@ -55,7 +118,7 @@ public class A2AAgent extends MosaicoAgent {
         String replyToUrl = "FIXME:URL"; // FIXME
 
         try {
-            System.out.println("[LOG] Connecting to agent at: " + A2AAgent.this.url );
+            System.out.println("[LOG] Connecting to agent at: " + A2AAgent.this.url);
             AgentCard publicAgentCard =
                     new A2ACardResolver(A2AAgent.this.url.url()).getAgentCard();
             System.out.println("[LOG] Successfully fetched public agent card");
@@ -105,7 +168,7 @@ public class A2AAgent extends MosaicoAgent {
             Message.Builder messageBuilder = (new Message.Builder()).role(Message.Role.AGENT).parts(Collections.singletonList(p));
             Message message = messageBuilder.build();
 
-            System.out.println("[LOG] Sending message: " + content );
+            System.out.println("[LOG] Sending message: " + content);
             client.sendMessage(message);
             System.out.println("[LOG] Message sent successfully. Handling sync response. Timout= " + this.timeout + " seconds.");
 
@@ -123,77 +186,11 @@ public class A2AAgent extends MosaicoAgent {
 
         MultipleValue mult = new MultipleValue();
         for (String s : outputs) mult.addValue(new StringValue(s));
-        System.out.println("[LOG] Agent output: " + mult + " on channel " +channel.name());
+        System.out.println("[LOG] Agent output: " + mult + " on channel " + channel.name());
         return new TaskOutput(task, channel, mult);
     }
 
-
-    static List<BiConsumer<ClientEvent, AgentCard>> getConsumers(
-            final CompletableFuture<String> messageResponse, List<String> outputs
-    ) {
-        List<BiConsumer<ClientEvent, AgentCard>> consumers = new ArrayList<>();
-        consumers.add(
-                (event, agentCard) -> {
-                    if (event instanceof MessageEvent messageEvent) {
-                        Message responseMessage = messageEvent.getMessage();
-                        String text = extractTextFromParts(responseMessage.getParts());
-                        System.out.println("[LOG] Consume message: " + text );
-                        messageResponse.complete(text);
-                    }
-                    else if (event instanceof TaskUpdateEvent taskUpdateEvent) {
-                        UpdateEvent updateEvent = taskUpdateEvent.getUpdateEvent();
-                        if (updateEvent
-                                instanceof TaskStatusUpdateEvent taskStatusUpdateEvent) {
-                            System.out.println(
-                                    "[LOG] Consume status-update: "
-                                            + taskStatusUpdateEvent.getStatus().state().asString() );
-                            if (taskStatusUpdateEvent.isFinal()) {
-                                StringBuilder textBuilder = new StringBuilder();
-                                List<Artifact> artifacts
-                                        = taskUpdateEvent.getTask().getArtifacts();
-                                for (Artifact artifact : artifacts) {
-                                    textBuilder.append(extractTextFromParts(artifact.parts()));
-                                }
-                                String text = textBuilder.toString();
-                                messageResponse.complete(text);
-                            }
-                        }
-                        else if (updateEvent instanceof TaskArtifactUpdateEvent
-                                taskArtifactUpdateEvent) {
-                            List<Part<?>> parts = taskArtifactUpdateEvent
-                                    .getArtifact()
-                                    .parts();
-                            String text = extractTextFromParts(parts);
-                            System.out.println("[LOG] Consume artifact-update: " + text );
-                        }
-                    }
-                    else if (event instanceof TaskEvent taskEvent) {
-                        System.out.println("[LOG]  Received a task event: "
-                                + taskEvent.getTask().getId() + " " + taskEvent.getTask().getStatus().state().toString());
-                        var artifacts = taskEvent.getTask().getArtifacts();
-                        for (Artifact a : artifacts)
-                            for (Part p : a.parts()) {
-                                if (p instanceof TextPart tp) {
-                                    String res = tp.getText();
-                                    System.out.println("[LOG] Artifact part received: " + res);
-                                    outputs.add(res);
-                                }
-                            }
-                    }
-                });
-        return consumers;
-    }
-
-    static String extractTextFromParts(final List<Part<?>> parts) {
-        final StringBuilder textBuilder = new StringBuilder();
-        if (parts != null) {
-            for (final Part<?> part : parts) {
-                if (part instanceof TextPart textPart) {
-                    textBuilder.append(textPart.getText());
-                }
-            }
-        }
-        return textBuilder.toString();
+    public record URL(String url) {
     }
 
 }

@@ -1,7 +1,7 @@
 package eu.mosaico_project;
 
 import eu.mosaico_project.agents.mosaico.CollaborationAgent;
-import eu.mosaico_project.dto.step.Step;
+import eu.mosaico_project.miol.step.Step;
 import eu.mosaico_project.transformation.SysMLDecoder;
 
 public class Main {

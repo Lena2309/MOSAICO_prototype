@@ -1,8 +1,8 @@
 package eu.mosaico_project.agents.mock;
 
-import eu.mosaico_project.dto.task.output.value.MultipleValue;
-import eu.mosaico_project.dto.task.output.value.StringValue;
-import eu.mosaico_project.dto.task.output.value.Value;
+import eu.mosaico_project.miol.task.output.value.MultipleValue;
+import eu.mosaico_project.miol.task.output.value.StringValue;
+import eu.mosaico_project.miol.task.output.value.Value;
 
 import java.util.List;
 

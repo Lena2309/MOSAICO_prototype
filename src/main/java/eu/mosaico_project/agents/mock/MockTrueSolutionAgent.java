@@ -1,7 +1,7 @@
 package eu.mosaico_project.agents.mock;
 
-import eu.mosaico_project.dto.task.output.value.BooleanValue;
-import eu.mosaico_project.dto.task.output.value.Value;
+import eu.mosaico_project.miol.task.output.value.BooleanValue;
+import eu.mosaico_project.miol.task.output.value.Value;
 
 import java.util.List;
 
