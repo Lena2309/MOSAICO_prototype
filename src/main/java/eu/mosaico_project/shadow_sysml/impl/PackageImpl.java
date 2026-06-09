@@ -6,4 +6,9 @@ public class PackageImpl extends NamespaceImpl implements eu.mosaico_project.sha
         super(p);
     }
 
+    @Override
+    public String toString(){
+        return "PACKAGE " + this.declaredName ;
+    }
+
 }

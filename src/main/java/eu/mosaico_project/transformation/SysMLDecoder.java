@@ -6,7 +6,7 @@ import eu.mosaico_project.shadow_sysml.Simplifier;
 import eu.mosaico_project.transformation.mapper.FlowMapper;
 import eu.mosaico_project.transformation.mapper.PartMapper;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
+
 import org.omg.sysml.lang.sysml.*;
 
 import java.security.InvalidParameterException;
@@ -39,13 +39,14 @@ public interface SysMLDecoder {
             throw new InvalidParameterException("Error reported while reading resource " + collaborationPatternPath);
         }
 
-        List<EObject> l = sysmlResource.getContents();
-        EObject root = l.getFirst(); // FIXME : other elements are discarded.
-        Object res = Simplifier.simplify(root);
-        System.out.println("[SIMPLIFIED AST] " + res);
+        List<EObject> lst = sysmlResource.getContents();
+        EObject root = lst.getFirst(); // FIXME : other elements are discarded.
+        eu.mosaico_project.shadow_sysml.Element rootShadow = Simplifier.simplify(root);
+        System.out.println("[SIMPLIFIED AST] " + rootShadow);
+        if (lst.size()>1)
+            throw new InvalidParameterException("More than one root in this file.");
 
-
-        var packages = (Namespace) l.getFirst();
+        var packages = (Namespace) lst.getFirst();
         var agentTypes = new HashMap<String, MosaicoAgent>();
         var mosaicoAgents = new ArrayList<MosaicoAgent>();
         var rootFlows = new ArrayList<Element>();

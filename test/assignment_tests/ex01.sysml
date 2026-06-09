@@ -13,7 +13,7 @@ package SimpleAssignment {
         assign counter := 0;
         then assign other := 9 ;
 
-        then action setTrue {
+        then action incr {
             first start ;
             then assign counter := counter + 1;
             then assign other := other - 1 ;

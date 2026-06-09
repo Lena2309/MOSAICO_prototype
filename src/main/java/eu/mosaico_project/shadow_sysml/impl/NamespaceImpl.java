@@ -7,10 +7,12 @@ import java.util.List;
 
 public class NamespaceImpl extends ElementImpl {
 
-    final List<Element> members;
+    final List<Element> nameSpaceMembers;
 
     public NamespaceImpl(org.omg.sysml.lang.sysml.Namespace e) {
         super(e);
-        this.members = e.getMember().stream().map(Simplifier::simplifyElement).toList();
+
+        /* Use getOwnedMember instead of OwnedMember or you will get all the imported elements. */
+        this.nameSpaceMembers = e.getOwnedMember().stream().map(Simplifier::simplifyElement).toList();
     }
 }
