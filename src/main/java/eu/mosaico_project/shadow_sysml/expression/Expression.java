@@ -1,4 +1,6 @@
 package eu.mosaico_project.shadow_sysml.expression;
 
-public interface Expression {
+import eu.mosaico_project.shadow_sysml.Element;
+
+public interface Expression extends Element {
 }

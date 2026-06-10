@@ -12,4 +12,9 @@ public class LiteralIntegerImpl implements Expression {
     public String toString(){
         return "LIT " + this.value;
     }
+
+    @Override
+    public String getDeclaredName() {
+        return "NO NAME";
+    }
 }
