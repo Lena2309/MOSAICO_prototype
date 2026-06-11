@@ -6,4 +6,9 @@ public class PartDefinitionImpl extends ItemDefinitionImpl implements ItemDefini
     public PartDefinitionImpl(org.omg.sysml.lang.sysml.PartDefinition p) {
         super(p);
     }
+
+    @Override
+    public String toString() {
+        return "PART DEF " + declaredName ;
+    }
 }

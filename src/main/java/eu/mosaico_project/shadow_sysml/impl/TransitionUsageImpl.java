@@ -4,15 +4,28 @@ import eu.mosaico_project.shadow_sysml.Element;
 import eu.mosaico_project.shadow_sysml.Simplifier;
 import eu.mosaico_project.shadow_sysml.expression.Expression;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 
 public class TransitionUsageImpl extends ElementImpl implements Element {
     final List<Expression> guards;
-    final List<Element> following;
+    final Element following;
+    final Element target;
     public TransitionUsageImpl(org.omg.sysml.lang.sysml.TransitionUsage t) {
         super(t);
         this.guards = Simplifier.simplifyExpressionList(t.getGuardExpression());
-        this.following = Simplifier.simplifyElementList(t.getEffectAction()); // FIXME
+        this.following = Simplifier.simplifyElement(t.getSuccession());
+        this.target = Simplifier.simplifyElement(t.getTarget());
+        if (!t.getTriggerAction().isEmpty())
+            throw new InvalidParameterException("Missed information");
+        if (!t.getEffectAction().isEmpty())
+            throw new InvalidParameterException("Missed information");
+
+    }
+
+    @Override
+    public String toString() {
+        return "GOTO " + (this.guards.isEmpty() ? "" : "(IF)"  );
     }
 }

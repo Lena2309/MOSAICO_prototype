@@ -14,4 +14,9 @@ public class FunctionImpl extends ElementImpl implements Function {
         super(f);
         this.steps = f.getExpression().stream().map(Simplifier::simplifyExpression).toList();
     }
+
+    @Override
+    public String toString() {
+        return "FUNCTION " + declaredName ;
+    }
 }

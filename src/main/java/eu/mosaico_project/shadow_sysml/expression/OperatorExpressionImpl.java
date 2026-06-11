@@ -7,6 +7,7 @@ import java.util.List;
 public class OperatorExpressionImpl implements Expression {
     final String operator;
     final List<Expression> parameters ;
+
     public OperatorExpressionImpl(org.omg.sysml.lang.sysml.OperatorExpression op){
         this.operator = op.getOperator();
         this.parameters = Simplifier.simplifyExpressionList(op.getArgument());
@@ -14,7 +15,7 @@ public class OperatorExpressionImpl implements Expression {
 
     @Override
     public String toString(){
-        return "OP:" + this.operator;
+        return "OP: " + this.operator;
     }
 
     @Override
