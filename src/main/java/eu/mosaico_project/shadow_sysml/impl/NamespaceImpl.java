@@ -28,6 +28,7 @@ public class NamespaceImpl extends ElementImpl {
                 case org.omg.sysml.lang.sysml.OwningMembership m -> this.classifyMember(Simplifier.simplifyElement(m.getOwnedMemberElement()));
                 case org.omg.sysml.lang.sysml.Membership m -> this.classifyMember(Simplifier.simplifyElement(m.getMemberElement()));
                 case org.omg.sysml.lang.sysml.NamespaceImport i -> discard(i);
+                case org.omg.sysml.lang.sysml.MembershipImport i -> discard(i);
                 default ->
                         throw new InvalidParameterException("[NAMESPACE] Not supported: " + r.getClass().getSimpleName());
             }

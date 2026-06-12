@@ -69,7 +69,8 @@ public class Simplifier {
             case org.omg.sysml.lang.sysml.SelectExpression op -> new SelectExpressionImpl(op);
             case org.omg.sysml.lang.sysml.FeatureChainExpression op -> new FeatureChainExpressionImpl(op);
             case org.omg.sysml.lang.sysml.OperatorExpression op -> new OperatorExpressionImpl(op);
-            case org.omg.sysml.lang.sysml.FeatureReferenceExpression op -> new FeatureReferenceExpressionImpl(op);
+            case org.omg.sysml.lang.sysml.FeatureReferenceExpression op ->
+                    new FeatureReferenceExpressionImpl(op);
             case org.omg.sysml.lang.sysml.ConstraintUsage u -> new ConstraintUsageImpl(u);
             case org.omg.sysml.lang.sysml.InvocationExpression i -> new InvocationExpressionImpl(i);
             case org.omg.sysml.lang.sysml.NullExpression n -> new NullExpressionImpl(n);

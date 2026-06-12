@@ -13,21 +13,22 @@ import java.util.List;
 
 public class ReferenceUsageImpl extends ElementImpl implements ReferenceUsage, Feature {
 
+    final String name;
+
     final String usageOf ;
     final List<Type> typeClassifiers = new ArrayList<>();
-    final List<Element> redefinitions = new ArrayList<>();
-    final List<Expression> features = new ArrayList<>();
+    final List<String> redefinitions = new ArrayList<>();
+    final List<Expression> values = new ArrayList<>();
     final List<Feature> members = new ArrayList<>();
     final List<Feature> fixme = new ArrayList<>();
     final List<Element> ownedElements = new ArrayList<>();
-
-
 
     @Nullable
     FeatureDirectionKind direction ;
 
     public ReferenceUsageImpl(org.omg.sysml.lang.sysml.ReferenceUsage r) {
         super(r);
+        this.name = r.getDeclaredName();
 
         EList<Classifier> tmp = r.getDefinition();
         if (tmp.size() != 1)
@@ -37,8 +38,10 @@ public class ReferenceUsageImpl extends ElementImpl implements ReferenceUsage, F
 
         for (org.omg.sysml.lang.sysml.Relationship rel : r.getOwnedRelationship()){
             switch (rel) {
-                case org.omg.sysml.lang.sysml.Redefinition d -> this.redefinitions.add(new FixMeElement(d.path()));
-                case org.omg.sysml.lang.sysml.FeatureValue v -> this.features.add(Simplifier.simplifyExpression(v.getValue()));
+                case org.omg.sysml.lang.sysml.Redefinition d ->{
+                    this.redefinitions.add(d.getRedefinedFeature().getDeclaredName()); // FIXME : name can be null
+                }
+                case org.omg.sysml.lang.sysml.FeatureValue v -> this.values.add(Simplifier.simplifyExpression(v.getValue()));
                 case org.omg.sysml.lang.sysml.FeatureTyping t -> this.typeClassifiers.add(Simplifier.simplifyType(t.getType()));
                 case org.omg.sysml.lang.sysml.FeatureMembership m -> this.members.add(Simplifier.simplifyFeature(m.getOwnedMemberFeature()));
                 case org.omg.sysml.lang.sysml.ReferenceSubsetting s ->
@@ -47,7 +50,6 @@ public class ReferenceUsageImpl extends ElementImpl implements ReferenceUsage, F
                         this.ownedElements.add(Simplifier.simplifyElement(m.getOwnedMemberElement()));
              default -> throw new InvalidParameterException("[REFERENCE USAGE] " + rel.getClass().getSimpleName());
             }
-
 
         }
 
@@ -58,6 +60,6 @@ public class ReferenceUsageImpl extends ElementImpl implements ReferenceUsage, F
 
     @Override
     public String toString() {
-        return "USAGE (REF) " + this.usageOf + " " + (this.direction!= null ? "(" + this.direction + ")": "");
+        return "USAGE (REF) " + name + " " + this.usageOf + " " + (this.direction!= null ? "(" + this.direction + ")": "");
     }
 }
