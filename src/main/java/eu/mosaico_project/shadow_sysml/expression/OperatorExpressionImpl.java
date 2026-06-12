@@ -18,8 +18,4 @@ public class OperatorExpressionImpl implements Expression {
         return "OP: " + this.operator;
     }
 
-    @Override
-    public String getDeclaredName() {
-        return "NO NAME";
-    }
 }

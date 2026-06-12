@@ -15,11 +15,6 @@ public class FeatureReferenceExpressionImpl implements Expression {
     }
 
     @Override
-    public String getDeclaredName() {
-        return "_";
-    }
-
-    @Override
     public String toString() {
         return "REF to=" + target;
     }

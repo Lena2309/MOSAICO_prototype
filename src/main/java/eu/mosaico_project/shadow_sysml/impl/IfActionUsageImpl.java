@@ -1,10 +1,11 @@
 package eu.mosaico_project.shadow_sysml.impl;
 
 import eu.mosaico_project.shadow_sysml.Element;
+import eu.mosaico_project.shadow_sysml.Feature;
 import eu.mosaico_project.shadow_sysml.Simplifier;
 import eu.mosaico_project.shadow_sysml.expression.Expression;
 
-public class IfActionUsageImpl extends ElementImpl implements Element {
+public class IfActionUsageImpl extends ElementImpl implements Feature {
 
     final Expression condition;
     final Element thenAction; // fixme : always ActionUsage

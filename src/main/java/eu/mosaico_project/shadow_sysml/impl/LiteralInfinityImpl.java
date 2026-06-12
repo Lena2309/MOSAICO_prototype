@@ -10,11 +10,7 @@ public class LiteralInfinityImpl implements Expression {
 
     @Override
     public String toString(){
-        return "LIT \"*\" (infinity)";
+        return "\"* (infinity)\"";
     }
 
-    @Override
-    public String getDeclaredName() {
-        return "_";
-    }
 }

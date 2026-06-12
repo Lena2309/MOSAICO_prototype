@@ -44,9 +44,11 @@ public interface SysMLDecoder {
             throw new InvalidParameterException("Only files with a single root can be handled currently.");
         EObject root = lst.getFirst();
         eu.mosaico_project.shadow_sysml.Element rootShadow = Simplifier.simplify(root);
-        System.out.println("[SHADOW AST] " + rootShadow);
+
         if (lst.size()>1)
             throw new InvalidParameterException("More than one root in this file.");
+
+        System.out.println("[SHADOW AST] " + rootShadow);
 
         var packages = (Namespace) lst.getFirst();
         var agentTypes = new HashMap<String, MosaicoAgent>();

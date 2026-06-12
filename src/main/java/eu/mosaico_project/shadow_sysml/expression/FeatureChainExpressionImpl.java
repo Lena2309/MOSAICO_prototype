@@ -15,10 +15,6 @@ public class FeatureChainExpressionImpl implements Expression {
         this.target = Simplifier.simplifyFeature(ref);
     }
 
-    @Override
-    public String getDeclaredName() {
-        return "_";
-    }
 
     @Override
     public String toString() {

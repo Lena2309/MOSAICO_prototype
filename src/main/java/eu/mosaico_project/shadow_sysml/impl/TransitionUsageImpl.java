@@ -1,14 +1,16 @@
 package eu.mosaico_project.shadow_sysml.impl;
 
 import eu.mosaico_project.shadow_sysml.Element;
+import eu.mosaico_project.shadow_sysml.Feature;
 import eu.mosaico_project.shadow_sysml.Simplifier;
+import eu.mosaico_project.shadow_sysml.Usage;
 import eu.mosaico_project.shadow_sysml.expression.Expression;
 
 import java.security.InvalidParameterException;
 import java.util.List;
 
 
-public class TransitionUsageImpl extends ElementImpl implements Element {
+public class TransitionUsageImpl extends ElementImpl implements Usage {
     final List<Expression> guards;
     final Element following;
     final Element target;

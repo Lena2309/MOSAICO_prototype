@@ -18,6 +18,6 @@ public class AssignmentActionUsageImpl extends ActionUsageImpl implements Assign
 
     @Override
     public String toString() {
-        return "ASSIGN " + lvalue.getDeclaredName() + " = ...";
+        return "ASSIGN " + lvalue + " = ...";
     }
 }

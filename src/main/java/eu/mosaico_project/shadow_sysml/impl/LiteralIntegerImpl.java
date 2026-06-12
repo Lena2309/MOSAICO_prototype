@@ -10,11 +10,7 @@ public class LiteralIntegerImpl implements Expression {
 
     @Override
     public String toString(){
-        return "LIT " + this.value;
+        return "\"" + this.value + "\"";
     }
 
-    @Override
-    public String getDeclaredName() {
-        return "NO NAME";
-    }
 }

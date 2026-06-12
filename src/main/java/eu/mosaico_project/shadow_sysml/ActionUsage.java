@@ -1,3 +1,3 @@
 package eu.mosaico_project.shadow_sysml;
 
-public interface ActionUsage extends OccurenceUsage {}
+public interface ActionUsage extends OccurenceUsage, Feature  {}

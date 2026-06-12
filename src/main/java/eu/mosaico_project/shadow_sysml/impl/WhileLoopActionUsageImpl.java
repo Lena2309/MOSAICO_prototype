@@ -1,9 +1,10 @@
 package eu.mosaico_project.shadow_sysml.impl;
 
+import eu.mosaico_project.shadow_sysml.Feature;
 import eu.mosaico_project.shadow_sysml.Simplifier;
 import eu.mosaico_project.shadow_sysml.expression.Expression;
 
-public class WhileLoopActionUsageImpl extends ActionUsageImpl {
+public class WhileLoopActionUsageImpl extends ActionUsageImpl implements Feature {
     final Expression condition;
 
     /** true for While loops, false for Until loops. */

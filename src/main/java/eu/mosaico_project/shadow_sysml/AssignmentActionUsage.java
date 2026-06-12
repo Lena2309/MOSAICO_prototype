@@ -1,3 +1,3 @@
 package eu.mosaico_project.shadow_sysml;
 
-public interface AssignmentActionUsage extends ActionUsage {}
+public interface AssignmentActionUsage extends ActionUsage, Feature {}
