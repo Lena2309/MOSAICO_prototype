@@ -5,9 +5,9 @@ import eu.mosaico_project.miol.step.Step;
 import eu.mosaico_project.transformation.SysMLDecoder;
 
 public class Main {
-    static void main(String[] args) {
+    public static void main(String[] args) {
 
-        IO.println(String.format("Hello and welcome!"));
+        System.out.println(String.format("Hello and welcome!"));
 
         final String inputFile;
         if (args.length == 0) {

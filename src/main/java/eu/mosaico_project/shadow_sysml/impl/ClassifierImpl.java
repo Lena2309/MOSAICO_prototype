@@ -8,8 +8,8 @@ public class ClassifierImpl extends ElementImpl implements Element, Type {
     final String typeName ;
 
     public ClassifierImpl(Classifier c) {
-        this.typeName = c.getDeclaredName();
         super(c);
+        this.typeName = c.getDeclaredName();
     }
 
     @Override

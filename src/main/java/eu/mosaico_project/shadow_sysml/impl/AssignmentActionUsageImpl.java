@@ -10,10 +10,11 @@ public class AssignmentActionUsageImpl extends ActionUsageImpl implements Assign
     final Element lvalue;
 
     public AssignmentActionUsageImpl(org.omg.sysml.lang.sysml.AssignmentActionUsage u) {
+        super(u);
         this.rvalue = Simplifier.simplifyExpression(u.getValueExpression());
         this.lvalue = Simplifier.simplifyElement(u.getReferent());
         // FIXME : what about getTargetArgument ?
-        super(u);
+
     }
 
     @Override
