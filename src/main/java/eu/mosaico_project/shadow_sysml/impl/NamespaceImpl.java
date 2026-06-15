@@ -6,8 +6,8 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Keyword 'specializes' in source code. */
-public class NamespaceImpl extends ElementImpl {
+
+public class NamespaceImpl extends ElementImpl implements Namespace {
 
     final String definedName;
     final List<Element> ownedMembers = new ArrayList<>();
@@ -25,6 +25,7 @@ public class NamespaceImpl extends ElementImpl {
             switch (r)  {
                 // Warning : relationships refer to possibly already handled elements
                 case org.omg.sysml.lang.sysml.Subclassification s -> {
+                    /* Keyword 'specializes' in source code. */
                     this.superTypes.add(s.getSuperclassifier().getDeclaredName());
                 }
                 case org.omg.sysml.lang.sysml.OwningMembership m ->
@@ -54,7 +55,10 @@ public class NamespaceImpl extends ElementImpl {
         }
     }
 
-
+    @Override
+    public List<String> getSuperTypes(){
+        return this.superTypes;
+    }
 
 
 }
