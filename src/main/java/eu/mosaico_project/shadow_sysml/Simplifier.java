@@ -7,14 +7,12 @@ import org.eclipse.emf.ecore.EObject;
 
 import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.Objects;
 
 public class Simplifier {
-    public static Element simplify(EObject node){
-        switch (node){
-            case org.omg.sysml.lang.sysml.Namespace n : return new NamespaceImpl(n) ;
-            default :
-                throw new InvalidParameterException("[ROOT] Not supported: " + node.getClass().getSimpleName());
-        }
+
+    public static Element simplify(org.omg.sysml.lang.sysml.Namespace node){
+        return new NamespaceImpl(node);
     }
 
     public static Element simplifyElement(org.omg.sysml.lang.sysml.Element e){

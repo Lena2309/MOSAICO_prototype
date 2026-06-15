@@ -3,11 +3,11 @@ package eu.mosaico_project.transformation;
 import eu.mosaico_project.agents.mosaico.MosaicoAgent;
 import eu.mosaico_project.miol.step.Step;
 import eu.mosaico_project.shadow_sysml.Simplifier;
+import eu.mosaico_project.shadow_sysml.impl.NamespaceImpl;
 import eu.mosaico_project.transformation.mapper.FlowMapper;
 import eu.mosaico_project.transformation.mapper.PartMapper;
 import org.eclipse.emf.ecore.EObject;
 
-import org.omg.sysml.lang.sysml.*;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -42,18 +42,20 @@ public interface SysMLDecoder {
         List<EObject> lst = sysmlResource.getContents();
         if (lst.size()>1)
             throw new InvalidParameterException("Only files with a single root can be handled currently.");
-        EObject root = lst.getFirst();
-        eu.mosaico_project.shadow_sysml.Element rootShadow = Simplifier.simplify(root);
 
-        if (lst.size()>1)
-            throw new InvalidParameterException("More than one root in this file.");
+        if (! (lst.getFirst() instanceof org.omg.sysml.lang.sysml.Namespace))
+            throw new InvalidParameterException("Don't know what to do with " + lst.getFirst().getClass().getSimpleName());
+
+        org.omg.sysml.lang.sysml.Namespace root = (org.omg.sysml.lang.sysml.Namespace) lst.getFirst();
+        eu.mosaico_project.shadow_sysml.Element rootShadow = Simplifier.simplify(root);
 
         System.out.println("[SHADOW AST] " + rootShadow);
 
-        var packages = (Namespace) lst.getFirst();
-        var agentTypes = new HashMap<String, MosaicoAgent>();
-        var mosaicoAgents = new ArrayList<MosaicoAgent>();
-        var rootFlows = new ArrayList<Element>();
+
+        org.omg.sysml.lang.sysml.Namespace packages = (org.omg.sysml.lang.sysml.Namespace) lst.getFirst();
+        Map<String, MosaicoAgent> agentTypes = new HashMap<>();
+        List<MosaicoAgent> mosaicoAgents = new ArrayList<>();
+        List<org.omg.sysml.lang.sysml.Element> rootFlows = new ArrayList<>();
 
         mapModelResources(packages, agentTypes, mosaicoAgents, rootFlows);
 
@@ -64,17 +66,20 @@ public interface SysMLDecoder {
      * Recursively traverses the SysML model hierarchy to identify agent definitions,
      * specific agent usages (references), and action succession flows.
      */
-    private static void mapModelResources(Element e, Map<String, MosaicoAgent> agents, List<MosaicoAgent> mosaicoAgents, List<Element> rootFlows) {
+    private static void mapModelResources(org.omg.sysml.lang.sysml.Element e,
+                                          Map<String, MosaicoAgent> agents,
+                                          List<MosaicoAgent> mosaicoAgents,
+                                          List<org.omg.sysml.lang.sysml.Element> rootFlows) {
         // First pass: Process relationships (memberships, successions)
         for (var rel : e.getOwnedRelationship()) {
             mapModelResources(rel, agents, mosaicoAgents, rootFlows);
 
             // Identify succession flows within Action Definitions
-            if (e instanceof ActionDefinition && rel instanceof FeatureMembership fm) {
+            if (e instanceof org.omg.sysml.lang.sysml.ActionDefinition && rel instanceof org.omg.sysml.lang.sysml.FeatureMembership fm) {
                 var relatedElement = fm.getOwnedRelatedElement().getFirst();
-                if (relatedElement instanceof SuccessionAsUsage sau) {
+                if (relatedElement instanceof org.omg.sysml.lang.sysml.SuccessionAsUsage sau) {
                     rootFlows.add(sau);
-                } else if (relatedElement instanceof TransitionUsage tru) {
+                } else if (relatedElement instanceof org.omg.sysml.lang.sysml.TransitionUsage tru) {
                     rootFlows.add(tru);
                 }
             }
@@ -83,12 +88,12 @@ public interface SysMLDecoder {
         // Second pass: Process child elements (Parts and References)
         for (var child : e.getOwnedElement()) {
             // Case 1: Discover Agent Definitions (structural templates)
-            if (child instanceof PartDefinition partDefinition) {
+            if (child instanceof org.omg.sysml.lang.sysml.PartDefinition partDefinition) {
                 PartMapper.mapPartToAgents(partDefinition, agents);
             }
 
             // Case 2: Discover Agent Usages (instances in a collaboration)
-            if (child instanceof ReferenceUsage rf && !(e instanceof ActionUsage)) {
+            if (child instanceof org.omg.sysml.lang.sysml.ReferenceUsage rf && !(e instanceof org.omg.sysml.lang.sysml.ActionUsage)) {
                 processReferenceUsage(rf, agents, mosaicoAgents);
             }
 
@@ -97,12 +102,14 @@ public interface SysMLDecoder {
     }
 
     /**
-     * Resolves a {@link ReferenceUsage} to a concrete agent instance by matching
-     * its type against discovered {@link PartDefinition}s.
+     * Resolves a {@link org.omg.sysml.lang.sysml.ReferenceUsage} to a concrete agent instance by matching
+     * its type against discovered {@link org.omg.sysml.lang.sysml.PartDefinition}s.
      */
-    private static void processReferenceUsage(ReferenceUsage rf, Map<String, MosaicoAgent> agents, List<MosaicoAgent> mosaicoAgents) {
+    private static void processReferenceUsage(org.omg.sysml.lang.sysml.ReferenceUsage rf,
+                                              Map<String, MosaicoAgent> agents,
+                                              List<MosaicoAgent> mosaicoAgents) {
         for (var childRef : rf.getOwnedRelationship()) {
-            if (childRef instanceof FeatureTyping ft) {
+            if (childRef instanceof org.omg.sysml.lang.sysml.FeatureTyping ft) {
                 // Get the type name to find the corresponding template
                 String agentType = ft.getOwningFeature().getType().getFirst().getDeclaredName();
 
