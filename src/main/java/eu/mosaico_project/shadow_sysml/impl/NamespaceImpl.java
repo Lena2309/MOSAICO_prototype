@@ -13,8 +13,11 @@ public class NamespaceImpl extends ElementImpl implements Namespace {
     final List<Element> ownedMembers = new ArrayList<>();
     final List<Usage> usages = new ArrayList<>();
     final List<Definition> definitions = new ArrayList<>();
-    final List<Feature> otherFeatures = new ArrayList<>();
+    final List<Feature> unclassifiedFeatures = new ArrayList<>();
     final List<String> superTypes= new ArrayList<>();
+    final List<Element> declarations = new ArrayList<>();
+    final List<Element> redefinitions = new ArrayList<>();
+    final List<Element> flow = new ArrayList<>();
 
     public NamespaceImpl(org.omg.sysml.lang.sysml.Namespace e) {
         super(e);
@@ -44,12 +47,25 @@ public class NamespaceImpl extends ElementImpl implements Namespace {
 
     void classifyMember(Element e){
         switch (e) {
-            case Usage u ->
-                    this.usages.add(u);
+            case ReferenceUsageImpl r -> {
+                switch (r.classify()){
+                    case REDEFINITION -> this.redefinitions.add(r);
+                    case TYPING_DECLARATION -> this.declarations.add(r);
+                    case FIXME -> this.usages.add(r);
+                }
+            }
+            case Usage u ->{
+                this.usages.add(u);
+            }
             case Definition d ->
                     this.definitions.add(d);
-            case Feature f ->
-                    this.otherFeatures.add(f);
+            case SuccessionAsUsageImpl s ->
+                this.flow.add(s);
+
+            case Feature f -> {
+                    System.err.println("[FIXME] Unclassified Feature.");
+                    this.unclassifiedFeatures.add(f);
+            }
             default ->
                     this.ownedMembers.add(e);
         }

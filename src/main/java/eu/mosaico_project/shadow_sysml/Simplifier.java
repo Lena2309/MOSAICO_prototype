@@ -48,6 +48,7 @@ public class Simplifier {
             case org.omg.sysml.lang.sysml.IfActionUsage u -> new IfActionUsageImpl(u); // fixme: never reached.
             case org.omg.sysml.lang.sysml.ActionUsage u -> new ActionUsageImpl(u);
             case org.omg.sysml.lang.sysml.MultiplicityRange m -> new MultiplicityRangeImpl(m);
+            case  org.omg.sysml.lang.sysml.SuccessionAsUsage u -> new SuccessionAsUsageImpl(u);
             case org.omg.sysml.lang.sysml.impl.FeatureImpl i -> new FeatureImpl(i);
             default ->
                     throw new InvalidParameterException("[FEATURE] Not supported: " + f.getClass().getSimpleName());
@@ -82,15 +83,6 @@ public class Simplifier {
     }
     public static List<Expression> simplifyExpressionList(List<? extends org.omg.sysml.lang.sysml.Expression> s){
         return s.stream().map(Simplifier::simplifyExpression).toList();
-    }
-
-    public static List<Type> simplifyTypeList(List<? extends org.omg.sysml.lang.sysml.Type> s){
-        return s.stream().map(Simplifier::simplifyType).toList();
-    }
-
-
-    public static List<Feature> simplifyFeatureList(List<? extends org.omg.sysml.lang.sysml.Feature> s){
-        return s.stream().map(Simplifier::simplifyFeature).toList();
     }
 
 

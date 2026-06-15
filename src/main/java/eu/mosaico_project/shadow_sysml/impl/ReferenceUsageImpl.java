@@ -60,6 +60,18 @@ public class ReferenceUsageImpl extends ElementImpl implements ReferenceUsage, F
 
     @Override
     public String toString() {
-        return "USAGE (REF) " + name + " " + this.usageOf + " " + (this.direction!= null ? "(" + this.direction + ")": "");
+        return "USAGE (REF) " + name + " " + this.usageOf + " " + (this.direction!= null ? "(" + this.direction + ")": "") + " " + this.classify();
     }
+
+
+    enum Kind { REDEFINITION, TYPING_DECLARATION, FIXME }
+
+    public Kind classify(){
+        if (!redefinitions.isEmpty()) return Kind.REDEFINITION ;
+        else
+            if (name != null && usageOf!= null && !typeClassifiers.isEmpty())
+                return Kind.TYPING_DECLARATION ;
+            else return Kind.FIXME;
+    }
+
 }
