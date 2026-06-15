@@ -10,7 +10,7 @@ public class SuccessionAsUsageImpl implements Feature {
 
 
 
-    /** Warning, in SysML AST, a SucessionAsUsage isa a both a Feature and a Relationship.
+    /** Warning, in SysML AST, a SucessionAsUsage is a both a Feature and a Relationship.
         It references nodes that are available by other means (--> risk of cycle) */
     public SuccessionAsUsageImpl(org.omg.sysml.lang.sysml.SuccessionAsUsage u) {
 

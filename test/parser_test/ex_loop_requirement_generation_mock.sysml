@@ -39,7 +39,7 @@ package Example {
             out userSpec : String ;
         }
 
-        then loop action repeatGeneration {
+        then loop action generation {
 
             // fixme: don't move-me at the end of the loop body !
             action incr {

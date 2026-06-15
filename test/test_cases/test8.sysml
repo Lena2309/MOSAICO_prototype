@@ -1,6 +1,6 @@
 // Test case : integer addition and equals operator
 
-package TestPrefix2 {
+package TestAddEquals {
     private import ScalarValues::*;
     private import SequenceFunctions::*;
     private import MOSAICO::*;
