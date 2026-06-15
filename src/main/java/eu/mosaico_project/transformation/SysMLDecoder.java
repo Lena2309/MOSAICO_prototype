@@ -104,6 +104,7 @@ public interface SysMLDecoder {
     /**
      * Resolves a {@link org.omg.sysml.lang.sysml.ReferenceUsage} to a concrete agent instance by matching
      * its type against discovered {@link org.omg.sysml.lang.sysml.PartDefinition}s.
+     * This is called only on owned elements of an ActionUsage.
      */
     private static void processReferenceUsage(org.omg.sysml.lang.sysml.ReferenceUsage rf,
                                               Map<String, MosaicoAgent> agents,
@@ -111,7 +112,7 @@ public interface SysMLDecoder {
         for (var childRef : rf.getOwnedRelationship()) {
             if (childRef instanceof org.omg.sysml.lang.sysml.FeatureTyping ft) {
                 // Get the type name to find the corresponding template
-                String agentType = ft.getOwningFeature().getType().getFirst().getDeclaredName();
+                String agentType = ft.getType().getDeclaredName();
 
                 if (agents.containsKey(agentType)) {
                     // Clone or reference the template and set the specific instance name

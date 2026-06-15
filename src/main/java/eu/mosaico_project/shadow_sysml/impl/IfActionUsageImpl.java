@@ -5,6 +5,8 @@ import eu.mosaico_project.shadow_sysml.Feature;
 import eu.mosaico_project.shadow_sysml.Simplifier;
 import eu.mosaico_project.shadow_sysml.expression.Expression;
 
+/** Not used (not found while traversing SysML AST. */
+@Deprecated
 public class IfActionUsageImpl extends ElementImpl implements Feature {
 
     final Expression condition;
@@ -16,5 +18,6 @@ public class IfActionUsageImpl extends ElementImpl implements Feature {
         this.condition = Simplifier.simplifyExpression(u.getIfArgument());
         this.thenAction = Simplifier.simplifyFeature(u.getThenAction());
         this.elseAction = Simplifier.simplifyFeature(u.getElseAction());
+        System.err.println("[WARNING] IfActionUsage : not tested.");
     }
 }

@@ -1,6 +1,6 @@
-package eu.mosaico_project.shadow_sysml.impl;
+package eu.mosaico_project.shadow_sysml.expression;
 
-import eu.mosaico_project.shadow_sysml.expression.Expression;
+import eu.mosaico_project.shadow_sysml.impl.ElementImpl;
 import org.omg.sysml.lang.sysml.NullExpression;
 
 /** NullExpressions are used for empty data. */

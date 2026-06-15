@@ -1,6 +1,4 @@
-package eu.mosaico_project.shadow_sysml.impl;
-
-import eu.mosaico_project.shadow_sysml.expression.Expression;
+package eu.mosaico_project.shadow_sysml.expression;
 
 public class LiteralStringImpl implements Expression {
     final String value;

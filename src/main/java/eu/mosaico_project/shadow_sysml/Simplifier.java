@@ -3,11 +3,9 @@ package eu.mosaico_project.shadow_sysml;
 import eu.mosaico_project.shadow_sysml.expression.*;
 import eu.mosaico_project.shadow_sysml.expression.FeatureChainExpressionImpl;
 import eu.mosaico_project.shadow_sysml.impl.*;
-import org.eclipse.emf.ecore.EObject;
 
 import java.security.InvalidParameterException;
 import java.util.List;
-import java.util.Objects;
 
 public class Simplifier {
 

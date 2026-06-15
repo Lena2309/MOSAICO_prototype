@@ -1,9 +1,9 @@
-package eu.mosaico_project.shadow_sysml.impl;
+package eu.mosaico_project.shadow_sysml.expression;
 
 import eu.mosaico_project.shadow_sysml.Element;
 import eu.mosaico_project.shadow_sysml.Simplifier;
-import eu.mosaico_project.shadow_sysml.expression.Expression;
 
+import eu.mosaico_project.shadow_sysml.impl.ElementImpl;
 import org.omg.sysml.lang.sysml.InvocationExpression;
 
 import java.util.List;

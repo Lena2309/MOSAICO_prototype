@@ -38,8 +38,11 @@ public class ActionUsageImpl extends OccurenceUsageImpl implements ActionUsage {
 
         for (org.omg.sysml.lang.sysml.Relationship r : u.getOwnedRelationship()){
             switch (r) {
-                case org.omg.sysml.lang.sysml.FeatureTyping t ->
-                        declaredTypes.add(t.getType().getDeclaredName()); //types.add(Simplifier.simplifyElement(t.getType()));
+                case org.omg.sysml.lang.sysml.FeatureTyping ft -> {
+                    final org.omg.sysml.lang.sysml.Type t = ft.getType();
+                    declaredTypes.add(t.getDeclaredName());
+                    //types.add(Simplifier.simplifyElement(t)); // this would loop
+                }
                 case org.omg.sysml.lang.sysml.FeatureMembership m ->
                         this.classify(m.getOwnedMemberFeature());
                 case org.omg.sysml.lang.sysml.Redefinition d ->
@@ -79,6 +82,11 @@ public class ActionUsageImpl extends OccurenceUsageImpl implements ActionUsage {
         }
 
     }
+
+    @Override
+    public List<String> getDeclaredType(){
+        return this.declaredTypes;
+    };
 
     @Override
     public String toString(){
