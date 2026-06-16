@@ -11,13 +11,13 @@ public class NamespaceImpl extends ElementImpl implements Namespace {
 
     final String definedName;
     final List<Element> ownedMembers = new ArrayList<>();
-    final List<Usage> usages = new ArrayList<>();
-    final List<Definition> definitions = new ArrayList<>();
+    final List<Feature> usages = new ArrayList<>();
+    final List<Element> definitions = new ArrayList<>();
     final List<Feature> unclassifiedFeatures = new ArrayList<>();
     final List<String> superTypes= new ArrayList<>();
     final List<Element> declarations = new ArrayList<>();
     final List<Element> redefinitions = new ArrayList<>();
-    final List<AttributeUsage> attributes = new ArrayList<>();
+    final List<Feature> attributes = new ArrayList<>();
     final List<Element> flow = new ArrayList<>();
 
     public NamespaceImpl(org.omg.sysml.lang.sysml.Namespace e) {
@@ -32,10 +32,12 @@ public class NamespaceImpl extends ElementImpl implements Namespace {
                     /* Keyword 'specializes' in source code. */
                     this.superTypes.add(s.getSuperclassifier().getDeclaredName());
                 }
+                case org.omg.sysml.lang.sysml.FeatureMembership m->
+                        this.classifyMember(m.getOwnedMemberFeature());
                 case org.omg.sysml.lang.sysml.OwningMembership m ->
-                        this.classifyMember(Simplifier.simplifyElement(m.getOwnedMemberElement()));
+                        this.classifyMember(m.getOwnedMemberElement());
                 case org.omg.sysml.lang.sysml.Membership m ->
-                        this.classifyMember(Simplifier.simplifyElement(m.getMemberElement()));
+                        this.classifyMember(m.getMemberElement()); // make a difference between member and owned member
                 case org.omg.sysml.lang.sysml.NamespaceImport i ->
                         discard(i);
                 case org.omg.sysml.lang.sysml.MembershipImport i ->
@@ -46,29 +48,29 @@ public class NamespaceImpl extends ElementImpl implements Namespace {
         }
     }
 
-    void classifyMember(Element e){
+    void classifyMember(org.omg.sysml.lang.sysml.Element e){
         switch (e) {
-            case ReferenceUsageImpl r -> {
-                switch (r.classify()){
-                    case REDEFINITION -> this.redefinitions.add(r);
-                    case TYPING_DECLARATION -> this.declarations.add(r);
-                    case FIXME -> this.usages.add(r);
+            case org.omg.sysml.lang.sysml.ReferenceUsage r -> {
+                switch (ReferenceUsageImpl.classify(r)){
+                    case REDEFINITION -> this.redefinitions.add(Simplifier.simplifyFeature(r) );
+                    case TYPING_DECLARATION -> this.declarations.add(Simplifier.simplifyFeature(r));
+                    case FIXME -> this.usages.add(Simplifier.simplifyFeature(r));
                 }
             }
 
-            case AttributeUsage a ->
-                this.attributes.add(a);
+            case org.omg.sysml.lang.sysml.AttributeUsage a ->
+                this.attributes.add(Simplifier.simplifyFeature(a));
 
-            case SuccessionAsUsageImpl s ->
-                    this.flow.add(s);
-            case TransitionUsageImpl t ->
-                    this.flow.add(t);
+            case org.omg.sysml.lang.sysml.SuccessionAsUsage s ->
+                    this.flow.add(Simplifier.simplifyFeature(s));
+            case org.omg.sysml.lang.sysml.TransitionUsage t ->
+                    this.flow.add(Simplifier.simplifyFeature(t));
 
-            case Usage u ->{
-                this.usages.add(u);
+            case org.omg.sysml.lang.sysml.Usage u ->{
+                this.usages.add(Simplifier.simplifyFeature(u));
             }
-            case Definition d ->
-                    this.definitions.add(d);
+            case org.omg.sysml.lang.sysml.Definition d ->
+                    this.definitions.add(Simplifier.simplifyElement(d));
 
 
 
@@ -77,7 +79,7 @@ public class NamespaceImpl extends ElementImpl implements Namespace {
                     this.unclassifiedFeatures.add(f);
             }
             default ->
-                    this.ownedMembers.add(e);
+                    this.ownedMembers.add(Simplifier.simplifyElement(e));
         }
     }
 

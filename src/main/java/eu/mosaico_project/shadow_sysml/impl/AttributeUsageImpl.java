@@ -17,6 +17,7 @@ public class AttributeUsageImpl extends UsageImpl implements AttributeUsage {
     final List<Type> types = new ArrayList<>();
     final List<Element> ownedMembers = new ArrayList<>();
     //final List<MultiplicityRangeImpl> multiplicity = new ArrayList<>();
+    final List<Element> redefinitions = new ArrayList<>();
 
     public AttributeUsageImpl(org.omg.sysml.lang.sysml.AttributeUsage u) {
         super(u);
@@ -25,6 +26,7 @@ public class AttributeUsageImpl extends UsageImpl implements AttributeUsage {
             switch (r){
                 case org.omg.sysml.lang.sysml.FeatureTyping ft -> this.types.add(Simplifier.simplifyType(ft.getType()));
                 case org.omg.sysml.lang.sysml.OwningMembership m -> this.ownedMembers.add(Simplifier.simplifyElement(m.getOwnedMemberElement()));
+                case org.omg.sysml.lang.sysml.Redefinition d -> this.redefinitions.add(Simplifier.simplifyFeature(d.getRedefinedFeature()));
                 default ->
                         throw new InvalidParameterException("[ATTRIBUTE USAGE] " + r.getClass().getSimpleName());
             }

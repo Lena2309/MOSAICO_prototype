@@ -8,6 +8,7 @@ public class ElementImpl implements eu.mosaico_project.shadow_sysml.Element {
 
     /** Elements that we don't want in simplified AST are discarded. */
     void discard(org.omg.sysml.lang.sysml.Element e){
+        System.err.println("[WARNING] Discarded element :" + e.getClass().getSimpleName());
         // Nothing to do.
     }
 

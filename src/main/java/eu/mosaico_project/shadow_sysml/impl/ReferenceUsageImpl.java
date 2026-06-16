@@ -38,9 +38,22 @@ public class ReferenceUsageImpl extends ElementImpl implements ReferenceUsage, F
 
         for (org.omg.sysml.lang.sysml.Relationship rel : r.getOwnedRelationship()){
             switch (rel) {
+
                 case org.omg.sysml.lang.sysml.Redefinition d ->{
-                    this.redefinitions.add(d.getRedefinedFeature().getDeclaredName()); // FIXME : name can be null
+                    org.omg.sysml.lang.sysml.Feature f = d.getRedefinedFeature();
+                    if (f.eIsProxy())
+                        if (f.eContainer()!=null)
+                            this.redefinitions.add(f.eContainer().toString());
+                        else {
+                            System.err.println("[WARNING] Unresolved reference (proxy).");
+                            this.redefinitions.add("PROXY " + ((org.omg.sysml.lang.sysml.impl.FeatureImpl) f).eProxyURI());
+                        }
+                    else {
+                        String id = f.getDeclaredName();
+                        this.redefinitions.add(id != null ? id : f.path());
+                    }
                 }
+
                 case org.omg.sysml.lang.sysml.FeatureValue v -> this.values.add(Simplifier.simplifyExpression(v.getValue()));
                 case org.omg.sysml.lang.sysml.FeatureTyping t -> this.typeClassifiers.add(Simplifier.simplifyType(t.getType()));
                 case org.omg.sysml.lang.sysml.FeatureMembership m -> this.members.add(Simplifier.simplifyFeature(m.getOwnedMemberFeature()));
@@ -60,16 +73,16 @@ public class ReferenceUsageImpl extends ElementImpl implements ReferenceUsage, F
 
     @Override
     public String toString() {
-        return "USAGE (REF) " + name + " " + this.usageOf + " " + (this.direction!= null ? "(" + this.direction + ")": "") + " " + this.classify();
+        return "USAGE (REF) " + name + " " + this.usageOf + " " + (this.direction!= null ? "(" + this.direction + ")": "")  ;
     }
 
 
     enum Kind { REDEFINITION, TYPING_DECLARATION, FIXME }
 
-    public Kind classify(){
-        if (!redefinitions.isEmpty()) return Kind.REDEFINITION ;
+    public static Kind classify(org.omg.sysml.lang.sysml.ReferenceUsage r){
+        if (!r.getOwnedRedefinition().isEmpty()) return Kind.REDEFINITION ;
         else
-            if (name != null && usageOf!= null && !typeClassifiers.isEmpty())
+            if (r.getDeclaredName() != null && r.getDefinition().getFirst().getDeclaredName() != null && !r.getType().isEmpty())
                 return Kind.TYPING_DECLARATION ;
             else return Kind.FIXME;
     }

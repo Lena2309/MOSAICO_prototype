@@ -6,7 +6,8 @@ package TestAddEquals {
     private import MOSAICO::*;
 
     part def EvaluatorAgent specializes MockFalseAgent {
-         :>> id = "eval1" ;
+         attribute redefines version = "v0";
+         redefines id = "eval1" ;
     }
     part def OtherEvaluatorAgent specializes MockTrueAgent {
          :>> id = "eval2" ;
